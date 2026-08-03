@@ -47,3 +47,8 @@ The first version will allow a user to:
 - Dockerized local development
 - AWS deployment
 - Terraform infrastructure
+
+## Documentation
+
+- [Product Roadmap](../docs/roadmap.md)
+- [User Stories](../docs/user-stories.md)

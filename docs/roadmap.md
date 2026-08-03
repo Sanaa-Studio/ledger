@@ -2,12 +2,13 @@
 
 ## Phase 1: Backend Foundation
 
-- Initialize TypeScript and Node.js
 - Create Express server
-- Add environment configuration
-- Add centralized error handling
-- Add request validation
+- Initialize TypeScript and Node.js
 - Add health-check endpoint
+- Add environment configuration
+- Add request validation
+- Add centralized error handling
+- Tests around the resulting behavior
 
 ## Phase 2: Accounts and Transactions API
 

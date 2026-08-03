@@ -50,6 +50,6 @@ The first version will allow a user to:
 
 ## Documentation
 
-- [Product Roadmap](../docs/roadmap.md)
-- [User Stories](../docs/user-stories.md)
-- [Development Guide](../docs/development.md)
+- [Product Roadmap](/docs/roadmap.md)
+- [User Stories](/docs/user-stories.md)
+- [Development Guide](/docs/development.md)

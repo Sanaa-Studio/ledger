@@ -52,3 +52,4 @@ The first version will allow a user to:
 
 - [Product Roadmap](../docs/roadmap.md)
 - [User Stories](../docs/user-stories.md)
+- [Development Guide](../docs/development.md)

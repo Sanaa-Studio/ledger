@@ -6,18 +6,7 @@ transactions, budgets, and monthly spending.
 ## Project Goal
 
 The goal of this project is to build an end-to-end production-style
-application while developing stronger skills in:
-
-- TypeScript
-- Node.js and Express
-- REST API design
-- PostgreSQL
-- Database schema design
-- Authentication and authorization
-- Testing
-- Docker
-- AWS deployment
-- Terraform
+application while developing stronger backend and frontend skills.
 
 ## MVP
 
@@ -47,6 +36,49 @@ The first version will allow a user to:
 - Dockerized local development
 - AWS deployment
 - Terraform infrastructure
+
+## Current Status
+
+Ledger is currently in the backend-foundation phase. The initial Express API
+and project structure are being developed before accounts and transactions are
+connected to PostgreSQL.
+
+## Technology Stack
+
+### Current
+
+- Node.js
+- TypeScript
+- Express
+- REST APIs
+- Vitest
+- Zod
+
+### Planned for the MVP
+
+- PostgreSQL
+- Prisma
+- React
+- Authentication and authorization
+- Docker and Docker Compose
+- GitHub Actions
+- AWS
+- Terraform
+
+### Future Exploration
+
+- Redis caching and background jobs
+- Event-driven processing with Kafka
+- OpenTelemetry
+- Service decomposition
+- Kubernetes
+
+## Architecture
+
+Ledger will begin as a modular monolith with domain-oriented modules for users,
+accounts, transactions, categories, and budgets. Background processing and
+independent services will be introduced only when a workflow requires separate
+scaling, deployment, or asynchronous execution.
 
 ## Documentation
 

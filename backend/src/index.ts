@@ -1,7 +1,14 @@
 import express, { type Express, type Request, type Response } from 'express';
+import dotenv from 'dotenv'; 
+import cors from "cors";
 
+dotenv.config();
 const app: Express = express();
-const port = 3000; 
+const port = process.env.PORT; 
+
+// Middleware
+app.use(cors<Request>());
+app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
     console.log(app.mountpath);

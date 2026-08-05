@@ -3,11 +3,18 @@ import dotenv from 'dotenv';
 import cors from "cors";
 
 dotenv.config();
+
 const app: Express = express();
 const port = process.env.PORT; 
 
+// Cors config
+const allowedOrigins = [process.env.FRONTEND_URL || "http://localhost:3000"]  
+const options: cors.CorsOptions = {
+    origin: allowedOrigins
+};
+
 // Middleware
-app.use(cors<Request>());
+app.use(cors(options)); //app.use(cors<Request>());
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {

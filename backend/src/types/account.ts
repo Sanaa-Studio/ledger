@@ -1,15 +1,22 @@
-export const AccountType = {
-    Checking: "checking",
-    Savings: "savings",
-    CreditCard: "creditCard",
-    Cash: "cash",
-    Investment: "investment"
-} as const;
+import { AccountTypeSchema } from './accountType.js';
+import * as z from 'zod';
 
-export type AccountType = typeof AccountType[keyof typeof AccountType];
+export const CreateAccountSchema = z.object({
+    name: z
+        .string()
+        .trim()
+        .min(1, 'Account name is required')
+        .max(100, 'Account name is too long'),
+    type: AccountTypeSchema,
+    balance: z
+        .number()
+});
 
-export type Account = {
-    id: number,
-    type: AccountType,
-    balance: number,
-}
+export const AccountSchema = CreateAccountSchema.extend({
+    id: z.number()
+        .int()
+        .positive()
+});
+
+export type CreateAccountInput = z.infer<typeof CreateAccountSchema>;
+export type Account = z.infer<typeof AccountSchema>;

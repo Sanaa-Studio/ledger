@@ -7,7 +7,7 @@ const app: Express = express();
 // Middleware
 app.use(corsMiddleware); 
 app.use(express.json());
-app.use('/api', accountRoutes);
+app.use('/api/accounts', accountRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     console.log(app.mountpath);

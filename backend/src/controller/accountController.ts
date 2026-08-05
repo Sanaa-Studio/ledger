@@ -1,5 +1,6 @@
-import { fetchAccounts, fetchAccount } from "../services/accountService.js";
+import { fetchAccounts, fetchAccount, createAccount } from "../services/accountService.js";
 import { type Request, type Response } from 'express';
+import { CreateAccountSchema } from "../types/account.js";
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {
@@ -7,20 +8,30 @@ export const getAccounts = (req: Request, res: Response) => {
     res.json(fetchAccounts());
 } 
 
-export const getAccountsById = (req: Request, res: Response) => {
+export const getAccountById = (req: Request, res: Response) => {
     const accountId = req.params.id;
-
-    if (!accountId){
-        return res.status(404).json({
-            "error": "invalid request",
-        });
-    };
-
     const account = fetchAccount(String(accountId));
-
+    
     if (!account){
         return res.status(404).end();
     }
 
-    res.json(fetchAccount(String(accountId)));
+    res.json(account);
+}
+
+// POST
+export const postAccount = (req: Request, res: Response) => {
+    const result = CreateAccountSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json(
+            {
+              error: "invalid account data",
+              details: result.error.issues,   
+            }
+        );
+    }
+
+    const account = createAccount(result.data);
+    return res.status(201).json(account);
 }

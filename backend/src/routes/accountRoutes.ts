@@ -3,7 +3,8 @@ import * as accountController from '../controller/accountController.js';
 
 const router = express.Router();
 
-router.get('/accounts', accountController.getAccounts);
-router.get('/accounts/:id', accountController.getAccountsById);
+router.get('/', accountController.getAccounts);
+router.get('/:id', accountController.getAccountById);
+router.post('/', accountController.postAccount);
 
-export default router;
+export default router

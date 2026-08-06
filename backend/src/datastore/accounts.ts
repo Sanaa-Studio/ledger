@@ -1,7 +1,7 @@
-import { Account } from "../types/account.js";
+import type { Account } from "../types/account.js";
 import { AccountType } from "../types/accountType.js";
 
-export const accounts: Account[] = [
+export let accounts: Account[] = [
   {
     id: 1,
     name: "Chase",
@@ -33,3 +33,11 @@ export const accounts: Account[] = [
     balance: 15750.3,
   },
 ];
+
+export const setAccounts = (newAccounts: Account[]) => {
+    accounts = newAccounts;
+}
+
+export const getAccounts = () => {
+    return accounts;
+}

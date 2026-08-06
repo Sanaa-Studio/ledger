@@ -12,6 +12,8 @@ export const CreateAccountSchema = z.object({
         .number()
 });
 
+export const UpdateAccountSchema = CreateAccountSchema.partial();
+
 export const AccountSchema = CreateAccountSchema.extend({
     id: z.number()
         .int()
@@ -19,4 +21,5 @@ export const AccountSchema = CreateAccountSchema.extend({
 });
 
 export type CreateAccountInput = z.infer<typeof CreateAccountSchema>;
+export type UpdateAccountInput = z.infer<typeof UpdateAccountSchema>;
 export type Account = z.infer<typeof AccountSchema>;

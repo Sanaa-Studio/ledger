@@ -1,6 +1,6 @@
-import  env  from './config/env.js';
-import  app  from './app.js';
+import env from "./config/env.js";
+import app from "./app.js";
 
-app.listen(env.port, () =>{
-    console.log(`Ledger is listening on Port ${env.port}`);
+app.listen(env.port, () => {
+  console.log(`Ledger is listening on Port ${env.port}`);
 });

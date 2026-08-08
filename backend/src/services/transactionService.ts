@@ -2,64 +2,82 @@ import { getTransactions, setTransactions } from "../datastore/transactions.js";
 import { getAccounts } from "../datastore/accounts.js";
 import { CreateTransactionInput, Transaction } from "../types/transaction.js";
 import { generateId } from "./generateId.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 // GET
 export const fetchTransactions = () => {
-    return getTransactions();
-}
+  return getTransactions();
+};
 
 export const fetchTransaction = (transactionId: number) => {
-    const transactions = getTransactions();
+  const transactions = getTransactions();
 
-    const transaction = transactions.find((transaction) => 
-        transaction.id === transactionId);
+  const transaction = transactions.find(
+    (transaction) => transaction.id === transactionId,
+  );
 
-    return transaction;
-}
+  if (!transaction) {
+    throw new NotFoundError("Transaction does not exist");
+  }
+
+  return transaction;
+};
 
 //POST
-export const makeTransaction = (input: CreateTransactionInput) : Transaction | undefined => {
-    const transactions = getTransactions();
-    const accounts = getAccounts();
-    const currentMaxId = transactions.length === 0 ?
-        0
-        : Math.max(...transactions.map((transaction) => transaction.id));
+export const makeTransaction = (input: CreateTransactionInput): Transaction => {
+  const transactions = getTransactions();
+  const accounts = getAccounts();
+  const currentMaxId =
+    transactions.length === 0
+      ? 0
+      : Math.max(...transactions.map((transaction) => transaction.id));
 
-    const destinationAccountId = input.destinationAccountId;
-    const originExists = accounts.some((account) => account.id === input.accountId);
-    const destinationExists = accounts.some((account) => account.id === destinationAccountId);
+  const destinationAccountId = input.destinationAccountId;
+  const originExists = accounts.some(
+    (account) => account.id === input.accountId,
+  );
 
-    if (!originExists){
-        return undefined;
+  if (!originExists) {
+    throw new NotFoundError("Origin account does not exist");
+  }
+
+  if (input.destinationAccountId != undefined) {
+    const destinationExists = accounts.some(
+      (account) => account.id === destinationAccountId,
+    );
+
+    if (!destinationExists) {
+      throw new NotFoundError("Destination account does not exist");
     }
 
-    if (destinationAccountId !== undefined && !destinationExists){
-        return undefined;
+    if (input.accountId === input.destinationAccountId) {
+      throw new NotFoundError(
+        "Origin and desitination accounts cannot be the same",
+      );
     }
+  }
 
-    if (input.accountId === destinationAccountId){
-        return undefined;
-    }
+  const transaction: Transaction = {
+    id: generateId(currentMaxId),
+    ...input,
+  };
 
-    const transaction: Transaction = {
-        id: generateId(currentMaxId),
-        ...input,
-    }
+  setTransactions([...transactions, transaction]);
 
-    setTransactions([...transactions, transaction]);
-
-    return transaction;
-}
+  return transaction;
+};
 
 // DELETE
-export const removeTransaction = (id: number): boolean => {
-    const transactions = getTransactions();
-    const filteredTransactions = transactions.filter((transaction) => transaction.id !== id);
+export const removeTransaction = (id: number) => {
+  const transactions = getTransactions();
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.id !== id,
+  );
 
-    if (transactions.length === filteredTransactions.length){
-        return false;
-    }
+  if (transactions.length === filteredTransactions.length) {
+    throw new NotFoundError("Transaction does not exist");
+  }
 
-    setTransactions(filteredTransactions);
-    return true;
-}
+  setTransactions(filteredTransactions);
+  return true;
+};

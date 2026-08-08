@@ -35,9 +35,9 @@ export let accounts: Account[] = [
 ];
 
 export const setAccounts = (newAccounts: Account[]) => {
-    accounts = newAccounts;
-}
+  accounts = newAccounts;
+};
 
 export const getAccounts = () => {
-    return accounts;
-}
+  return accounts;
+};

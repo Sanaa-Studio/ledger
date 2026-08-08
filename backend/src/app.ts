@@ -1,6 +1,7 @@
 import express, { type Express, type Request, type Response } from 'express'; 
 import { corsMiddleware } from './middleware/cors.js';
 import accountRoutes from './routes/accountRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
 
 const app: Express = express();
 
@@ -8,6 +9,7 @@ const app: Express = express();
 app.use(corsMiddleware); 
 app.use(express.json());
 app.use('/api/accounts', accountRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     console.log(app.mountpath);

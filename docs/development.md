@@ -80,3 +80,6 @@ Run backend commands from the `backend/` directory.
 | `npm run validate` | Run linting, formatting checks, and TypeScript validation |
 
 > The `pre-commit` Git hook automatically runs `npm run validate` before every commit.
+
+## Scripts
+run `./zip-backend.sh` to zip the backend folder and copy it to the root of the project.

@@ -14,23 +14,24 @@ export const fetchAccount = (accountId: string) => {
 
 // POST
 export const createAccount = (input: CreateAccountInput): Account => {
-   const maxId = getAccounts().length === 0 
+    const accounts = getAccounts();
+    const maxId = accounts.length === 0 
     ? 0
-    : Math.max(...getAccounts().map((account) => account.id));
+    : Math.max(...accounts.map((account) => account.id));
 
     const account: Account = {
         id: generateId(maxId),
         ...input
     };
 
-    getAccounts().push(account);
+    setAccounts([...accounts, account]);
     return account;
 } 
 
 // DELETE
 export const removeAccount = (id: number): boolean => {
     const accounts = getAccounts();
-    const filteredAccounts = getAccounts().filter((account) => account.id !== id);
+    const filteredAccounts = accounts.filter((account) => account.id !== id);
 
     if (accounts.length === filteredAccounts.length){
         return false;
@@ -64,29 +65,29 @@ export const replaceAccount = (input: CreateAccountInput, id: number): Account |
     return replacement;
 }
 
-    // PATCH
-    export const patchAccount = (input: UpdateAccountInput, id: number): Account | undefined => {
-        const accounts = getAccounts();
-        const existingAccount = accounts.find(
-            (account) => account.id === id
-        );
+// PATCH
+export const patchAccount = (input: UpdateAccountInput, id: number): Account | undefined => {
+    const accounts = getAccounts();
+    const existingAccount = accounts.find(
+        (account) => account.id === id
+    );
 
-        if (!existingAccount){
-            return undefined;
-        }
-
-        const updatedAccount: Account = {
-            id,
-            name: input.name ?? existingAccount.name,
-            type: input.type ?? existingAccount.type,
-            balance: input.balance ?? existingAccount.balance
-        };
-
-        const updatedAccounts = accounts.map((account) => 
-            account.id === id ? updatedAccount: account
-        );    
-        
-        setAccounts(updatedAccounts);
-
-        return updatedAccount;
+    if (!existingAccount){
+        return undefined;
     }
+
+    const updatedAccount: Account = {
+        id,
+        name: input.name ?? existingAccount.name,
+        type: input.type ?? existingAccount.type,
+        balance: input.balance ?? existingAccount.balance
+    };
+
+    const updatedAccounts = accounts.map((account) => 
+        account.id === id ? updatedAccount: account
+    );    
+    
+    setAccounts(updatedAccounts);
+
+    return updatedAccount;
+}

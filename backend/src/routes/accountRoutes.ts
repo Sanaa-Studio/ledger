@@ -8,6 +8,6 @@ router.get('/:id', accountController.getAccountById);
 router.post('/', accountController.postAccount);
 router.put('/:id', accountController.putAccount);
 router.patch('/:id', accountController.updateAccount);
-router.delete('/id', accountController.deleteAccount);
+router.delete('/:id', accountController.deleteAccount);
 
 export default router

@@ -53,11 +53,12 @@ connected to PostgreSQL.
 - REST APIs
 - Vitest
 - Zod
+- Supertest
 
 ### Planned for the MVP
 
 - PostgreSQL
-- Prisma
+- Drizzle
 - React
 - Authentication and authorization
 - Docker and Docker Compose
@@ -72,6 +73,7 @@ connected to PostgreSQL.
 - OpenTelemetry
 - Service decomposition
 - Kubernetes
+- Jest
 
 ## Architecture
 

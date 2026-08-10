@@ -116,6 +116,10 @@ describe('Testing account service logic', () => {
 
             const replacement = accountService.replaceAccount(acccountInput, currentAccount.id);
 
+            const storedAccount = getAccounts().find((account) => 
+                account.id === currentAccount.id );
+
+            assert.deepStrictEqual(storedAccount, replacement);
             assert.strictEqual(replacement.id, currentAccount.id);
             assert.strictEqual(replacement.name, acccountInput.name);
             assert.strictEqual(replacement.balance, acccountInput.balance);

@@ -14,15 +14,14 @@ import {
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {
-  console.log(req.path);
-  res.json(fetchAccounts());
+  res.status(200).json(fetchAccounts());
 };
 
 export const getAccountById = (req: Request, res: Response) => {
   const accountId = req.params.id;
   const account = fetchAccount(String(accountId));
 
-  res.json(account);
+  return res.status(200).json(account);
 };
 
 // POST

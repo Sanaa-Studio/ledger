@@ -8,13 +8,7 @@ import type {
   UpdateAccountInput,
 } from "../../types/accountsSchemaType.js";
 import { AccountType } from "../../types/accountType.js";
-import { Account } from "../../types/accountsSchemaType.js";
-
-const getMaxId = (accounts: Account[]) => {
-  return accounts.length === 0
-    ? 0
-    : Math.max(...accounts.map((account) => account.id));
-};
+import getMaxId from "../utils/getMaxId.js";
 
 describe("Testing account service logic", () => {
   const originalAccounts = structuredClone(getAccounts());

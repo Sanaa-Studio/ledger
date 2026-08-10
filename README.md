@@ -54,6 +54,7 @@ connected to PostgreSQL.
 - Vitest
 - Zod
 - Supertest
+- node:test
 
 ### Planned for the MVP
 

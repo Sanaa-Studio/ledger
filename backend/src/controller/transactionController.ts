@@ -21,7 +21,7 @@ export const getTransaction = (req: Request, res: Response) => {
     return res.status(404).end();
   }
 
-  return res.json(transaction);
+  return res.status(200).json(transaction);
 };
 
 // POST

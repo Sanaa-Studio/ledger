@@ -5,18 +5,10 @@ import {
   setTransactions,
 } from "../../datastore/transactionsData.js";
 import * as transactionService from "../../services/transactionsService.js";
-import {
-  CreateTransactionInput,
-  Transaction,
-} from "../../types/transactionsSchemaType.js";
+import { CreateTransactionInput } from "../../types/transactionsSchemaType.js";
 import { NotFoundError, BadRequestError } from "../../errors/AppError.js";
 import { getAccounts } from "../../datastore/accountsData.js";
-
-const getMaxId = (transactions: Transaction[]) => {
-  return transactions.length === 0
-    ? 0
-    : Math.max(...transactions.map((transaction) => transaction.id));
-};
+import getMaxId from "../utils/getMaxId.js";
 
 describe("Test Suite for the Transaction Service", () => {
   const transactions = structuredClone(getTransactions());

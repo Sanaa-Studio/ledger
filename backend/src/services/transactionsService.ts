@@ -1,8 +1,14 @@
-import { getTransactions, setTransactions } from "../datastore/transactions.js";
-import { getAccounts } from "../datastore/accounts.js";
-import { CreateTransactionInput, Transaction } from "../types/transaction.js";
+import {
+  getTransactions,
+  setTransactions,
+} from "../datastore/transactionsData.js";
+import { getAccounts } from "../datastore/accountsData.js";
+import {
+  CreateTransactionInput,
+  Transaction,
+} from "../types/transactionsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
-import { NotFoundError } from "../errors/AppError.js";
+import { BadRequestError, NotFoundError } from "../errors/AppError.js";
 
 // GET
 export const fetchTransactions = () => {
@@ -51,7 +57,7 @@ export const makeTransaction = (input: CreateTransactionInput): Transaction => {
     }
 
     if (input.accountId === input.destinationAccountId) {
-      throw new NotFoundError(
+      throw new BadRequestError(
         "Origin and desitination accounts cannot be the same",
       );
     }

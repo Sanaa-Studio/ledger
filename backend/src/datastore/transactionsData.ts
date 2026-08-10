@@ -1,4 +1,4 @@
-import type { Transaction } from "../types/transaction.js";
+import type { Transaction } from "../types/transactionsSchemaType.js";
 
 export let transactions: Transaction[] = [
   {
@@ -89,7 +89,7 @@ export let transactions: Transaction[] = [
 ];
 
 export const getTransactions = () => {
-  return transactions;
+  return transactions || [];
 };
 
 export const setTransactions = (newTransactions: Transaction[]) => {

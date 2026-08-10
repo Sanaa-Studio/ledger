@@ -1,9 +1,9 @@
-import { getAccounts, setAccounts } from "../datastore/accounts.js";
+import { getAccounts, setAccounts } from "../datastore/accountsData.js";
 import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
-} from "../types/account.js";
+} from "../types/accountsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
 

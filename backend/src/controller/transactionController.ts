@@ -1,11 +1,11 @@
-import { CreateTransactionSchema } from "../types/transaction.js";
+import { CreateTransactionSchema } from "../types/transactionsSchemaType.js";
 import type { Response, Request } from "express";
 import {
   fetchTransactions,
   fetchTransaction,
   makeTransaction,
   removeTransaction,
-} from "../services/transactionService.js";
+} from "../services/transactionsService.js";
 
 // GET
 export const getTransactions = (req: Request, res: Response) => {

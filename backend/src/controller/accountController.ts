@@ -5,9 +5,12 @@ import {
   replaceAccount,
   patchAccount,
   removeAccount,
-} from "../services/accountService.js";
+} from "../services/accountsService.js";
 import { type Request, type Response } from "express";
-import { CreateAccountSchema, UpdateAccountSchema } from "../types/account.js";
+import {
+  CreateAccountSchema,
+  UpdateAccountSchema,
+} from "../types/accountsSchemaType.js";
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {

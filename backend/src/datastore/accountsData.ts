@@ -1,4 +1,4 @@
-import type { Account } from "../types/account.js";
+import type { Account } from "../types/accountsSchemaType.js";
 import { AccountType } from "../types/accountType.js";
 
 export let accounts: Account[] = [

@@ -15,7 +15,7 @@
 - [x] Create account CRUD endpoints
 - [x] Create transaction CRUD endpoints
 - [x] Define consistent API responses and error handling
-- [ ] Add unit tests for service
+- [x] Add unit tests for services
 - [ ] Add endpoint integration tests using Supertest
 - [ ] Add filtering and pagination
 
@@ -45,6 +45,8 @@
 - [ ] Create the frontend application
 - [ ] Build account views
 - [ ] Build transaction views
+- [ ] Add logic for transfers between accounts
+- [ ] Add a tranfers schema
 - [ ] Add forms for creating and updating data
 - [ ] Add transaction filtering and pagination
 - [ ] Connect the frontend to the Express API

@@ -7,17 +7,17 @@
 - [x] Add health-check endpoint
 - [x] Add environment configuration
 - [x] Add request validation
-- [ ] Add centralized error handling
-- [ ] Add tests for server behavior
+- [x] Add centralized error handling
+- [ ] Add server tests for middleware and error handling
 
 ## Phase 2: Accounts and Transactions API
 
 - [x] Create account CRUD endpoints
 - [x] Create transaction CRUD endpoints
-- [ ] Add filtering and pagination
-- [ ] Define consistent API responses and error handling
+- [x] Define consistent API responses and error handling
 - [ ] Add unit tests for service
-- [ ] Add endpoint integration tests
+- [ ] Add endpoint integration tests using Supertest
+- [ ] Add filtering and pagination
 
 ## Phase 3: Docker and Local Development
 

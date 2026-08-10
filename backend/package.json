@@ -13,7 +13,8 @@
     "validate": "npm run lint && npm run format:check && npm run typecheck",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "tsx --test"
   },
   "keywords": [],
   "author": "",

@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Api tests
 /backend/api_calls/
+
+# Zip files
+*.zip

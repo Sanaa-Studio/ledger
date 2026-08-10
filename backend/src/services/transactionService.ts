@@ -1,7 +1,7 @@
 import { getTransactions, setTransactions } from "../datastore/transactions.js";
 import { getAccounts } from "../datastore/accounts.js";
 import { CreateTransactionInput, Transaction } from "../types/transaction.js";
-import { generateId } from "./generateId.js";
+import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
 
 // GET

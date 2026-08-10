@@ -4,8 +4,8 @@ import type {
   CreateAccountInput,
   UpdateAccountInput,
 } from "../types/account.js";
-import { generateId } from "./generateId.js";
-import { NotFoundError, BadRequestError } from "../errors/AppError.js";
+import { generateId } from "../utils/generateId.js";
+import { NotFoundError } from "../errors/AppError.js";
 
 // GET
 export const fetchAccounts = () => {
@@ -87,9 +87,7 @@ export const patchAccount = (
   const existingAccount = accounts.find((account) => account.id === id);
 
   if (!existingAccount) {
-    throw new BadRequestError(
-      "Attempting to edit an account that does not exist",
-    );
+    throw new NotFoundError("Account does not exist");
   }
 
   const updatedAccount: Account = {

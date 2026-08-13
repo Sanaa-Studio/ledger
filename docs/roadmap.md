@@ -16,16 +16,16 @@
 - [x] Create transaction CRUD endpoints
 - [x] Define consistent API responses and error handling
 - [x] Add unit tests for services
-- [ ] Add endpoint integration tests using Supertest
+- [x] Add endpoint integration tests using Supertest
 - [ ] Add filtering and pagination
 
 ## Phase 3: Docker and Local Development
 
 - [ ] Learn Docker images and containers
 - [ ] Create a Dockerfile for the backend
+- [ ] Add Docker Compose
 - [ ] Run PostgreSQL locally with Docker
 - [ ] Configure persistent database volumes
-- [ ] Add Docker Compose
 - [ ] Manage configuration with environment variables
 
 ## Phase 4: PostgreSQL Persistence
@@ -35,9 +35,13 @@
 - [ ] Add Drizzle
 - [ ] Create and run database migrations
 - [ ] Replace in-memory storage with PostgreSQL
+- [ ] Add database seeding for development and testing
 - [ ] Add database constraints
 - [ ] Add indexes where appropriate
 - [ ] Update integration tests to use the database
+- [ ] Add Redis to the local Docker Compose environment
+- [ ] Learn Redis keys, TTLs, and expiration
+- [ ] Implement API rate limiting with Redis
 
 ## Phase 5: React Frontend
 
@@ -45,8 +49,8 @@
 - [ ] Create the frontend application
 - [ ] Build account views
 - [ ] Build transaction views
-- [ ] Add logic for transfers between accounts
-- [ ] Add a tranfers schema
+- [ ] Design transfer data model
+- [ ] Implement transfers between accounts
 - [ ] Add forms for creating and updating data
 - [ ] Add transaction filtering and pagination
 - [ ] Connect the frontend to the Express API
@@ -74,3 +78,13 @@
 - [ ] Deploy frontend
 - [ ] Configure production environment variables and secrets
 - [ ] Add production health checks and monitoring
+
+## Phase 8: Future Features
+
+- [ ] Add monthly budgets
+- [ ] Add recurring transactions
+- [ ] Learn Redis-backed background job queues
+- [ ] Add CSV transaction imports
+- [ ] Add transaction categories
+- [ ] Add spending analytics
+- [ ] Add data visualization with D3.js

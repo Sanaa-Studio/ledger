@@ -59,22 +59,24 @@ connected to PostgreSQL.
 ### Planned for the MVP
 
 - PostgreSQL
-- Drizzle
+- Sequelize
+- Authentication and authorization: Passport, jsonwebtoken, and bcrypt
 - React
-- Authentication and authorization
 - Docker and Docker Compose
 - GitHub Actions
 - AWS
+- Redis cache and background jobs
 - Terraform
 
 ### Future Exploration
 
-- Redis caching and background jobs
 - Event-driven processing with Kafka
 - OpenTelemetry
 - Service decomposition
 - Kubernetes
 - Jest
+- Prometheus and Grafana
+- D3.js
 
 ## Architecture
 

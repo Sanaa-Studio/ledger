@@ -6,10 +6,30 @@ import type {
 } from "../types/accountsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
+import { AccountQuery } from "../types/AccountQuerySchema.js";
+import type { AccountQueryResponseType } from "../types/AccountQueryResponseType.js";
 
 // GET
-export const fetchAccounts = () => {
-  return getAccounts();
+export const fetchAccounts = (query: AccountQuery) => {
+  const accounts = getAccounts();
+
+  const { page, limit } = query;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  const totalAccounts = accounts.length;
+  const paginatedAccounts = accounts.slice(startIndex, endIndex);
+
+  const response: AccountQueryResponseType = {
+    page,
+    limit,
+    totalAccounts,
+    pages: Math.ceil(totalAccounts / limit),
+    data: paginatedAccounts,
+  };
+
+  return response;
 };
 
 export const fetchAccount = (accountId: string) => {

@@ -14,7 +14,11 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "tsx --test"
+    "test": "tsx --test",
+    "docker:build": "docker build -t ledger-backend .",
+    "docker:run": "docker run --rm --name ledger-backend-dev -e PORT=5001 -p 5001:5001 ledger-backend",
+    "docker": "npm run docker:build && npm run docker:run",
+    "docker:stop": "docker stop ledger-backend-dev"
   },
   "keywords": [],
   "author": "",

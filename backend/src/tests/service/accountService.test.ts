@@ -9,6 +9,8 @@ import type {
 } from "../../types/accountsSchemaType.js";
 import { AccountType } from "../../types/accountType.js";
 import getMaxId from "../utils/getMaxId.js";
+import { AccountQuery } from "../../types/AccountQuerySchema.js";
+import type { AccountQueryResponseType } from "../../types/AccountQueryResponseType.js";
 
 describe("Testing account service logic", () => {
   const originalAccounts = structuredClone(getAccounts());
@@ -21,9 +23,28 @@ describe("Testing account service logic", () => {
   describe("Happy tests for fetching accounts", () => {
     it("Fetching exising accounts", () => {
       const accounts = getAccounts();
-      const result = accountService.fetchAccounts();
+      const query: AccountQuery = { page: 1, limit: 10 };
+
+      const totalAccounts = accounts.length;
+      const pages = Math.ceil(totalAccounts / query.limit);
+
+      const startIndex = (query.page - 1) * query.limit;
+      const endIndex = startIndex + query.limit;
+
+      const data = accounts.slice(startIndex, endIndex);
+
+      const response: AccountQueryResponseType = {
+        page: query.page,
+        pages: pages,
+        limit: query.limit,
+        totalAccounts: totalAccounts,
+        data: data,
+      };
+
+      const result = accountService.fetchAccounts(query);
+
       assert.ok(result);
-      assert.deepStrictEqual(accounts, result);
+      assert.deepStrictEqual(response, result);
     });
 
     it("Fetching existing account", () => {

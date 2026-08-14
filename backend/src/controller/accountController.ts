@@ -11,10 +11,20 @@ import {
   CreateAccountSchema,
   UpdateAccountSchema,
 } from "../types/accountsSchemaType.js";
+import { AccountQuerySchema } from "../types/AccountQuerySchema.js";
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {
-  res.status(200).json(fetchAccounts());
+  const query = AccountQuerySchema.safeParse(req.query);
+
+  if (!query.success) {
+    return res.status(400).json({
+      error: "Invalid query parameters",
+      details: query.error.issues,
+    });
+  }
+
+  res.status(200).json(fetchAccounts(query.data));
 };
 
 export const getAccountById = (req: Request, res: Response) => {

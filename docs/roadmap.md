@@ -25,26 +25,24 @@
 
 - [x] Learn Docker images and containers
 - [x] Create a Dockerfile for the backend
-- [ ] Add Docker Compose
-- [ ] Connect backup PostgreSQL with Aiven
-- [ ] Run PostgreSQL locally with Docker
-- [ ] Configure persistent database volumes
-- [ ] Manage configuration with environment variables
+- [x] Add Docker Compose
+- [x] Run PostgreSQL locally with Docker
+- [x] Configure persistent database volumes
 
-## Phase 4: PostgreSQL Persistence
+## Phase 4: PostgreSQL and Redis
 
 - [ ] Design relational database schema
 - [ ] Define account and transaction relationships
-- [ ] Add Drizzle
+- [ ] Install Drizzle
+- [ ] Configure database connection
 - [ ] Create and run database migrations
+- [ ] Seed local database
 - [ ] Replace in-memory storage with PostgreSQL
-- [ ] Add database seeding for development and testing
 - [ ] Add database constraints
 - [ ] Add indexes where appropriate
-- [ ] Update integration tests to use the database
-- [ ] Add Redis to the local Docker Compose environment
-- [ ] Learn Redis keys, TTLs, and expiration
-- [ ] Implement API rate limiting with Redis
+- [ ] Update integration tests to use the PostgreSQL
+- [ ] Connect backup PostgreSQL with Aiven
+- [ ] Manage DB configuration with environment variables
 
 ## Phase 5: React Frontend
 
@@ -70,6 +68,9 @@
 - [ ] Associate accounts with users
 - [ ] Enforce account and transaction ownership
 - [ ] Integrate authentication with the frontend
+- [ ] Add Redis to the local Docker Compose environment
+- [ ] Learn Redis keys, TTLs, and expiration
+- [ ] Implement API rate limiting with Redis
 
 ## Phase 7: Deployment and Infrastructure
 

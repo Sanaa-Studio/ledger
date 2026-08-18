@@ -9,7 +9,7 @@ import type {
 } from "../../types/accountTypes/accountsSchemaType.js";
 import { AccountType } from "../../types/accountTypes/accountType.js";
 import getMaxId from "../utils/getMaxId.js";
-import type { AccountQuery } from "../../types/accountTypes/AccountQuerySchema.js";
+import type { AccountQuery } from "../../types/accountTypes/accountQuerySchema.js";
 
 describe("Testing account service logic", () => {
   const originalAccounts = structuredClone(getAccounts());

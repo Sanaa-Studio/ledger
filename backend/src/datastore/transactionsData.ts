@@ -1,4 +1,4 @@
-import type { Transaction } from "../types/transactionTypes/TransactionsSchemaType.js";
+import  { Transaction } from "../types/transactionTypes/transactionsSchemaType.js";
 
 export let transactions: Transaction[] = [
   {

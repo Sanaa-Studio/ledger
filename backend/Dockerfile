@@ -3,7 +3,7 @@ FROM node:24-alpine AS builder
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package\*.json ./
+COPY --chown=node:node package*.json ./
 
 RUN npm ci
 

@@ -11,7 +11,7 @@ import {
   CreateAccountSchema,
   UpdateAccountSchema,
 } from "../types/accountTypes/accountsSchemaType.js";
-import { AccountQuerySchema } from "../types/accountTypes/AccountQuerySchema.js";
+import { AccountQuerySchema } from "../types/accountTypes/accountQuerySchema.js";
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {

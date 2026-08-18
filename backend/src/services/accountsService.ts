@@ -6,8 +6,8 @@ import type {
 } from "../types/accountTypes/accountsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
-import { AccountQuery } from "../types/accountTypes/AccountQuerySchema.js";
-import type { AccountQueryResponseType } from "../types/accountTypes/AccountQueryResponseType.js";
+import { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
+import type { AccountQueryResponseType } from "../types/accountTypes/accountQueryResponseType.js";
 
 // GET
 export const fetchAccounts = (query: AccountQuery) => {

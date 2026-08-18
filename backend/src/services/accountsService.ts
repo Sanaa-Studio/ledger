@@ -3,11 +3,11 @@ import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
-} from "../types/accountsSchemaType.js";
+} from "../types/accountTypes/accountsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
-import { AccountQuery } from "../types/AccountQuerySchema.js";
-import type { AccountQueryResponseType } from "../types/AccountQueryResponseType.js";
+import { AccountQuery } from "../types/accountTypes/AccountQuerySchema.js";
+import type { AccountQueryResponseType } from "../types/accountTypes/AccountQueryResponseType.js";
 
 // GET
 export const fetchAccounts = (query: AccountQuery) => {

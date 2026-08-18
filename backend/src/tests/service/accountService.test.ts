@@ -6,11 +6,10 @@ import * as accountService from "../../services/accountsService.js";
 import type {
   CreateAccountInput,
   UpdateAccountInput,
-} from "../../types/accountsSchemaType.js";
-import { AccountType } from "../../types/accountType.js";
+} from "../../types/accountTypes/accountsSchemaType.js";
+import { AccountType } from "../../types/accountTypes/accountType.js";
 import getMaxId from "../utils/getMaxId.js";
-import { AccountQuery } from "../../types/AccountQuerySchema.js";
-import type { AccountQueryResponseType } from "../../types/AccountQueryResponseType.js";
+import type { AccountQuery } from "../../types/accountTypes/AccountQuerySchema.js";
 
 describe("Testing account service logic", () => {
   const originalAccounts = structuredClone(getAccounts());
@@ -21,37 +20,154 @@ describe("Testing account service logic", () => {
 
   // Happy tests for fetching accounts
   describe("Happy tests for fetching accounts", () => {
-    it("Fetching exising accounts", () => {
+    it("Returns the first page of accounts", () => {
       const accounts = getAccounts();
-      const query: AccountQuery = { page: 1, limit: 10 };
 
-      const totalAccounts = accounts.length;
-      const pages = Math.ceil(totalAccounts / query.limit);
-
-      const startIndex = (query.page - 1) * query.limit;
-      const endIndex = startIndex + query.limit;
-
-      const data = accounts.slice(startIndex, endIndex);
-
-      const response: AccountQueryResponseType = {
-        page: query.page,
-        pages: pages,
-        limit: query.limit,
-        totalAccounts: totalAccounts,
-        data: data,
+      const query: AccountQuery = { 
+        page: 1, 
+        limit: 2 
       };
 
       const result = accountService.fetchAccounts(query);
+      
+      assert.strictEqual(result.page, 1);
+      assert.strictEqual(result.limit, 2);
+      assert.strictEqual(result.totalAccounts, accounts.length);
+      assert.strictEqual(result.pages, Math.ceil(accounts.length / 2));
 
-      assert.ok(result);
-      assert.deepStrictEqual(response, result);
+      assert.deepStrictEqual(result.data, accounts.slice(0, 2));
+    });
+
+    it("Returns the second page of accounts", () => {
+        const accounts = getAccounts();
+
+        const query: AccountQuery = {
+        page: 2,
+        limit: 2,
+        };
+
+        const result = accountService.fetchAccounts(query);
+
+        assert.strictEqual(result.page, 2);
+        assert.strictEqual(result.limit, 2);
+        assert.deepStrictEqual(result.data, accounts.slice(2, 4));
+    });
+
+      it("Returns a partial final page", () => {
+        setAccounts([
+        {
+            id: 1,
+            name: "Account 1",
+            type: AccountType.Checking,
+            balance: 100,
+        },
+        {
+            id: 2,
+            name: "Account 2",
+            type: AccountType.Savings,
+            balance: 200,
+        },
+        {
+            id: 3,
+            name: "Account 3",
+            type: AccountType.Cash,
+            balance: 300,
+        },
+        {
+            id: 4,
+            name: "Account 4",
+            type: AccountType.Checking,
+            balance: 400,
+        },
+        {
+            id: 5,
+            name: "Account 5",
+            type: AccountType.Savings,
+            balance: 500,
+        },
+        ]);
+
+        const result = accountService.fetchAccounts({
+        page: 3,
+        limit: 2,
+        });
+
+        assert.strictEqual(result.page, 3);
+        assert.strictEqual(result.pages, 3);
+        assert.strictEqual(result.totalAccounts, 5);
+
+        assert.deepStrictEqual(result.data, [
+        {
+            id: 5,
+            name: "Account 5",
+            type: AccountType.Savings,
+            balance: 500,
+        },
+        ]);
+    });
+
+    it("Returns an empty array when page is beyond available accounts", () => {
+        const accounts = getAccounts();
+
+        const result = accountService.fetchAccounts({
+        page: 100,
+        limit: 10,
+        });
+
+        assert.strictEqual(result.page, 100);
+        assert.strictEqual(result.totalAccounts, accounts.length);
+        assert.deepStrictEqual(result.data, []);
+    });
+
+    it("Calculates the correct number of pages", () => {
+        setAccounts([
+        {
+            id: 1,
+            name: "Account 1",
+            type: AccountType.Checking,
+            balance: 100,
+        },
+        {
+            id: 2,
+            name: "Account 2",
+            type: AccountType.Checking,
+            balance: 200,
+        },
+        {
+            id: 3,
+            name: "Account 3",
+            type: AccountType.Checking,
+            balance: 300,
+        },
+        {
+            id: 4,
+            name: "Account 4",
+            type: AccountType.Checking,
+            balance: 400,
+        },
+        {
+            id: 5,
+            name: "Account 5",
+            type: AccountType.Checking,
+            balance: 500,
+        },
+        ]);
+
+        const result = accountService.fetchAccounts({
+        page: 1,
+        limit: 2,
+        });
+
+        assert.strictEqual(result.pages, 3);
     });
 
     it("Fetching existing account", () => {
-      const accounts = getAccounts();
-      const result = accountService.fetchAccount("1");
-      assert.ok(result);
-      assert.deepStrictEqual(result, accounts[0]);
+        const accounts = getAccounts();
+
+        const result = accountService.fetchAccount("1");
+
+        assert.ok(result);
+        assert.deepStrictEqual(result, accounts[0]);
     });
   });
 

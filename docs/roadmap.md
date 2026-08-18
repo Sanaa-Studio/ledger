@@ -8,7 +8,7 @@
 - [x] Add environment configuration
 - [x] Add request validation
 - [x] Add centralized error handling
-- [ ] Add server tests for middleware and error handling
+- [x] Add server tests for middleware and error handling
 
 ## Phase 2: Accounts and Transactions API
 
@@ -17,13 +17,16 @@
 - [x] Define consistent API responses and error handling
 - [x] Add unit tests for services
 - [x] Add endpoint integration tests using Supertest
-- [ ] Add filtering and pagination
+- [X] Add pagination for accounts
+- [x] Add pagination for transactions
+- [x] Add testing for pagination
 
 ## Phase 3: Docker and Local Development
 
-- [ ] Learn Docker images and containers
-- [ ] Create a Dockerfile for the backend
+- [x] Learn Docker images and containers
+- [x] Create a Dockerfile for the backend
 - [ ] Add Docker Compose
+- [ ] Connect backup PostgreSQL with Aiven
 - [ ] Run PostgreSQL locally with Docker
 - [ ] Configure persistent database volumes
 - [ ] Manage configuration with environment variables
@@ -52,7 +55,8 @@
 - [ ] Design transfer data model
 - [ ] Implement transfers between accounts
 - [ ] Add forms for creating and updating data
-- [ ] Add transaction filtering and pagination
+- [ ] Add transaction filtering
+- [ ] Test filtering
 - [ ] Connect the frontend to the Express API
 - [ ] Add loading and error states
 - [ ] Build monthly dashboard

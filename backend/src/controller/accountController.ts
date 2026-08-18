@@ -10,8 +10,8 @@ import { type Request, type Response } from "express";
 import {
   CreateAccountSchema,
   UpdateAccountSchema,
-} from "../types/accountsSchemaType.js";
-import { AccountQuerySchema } from "../types/AccountQuerySchema.js";
+} from "../types/accountTypes/accountsSchemaType.js";
+import { AccountQuerySchema } from "../types/accountTypes/AccountQuerySchema.js";
 
 // GET
 export const getAccounts = (req: Request, res: Response) => {

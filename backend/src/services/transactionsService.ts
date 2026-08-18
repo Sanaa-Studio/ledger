@@ -6,13 +6,32 @@ import { getAccounts } from "../datastore/accountsData.js";
 import {
   CreateTransactionInput,
   Transaction,
-} from "../types/transactionsSchemaType.js";
+} from "../types/transactionTypes/transactionsSchemaType.js";
 import { generateId } from "../utils/generateId.js";
 import { BadRequestError, NotFoundError } from "../errors/AppError.js";
+import type { TransactionQuery } from "../types/transactionTypes/transactionQuerySchema.js";
+import type { TransactionQueryResponse } from "../types/transactionTypes/transactionQueryResponseType.js";
 
 // GET
-export const fetchTransactions = () => {
-  return getTransactions();
+export const fetchTransactions = (query: TransactionQuery): TransactionQueryResponse => {
+    const transactions = getTransactions();
+    const {page, limit} = query;
+
+    const startIndex =  (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    const totalTransactions = transactions.length;
+    const paginatedTransactions = transactions.slice(startIndex,endIndex);
+
+    const response: TransactionQueryResponse = {
+        page,
+        limit,
+        totalTransactions: totalTransactions,
+        pages: Math.ceil(totalTransactions / limit),
+        data: paginatedTransactions
+    };
+
+  return response;
 };
 
 export const fetchTransaction = (transactionId: number) => {

@@ -4,46 +4,143 @@ import assert from "node:assert";
 import app from "../../app.js";
 import { getAccounts, setAccounts } from "../../datastore/accountsData.js";
 import getMaxId from "../utils/getMaxId.js";
-import { CreateAccountInput } from "../../types/accountsSchemaType.js";
-import { AccountType } from "../../types/accountType.js";
+import type { CreateAccountInput } from "../../types/accountTypes/accountsSchemaType.js";
+import { AccountType } from "../../types/accountTypes/accountType.js";
 
 describe("Account controller test suite", () => {
-  const accounts = structuredClone(getAccounts());
+  const originalAccounts = structuredClone(getAccounts());
 
   beforeEach(() => {
-    setAccounts(structuredClone(accounts));
+    setAccounts(structuredClone(originalAccounts));
   });
 
   describe("GET /api/accounts", () => {
-    it("Should return accounts", async () => {
-      const result = await request(app).get("/api/accounts");
-      assert.strictEqual(result.statusCode, 200);
+    it("Should return paginated accounts", async () => {
+    const accounts = getAccounts();
+
+    const result = await request(app).get(
+      "/api/accounts?page=1&limit=2",
+    );
+
+    assert.strictEqual(result.statusCode, 200);
+
+    assert.strictEqual(result.body.page, 1);
+    assert.strictEqual(result.body.limit, 2);
+    assert.strictEqual(
+      result.body.totalAccounts,
+      accounts.length,
+    );
+    assert.strictEqual(
+      result.body.pages,
+      Math.ceil(accounts.length / 2),
+    );
+
+    assert.deepStrictEqual(
+      result.body.data,
+      accounts.slice(0, 2),
+    );
+  });
+
+    it("Should return the second page of accounts", async () => {
+        const accounts = getAccounts();
+
+        const result = await request(app).get(
+        "/api/accounts?page=2&limit=2",
+        );
+
+        assert.strictEqual(result.statusCode, 200);
+        assert.strictEqual(result.body.page, 2);
+        assert.strictEqual(result.body.limit, 2);
+
+        assert.deepStrictEqual(
+        result.body.data,
+        accounts.slice(2, 4),
+        );
     });
 
-    it("Should return an account", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
-      const expectedResult = accounts.find(
-        (account) => account.id === currentMaxId,
-      );
+    it("Should return an empty data array when page exceeds available accounts", async () => {
+        const result = await request(app).get(
+        "/api/accounts?page=100&limit=10",
+        );
 
-      const result = await request(app).get(`/api/accounts/${currentMaxId}`);
-
-      assert.ok(result);
-      assert.deepStrictEqual(result.body, expectedResult);
-      assert.strictEqual(result.statusCode, 200);
+        assert.strictEqual(result.statusCode, 200);
+        assert.deepStrictEqual(result.body.data, []);
     });
 
-    it("Should return a 404 on invalid request", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
+    it("Should return 400 when page is invalid", async () => {
+        const result = await request(app).get(
+        "/api/accounts?page=0&limit=10",
+        );
 
-      const result = await request(app).get(
-        `/api/accounts/${currentMaxId + 1}`,
-      );
-      assert.strictEqual(result.statusCode, 404);
+        assert.strictEqual(result.statusCode, 400);
+        assert.strictEqual(
+        result.body.error,
+        "Invalid query parameters",
+        );
+    });
+
+    it("Should return 400 when limit is invalid", async () => {
+        const result = await request(app).get(
+        "/api/accounts?page=1&limit=0",
+        );
+
+        assert.strictEqual(result.statusCode, 400);
+    });
+
+    it("Should return 400 when pagination parameters are not numeric", async () => {
+        const result = await request(app).get(
+        "/api/accounts?page=test&limit=test",
+        );
+
+        assert.strictEqual(result.statusCode, 400);
+    });
+
+    it("Should use default pagination when query parameters are omitted", async () => {
+        const accounts = getAccounts();
+
+        const result = await request(app).get("/api/accounts");
+
+        assert.strictEqual(result.statusCode, 200);
+        assert.strictEqual(result.body.page, 1);
+        assert.strictEqual(result.body.limit, 10);
+        assert.strictEqual(result.body.totalAccounts, accounts.length);
+
+        assert.deepStrictEqual(
+            result.body.data,
+            accounts.slice(0, 10),
+        );
     });
   });
+
+  // GET individual account
+  describe("GET /api/accounts/:id", () => {
+  it("Should return an account", async () => {
+    const accounts = getAccounts();
+    const currentMaxId = getMaxId(accounts);
+
+    const expectedResult = accounts.find(
+      (account) => account.id === currentMaxId,
+    );
+
+    const result = await request(app).get(
+      `/api/accounts/${currentMaxId}`,
+    );
+
+    assert.strictEqual(result.statusCode, 200);
+    assert.deepStrictEqual(result.body, expectedResult);
+  });
+
+  it("Should return a 404 on invalid request", async () => {
+    const accounts = getAccounts();
+    const currentMaxId = getMaxId(accounts);
+
+    const result = await request(app).get(
+      `/api/accounts/${currentMaxId + 1}`,
+    );
+
+    assert.strictEqual(result.statusCode, 404);
+  });
+});
 
   // POST
   describe("POST /api/accounts", () => {

@@ -1,4 +1,4 @@
-import { CreateTransactionSchema } from "../types/transactionsSchemaType.js";
+import { CreateTransactionSchema } from "../types/transactionTypes/transactionsSchemaType.js";
 import type { Response, Request } from "express";
 import {
   fetchTransactions,
@@ -6,10 +6,20 @@ import {
   makeTransaction,
   removeTransaction,
 } from "../services/transactionsService.js";
+import { TransactionQuerySchema } from "../types/transactionTypes/transactionQuerySchema.js";
 
 // GET
 export const getTransactions = (req: Request, res: Response) => {
-  const transactions = fetchTransactions();
+  const query = TransactionQuerySchema.safeParse(req.query);
+
+  if (!query.success){
+    return res.status(400).json({
+      error: "Invalid transaction data",
+      details: query.error.issues,
+    });
+  };
+
+  const transactions = fetchTransactions(query.data);
   res.json(transactions);
 };
 

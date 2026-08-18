@@ -5,41 +5,124 @@ import {
   setTransactions,
 } from "../../datastore/transactionsData.js";
 import * as transactionService from "../../services/transactionsService.js";
-import { CreateTransactionInput } from "../../types/transactionsSchemaType.js";
+import type { CreateTransactionInput } from "../../types/transactionTypes/transactionsSchemaType.js";
 import { NotFoundError, BadRequestError } from "../../errors/AppError.js";
 import { getAccounts } from "../../datastore/accountsData.js";
 import getMaxId from "../utils/getMaxId.js";
 
 describe("Test Suite for the Transaction Service", () => {
-  const transactions = structuredClone(getTransactions());
+  const originalTransactions = structuredClone(getTransactions());
 
   beforeEach(() => {
-    setTransactions(structuredClone(transactions));
+    setTransactions(structuredClone(originalTransactions));
   });
 
   //Happy tests for fetching transactions
   describe("Happy tests for fetching transactions", () => {
-    it("Fetching transactions", () => {
-      const currentTransactions = getTransactions();
-      const fetchedTransactions = transactionService.fetchTransactions();
+     it("Returns the first page of transactions", () => {
+    const transactions = getTransactions();
 
-      assert.ok(fetchedTransactions);
-      assert.deepStrictEqual(currentTransactions, fetchedTransactions);
+    const result = transactionService.fetchTransactions({
+      page: 1,
+      limit: 2,
     });
 
-    it("Fetching existing transaction", () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
+    assert.strictEqual(result.page, 1);
+    assert.strictEqual(result.limit, 2);
+    assert.strictEqual(result.totalTransactions, transactions.length);
+    assert.strictEqual(
+      result.pages,
+      Math.ceil(transactions.length / 2),
+    );
 
-      const initialTransaction = transactions.find(
-        (transaction) => transaction.id === currentMaxId,
-      );
-      const fetchedTransaction =
-        transactionService.fetchTransaction(currentMaxId);
+    assert.deepStrictEqual(
+      result.data,
+      transactions.slice(0, 2),
+    );
+  });
 
-      assert.ok(fetchedTransaction);
-      assert.deepStrictEqual(initialTransaction, fetchedTransaction);
+  it("Returns the second page of transactions", () => {
+    const transactions = getTransactions();
+
+    const result = transactionService.fetchTransactions({
+      page: 2,
+      limit: 2,
     });
+
+    assert.strictEqual(result.page, 2);
+    assert.strictEqual(result.limit, 2);
+
+    assert.deepStrictEqual(
+      result.data,
+      transactions.slice(2, 4),
+    );
+  });
+
+    it("Returns a partial final page", () => {
+    const transactions = getTransactions();
+
+    assert.ok(transactions.length >= 5);
+
+    setTransactions(transactions.slice(0, 5));
+
+    const result = transactionService.fetchTransactions({
+        page: 3,
+        limit: 2,
+    });
+
+    assert.strictEqual(result.page, 3);
+    assert.strictEqual(result.limit, 2);
+    assert.strictEqual(result.pages, 3);
+    assert.strictEqual(result.totalTransactions, 5);
+    assert.strictEqual(result.data.length, 1);
+
+    assert.deepStrictEqual(
+        result.data,
+        transactions.slice(4, 5),
+    );
+    });
+
+  it("Returns an empty array when page exceeds available transactions", () => {
+    const transactions = getTransactions();
+
+    const result = transactionService.fetchTransactions({
+      page: 100,
+      limit: 10,
+    });
+
+    assert.strictEqual(result.page, 100);
+    assert.strictEqual(result.totalTransactions, transactions.length);
+    assert.deepStrictEqual(result.data, []);
+  });
+
+  it("Calculates the correct number of pages", () => {
+    const transactions = getTransactions();
+
+    const result = transactionService.fetchTransactions({
+      page: 1,
+      limit: 2,
+    });
+
+    assert.strictEqual(
+      result.pages,
+      Math.ceil(transactions.length / 2),
+    );
+  });
+
+  it("Fetching existing transaction", () => {
+    const transactions = getTransactions();
+    const currentMaxId = getMaxId(transactions);
+
+    const initialTransaction = transactions.find(
+      (transaction) => transaction.id === currentMaxId,
+    );
+
+    const fetchedTransaction =
+      transactionService.fetchTransaction(currentMaxId);
+
+    assert.ok(fetchedTransaction);
+    assert.deepStrictEqual(initialTransaction, fetchedTransaction);
+  });
   });
 
   // Error test for fetching transaction

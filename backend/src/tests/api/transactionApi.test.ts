@@ -20,17 +20,98 @@ describe("Transaction API test suite", () => {
 
   // GET ALL
   describe("GET /api/transactions", () => {
-    it("Should return all transactions", async () => {
-      const expectedTransactions = getTransactions().map((transaction) => ({
+    it("Should return paginated transactions", async () => {
+        const transactions = getTransactions();
+
+        const expectedTransactions = transactions
+        .slice(0, 2)
+        .map((transaction) => ({
+            ...transaction,
+            date: transaction.date.toISOString(),
+        }));
+
+        const result = await request(app).get(
+        "/api/transactions?page=1&limit=2",
+        );
+
+        assert.strictEqual(result.statusCode, 200);
+
+        assert.strictEqual(result.body.page, 1);
+        assert.strictEqual(result.body.limit, 2);
+        assert.strictEqual(
+        result.body.totalTransactions,
+        transactions.length,
+        );
+        assert.strictEqual(
+        result.body.pages,
+        Math.ceil(transactions.length / 2),
+        );
+
+        assert.deepStrictEqual(
+        result.body.data,
+        expectedTransactions,
+        );
+    });
+
+    it("Should return the second page of transactions", async () => {
+    const transactions = getTransactions();
+
+    const expectedTransactions = transactions
+      .slice(2, 4)
+      .map((transaction) => ({
         ...transaction,
         date: transaction.date.toISOString(),
       }));
 
-      const result = await request(app).get("/api/transactions");
+    const result = await request(app).get(
+      "/api/transactions?page=2&limit=2",
+    );
 
-      assert.strictEqual(result.statusCode, 200);
+    assert.strictEqual(result.statusCode, 200);
+    assert.strictEqual(result.body.page, 2);
+    assert.strictEqual(result.body.limit, 2);
 
-      assert.deepStrictEqual(result.body, expectedTransactions);
+    assert.deepStrictEqual(
+      result.body.data,
+      expectedTransactions,
+    );
+  });
+
+    it("Should return an empty data array when page exceeds available transactions", async () => {
+        const result = await request(app).get(
+        "/api/transactions?page=100&limit=10",
+        );
+
+        assert.strictEqual(result.statusCode, 200);
+        assert.deepStrictEqual(result.body.data, []);
+    });
+
+    it("Should return 400 when page is invalid", async () => {
+        const result = await request(app).get(
+        "/api/transactions?page=0&limit=10",
+        );
+
+        assert.strictEqual(result.statusCode, 400);
+        assert.strictEqual(
+        result.body.error,
+        "Invalid transaction data",
+        );
+    });
+
+    it("Should return 400 when limit is invalid", async () => {
+        const result = await request(app).get(
+        "/api/transactions?page=1&limit=0",
+        );
+
+        assert.strictEqual(result.statusCode, 400);
+    });
+
+    it("Should return 400 when pagination parameters are not numeric", async () => {
+        const result = await request(app).get(
+        "/api/transactions?page=abc&limit=xyz",
+        );
+
+        assert.strictEqual(result.statusCode, 400);
     });
   });
 

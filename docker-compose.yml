@@ -22,11 +22,10 @@ services:
       - "5001:5001"
 
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=${POSTGRES_DB}
+      APP_ENV: development
+      NODE_ENV: production
+      PORT: 5001
+      FRONTEND_URL: http://localhost:3000
 
 volumes:
     pgdata:

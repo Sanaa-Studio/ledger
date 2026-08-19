@@ -1,0 +1,198 @@
+[
+  {
+    "accountId": 1,
+    "amount": -85.42,
+    "description": "Groceries",
+    "date": "2026-07-02"
+  },
+  {
+    "accountId": 1,
+    "amount": 2500.0,
+    "description": "Paycheck",
+    "date": "2026-07-05"
+  },
+  {
+    "accountId": 3,
+    "amount": -64.99,
+    "description": "Internet bill",
+    "date": "2026-07-08"
+  },
+  {
+    "accountId": 4,
+    "amount": -18.5,
+    "description": "Lunch",
+    "date": "2026-07-10"
+  },
+  {
+    "accountId": 1,
+    "destinationAccountId": 2,
+    "amount": -500.0,
+    "description": "Transfer to savings",
+    "date": "2026-07-12"
+  },
+  {
+    "accountId": 3,
+    "amount": -142.37,
+    "description": "Flight",
+    "date": "2026-07-15"
+  },
+  {
+    "accountId": 1,
+    "amount": -52.16,
+    "description": "Gas",
+    "date": "2026-07-19"
+  },
+  {
+    "accountId": 5,
+    "amount": 325.8,
+    "description": "Dividend payment",
+    "date": "2026-07-23"
+  },
+  {
+    "accountId": 4,
+    "amount": -7.25,
+    "description": "Coffee",
+    "date": "2026-07-25"
+  },
+  {
+    "accountId": 1,
+    "amount": -127.49,
+    "description": "Utilities",
+    "date": "2026-08-01"
+  },
+  {
+    "accountId": 2,
+    "destinationAccountId": 5,
+    "amount": -1000.0,
+    "description": "Transfer to investment account",
+    "date": "2026-08-03"
+  },
+  {
+    "accountId": 6,
+    "amount": 1850.0,
+    "description": "Freelance payment",
+    "date": "2026-08-04"
+  },
+  {
+    "accountId": 8,
+    "amount": -43.76,
+    "description": "Dinner",
+    "date": "2026-08-05"
+  },
+  {
+    "accountId": 1,
+    "amount": -14.99,
+    "description": "Streaming subscription",
+    "date": "2026-08-06"
+  },
+  {
+    "accountId": 3,
+    "amount": -112.34,
+    "description": "Hotel",
+    "date": "2026-08-07"
+  },
+  {
+    "accountId": 6,
+    "amount": -72.18,
+    "description": "Groceries",
+    "date": "2026-08-08"
+  },
+  {
+    "accountId": 4,
+    "amount": -32.0,
+    "description": "Haircut",
+    "date": "2026-08-09"
+  },
+  {
+    "accountId": 1,
+    "amount": -48.73,
+    "description": "Restaurant",
+    "date": "2026-08-10"
+  },
+  {
+    "accountId": 6,
+    "destinationAccountId": 7,
+    "amount": -300.0,
+    "description": "Transfer to Ally savings",
+    "date": "2026-08-11"
+  },
+  {
+    "accountId": 8,
+    "amount": -29.99,
+    "description": "Software subscription",
+    "date": "2026-08-11"
+  },
+  {
+    "accountId": 3,
+    "amount": 250.0,
+    "description": "Credit card payment",
+    "date": "2026-08-12"
+  },
+  {
+    "accountId": 1,
+    "amount": -61.24,
+    "description": "Electric bill",
+    "date": "2026-08-12"
+  },
+  {
+    "accountId": 5,
+    "amount": -400.0,
+    "description": "ETF purchase",
+    "date": "2026-08-13"
+  },
+  {
+    "accountId": 6,
+    "amount": -45.0,
+    "description": "Gym membership",
+    "date": "2026-08-13"
+  },
+  {
+    "accountId": 2,
+    "amount": 8.74,
+    "description": "Interest payment",
+    "date": "2026-08-14"
+  },
+  {
+    "accountId": 1,
+    "amount": -96.32,
+    "description": "Groceries",
+    "date": "2026-08-14"
+  },
+  {
+    "accountId": 8,
+    "amount": -215.45,
+    "description": "Golf equipment",
+    "date": "2026-08-15"
+  },
+  {
+    "accountId": 4,
+    "amount": -38.0,
+    "description": "Gas",
+    "date": "2026-08-15"
+  },
+  {
+    "accountId": 1,
+    "amount": 2500.0,
+    "description": "Paycheck",
+    "date": "2026-08-16"
+  },
+  {
+    "accountId": 1,
+    "destinationAccountId": 5,
+    "amount": -750.0,
+    "description": "Monthly investment contribution",
+    "date": "2026-08-16"
+  },
+  {
+    "accountId": 6,
+    "amount": -23.18,
+    "description": "Pharmacy",
+    "date": "2026-08-17"
+  },
+  {
+    "accountId": 7,
+    "amount": 4.21,
+    "description": "Interest payment",
+    "date": "2026-08-17"
+  }
+]

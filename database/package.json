@@ -8,17 +8,23 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "create migtration": "npx drizzle-kit generate",
-    "migrate": "npx drizzle-kit migrate"
+    "db:generate": "npx drizzle-kit generate",
+    "db:migrate:dev": "APP_ENV=development tsx src/migrate.ts",
+    "db:migrate:beta": "APP_ENV=beta tsx src/migrate.ts",
+    "db:seed:dev": "APP_ENV=development tsx src/seed.ts",
+    "db:seed:beta": "APP_ENV=beta tsx src/seed.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/node": "^26.2.0",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "^1.0.0-rc.4",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
   }
 }

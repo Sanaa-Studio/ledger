@@ -31,18 +31,18 @@
 
 ## Phase 4: PostgreSQL and Redis
 
-- [ ] Design relational database schema
-- [ ] Define account and transaction relationships
-- [ ] Install Drizzle
-- [ ] Configure database connection
-- [ ] Create and run database migrations
-- [ ] Seed local database
+- [x] Design relational database schema
+- [x] Define account and transaction relationships
+- [x] Install Drizzle
+- [x] Configure database connection
+- [x] Create and run database migrations
+- [x] Add database constraints
+- [x] Seed local database
+- [x] Connect backup PostgreSQL with Aiven
+- [x] Manage DB configuration with environment variables
 - [ ] Replace in-memory storage with PostgreSQL
-- [ ] Add database constraints
 - [ ] Add indexes where appropriate
 - [ ] Update integration tests to use the PostgreSQL
-- [ ] Connect backup PostgreSQL with Aiven
-- [ ] Manage DB configuration with environment variables
 
 ## Phase 5: React Frontend
 

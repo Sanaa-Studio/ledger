@@ -18,10 +18,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "db": "docker compose exec postgres psql -U sanaastudio -d postgres",
-    "docker:up": "docker compose up",
-    "docker:down": "docker compose down",
-    "docker:build": "docker compose up --build"
+    "db": "docker compose --env-file .env.compose exec postgres psql -U sanaastudio -d postgres",
+    "docker:up": "docker compose --env-file .env.compose up",
+    "docker:down": "docker compose --env-file .env.compose down",
+    "docker:build": "docker compose --env-file .env.compose up --build"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

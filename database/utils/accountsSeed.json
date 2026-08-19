@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Chase Checking",
+    "type": "checking",
+    "balance": 4350.75
+  },
+  {
+    "id": 2,
+    "name": "Bank of America Savings",
+    "type": "savings",
+    "balance": 12480.2
+  },
+  {
+    "id": 3,
+    "name": "American Express",
+    "type": "creditCard",
+    "balance": -742.18
+  },
+  {
+    "id": 4,
+    "name": "Wallet",
+    "type": "cash",
+    "balance": 185
+  },
+  {
+    "id": 5,
+    "name": "Morgan Stanley",
+    "type": "investment",
+    "balance": 18235.64
+  },
+  {
+    "id": 6,
+    "name": "Capital One Checking",
+    "type": "checking",
+    "balance": 1360.42
+  },
+  {
+    "id": 7,
+    "name": "Ally Savings",
+    "type": "savings",
+    "balance": 5350
+  },
+  {
+    "id": 8,
+    "name": "Chase Sapphire",
+    "type": "creditCard",
+    "balance": -268.5
+  }
+]

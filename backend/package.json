@@ -15,7 +15,8 @@
     "beta": "APP_ENV=beta NODE_ENV=production npm run build && node dist/index.js",
     "build": "rm -rf dist && tsc",
     "start": "node dist/index.js",
-    "test": "tsx --test"
+    "test": "tsx --test",
+    "db:test-connection": "APP_ENV=development tsx src/utils/testingDbConnection.ts"
   },
   "keywords": [],
   "author": "",

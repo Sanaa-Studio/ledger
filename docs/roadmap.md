@@ -40,8 +40,14 @@
 - [x] Seed local database
 - [x] Connect backup PostgreSQL with Aiven
 - [x] Manage DB configuration with environment variables
-- [ ] Replace in-memory storage with PostgreSQL
+- [ ] Establish database connection pooling
+- [ ] Import schema from dabatase repo
+- [ ] Add a repository layer for database access
+- [ ] Refatcor get service to use repository layer
+- [ ] Refactor remaining crud operations to use repository layer
+- [ ] Add unit tests with mocked database
 - [ ] Add indexes where appropriate
+- [ ] Replace in-memory storage with PostgreSQL
 - [ ] Update integration tests to use the PostgreSQL
 
 ## Phase 5: React Frontend

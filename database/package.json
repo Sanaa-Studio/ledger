@@ -1,18 +1,26 @@
 {
-  "name": "database",
+  "name": "@ledger/database",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "license": "ISC",
   "author": "",
   "type": "module",
   "main": "index.js",
+  "exports": {
+    "./schema": {
+        "types": "./dist/schema.d.ts",
+        "import": "./dist/schema.js"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "npx drizzle-kit generate",
     "db:migrate:dev": "APP_ENV=development tsx src/migrate.ts",
     "db:migrate:beta": "APP_ENV=beta tsx src/migrate.ts",
     "db:seed:dev": "APP_ENV=development tsx src/seed.ts",
-    "db:seed:beta": "APP_ENV=beta tsx src/seed.ts"
+    "db:seed:beta": "APP_ENV=beta tsx src/seed.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

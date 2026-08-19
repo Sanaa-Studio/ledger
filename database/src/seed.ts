@@ -2,8 +2,8 @@ import { db, pool } from "./index.js";
 import { sql } from "drizzle-orm";
 import { accountsTable, transactionsTable } from "./schema.js";
 
-import accountsSeed from "../utils/accountsSeed.json" with { type: 'json' };
-import transactionsSeed from "../utils/transactionsSeed.json" with { type: 'json' };
+import accountsSeed from "./utils/accountsSeed.json" with { type: 'json' };
+import transactionsSeed from "./utils/transactionsSeed.json" with { type: 'json' };
 
 const main = async () => {
     await db.transaction(async (tx) => {

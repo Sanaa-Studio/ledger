@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import z from "zod";
-import type { Env } from "../../types/envType.js";
+import type { Env } from "../types/envType.js";
 
 const appEnvSchema = z.enum(["development", "beta", "production"]);
 

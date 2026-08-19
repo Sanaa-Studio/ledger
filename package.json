@@ -1,5 +1,11 @@
 {
   "name": "ledger",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "database",
+    "frontend"
+  ],
   "version": "1.0.0",
   "description": "Personal budgeting application",
   "homepage": "https://github.com/Sanaa-Studio/ledger#readme",
@@ -22,7 +28,8 @@
     "docker:db": "docker compose --env-file .env.compose up postgres",
     "docker:up": "docker compose --env-file .env.compose up",
     "docker:down": "docker compose --env-file .env.compose down",
-    "docker:build": "docker compose --env-file .env.compose up --build"
+    "docker:build": "docker compose --env-file .env.compose up --build",
+    "build": "rm -rf dist && tsc"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

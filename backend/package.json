@@ -13,19 +13,16 @@
     "validate": "npm run lint && npm run format:check && npm run typecheck",
     "dev": "APP_ENV=development NODE_ENV=development tsx watch src/index.ts",
     "beta": "APP_ENV=beta NODE_ENV=production npm run build && node dist/index.js",
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "start": "node dist/index.js",
-    "test": "tsx --test",
-    "docker:build": "docker build -t ledger-backend .",
-    "docker:run": "docker run --rm --name ledger-backend-dev -e PORT=5001 -p 5001:5001 ledger-backend",
-    "docker": "npm run docker:build && npm run docker:run",
-    "docker:stop": "docker stop ledger-backend-dev"
+    "test": "tsx --test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@ledger/database": "1.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",

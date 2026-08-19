@@ -41,8 +41,10 @@
 - [x] Connect backup PostgreSQL with Aiven
 - [x] Manage DB configuration with environment variables
 - [x] Establish database connection pooling
-- [ ] Share/import database schema with backend
-- [ ] Add repository layer for database access
+- [x] Share/import database schema with backend
+- [x] Make docker build db for backend
+- [x] Make one root package-lock.json rather than independent lockfiles
+- [x] Add repository layer for database access
 - [ ] Refactor GET services to use repositories
 - [ ] Refactor remaining CRUD operations
 - [ ] Remove remaining in-memory datastore dependencies
@@ -54,6 +56,7 @@
 ## Phase 5: React Frontend
 
 - [ ] Learn core React concepts
+- [ ] Add frontend to npm workspace
 - [ ] Create the frontend application
 - [ ] Build account views
 - [ ] Build transaction views

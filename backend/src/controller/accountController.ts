@@ -12,21 +12,29 @@ import {
   UpdateAccountSchema,
 } from "../types/accountTypes/accountsSchemaType.js";
 import { AccountQuerySchema } from "../types/accountTypes/accountQuerySchema.js";
+import { ValidationError } from "../errors/AppError.js";
 
 // GET
 export const getAccounts = async (req: Request, res: Response) => {
   const query = AccountQuerySchema.safeParse(req.query);
 
   if (!query.success) {
-    return res.status(400).json({
-      error: "Invalid query parameters",
-      details: query.error.issues,
-    });
+    throw new ValidationError("Invalid account data", query.error.issues);
   }
 
-  const response = await fetchAccounts(query.data);
+  const result = await fetchAccounts(query.data);
 
-  res.status(200).json(response);
+  const response = {
+    data: result.data,
+    meta: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        pages: result.pages
+    }
+  };
+
+  return res.status(200).json(response);
 };
 
 export const getAccountById = async (req: Request, res: Response) => {
@@ -45,11 +53,8 @@ export const postAccount = async (req: Request, res: Response) => {
   const result = CreateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res.status(400).json({
-      error: "invalid account data",
-      details: result.error.issues,
-    });
-  }
+   throw new ValidationError("Invalid account data", result.error.issues);
+  };
 
   const account = await createAccount(result.data);
   
@@ -65,11 +70,8 @@ export const putAccount = async (req: Request, res: Response) => {
   const result = CreateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid account data",
-      details: result.error.issues,
-    });
-  }
+    throw new ValidationError("Invalid account data", result.error.issues);
+  };
 
   const accountId = Number(req.params.id);
   const account = await replaceAccount(result.data, accountId);
@@ -87,11 +89,8 @@ export const updateAccount = async (req: Request, res: Response) => {
   const result = UpdateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
-    return res.status(400).json({
-      error: "Invalid account info",
-      details: result.error.issues,
-    });
-  }
+    throw new ValidationError("Invalid account data", result.error.issues);
+  };
 
   const account = await patchAccount(result.data, accountId);
 

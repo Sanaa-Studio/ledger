@@ -12,8 +12,7 @@ export const getAccounts = async (offset: number, limit: number) => {
         .orderBy(asc(accountsTable.id))
         .limit(limit)
         .offset(offset)
-    
-    
+
     return accounts.map(toAccount);
 };
 
@@ -79,7 +78,7 @@ export const putAccount = async (id: number, input: CreateAccountInput): Promise
             {
                 name: input.name,
                 type: input.type,
-                balance: String(input.balance)
+                openingBalance: String(input.openingBalance)
             }
         )
         .where(eq(accountsTable.id, id))
@@ -95,8 +94,8 @@ export const updateAccount = async (id: number, input: UpdateAccountInput): Prom
             {
                 name: input.name,
                 type: input.type,
-                balance: input.balance !== undefined
-                    ? String(input.balance)
+                openingBalance: input.openingBalance !== undefined
+                    ? String(input.openingBalance)
                     : undefined,
             }
         )

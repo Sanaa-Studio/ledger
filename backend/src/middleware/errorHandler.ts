@@ -9,15 +9,22 @@ export const errorHandler = (
 ) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
-      error: err.message,
-      code: err.code,
+      error: {
+        code: err.code,
+        message: err.message,
+        ...(err.details !== undefined && {
+            details: err.details,
+        }),
+      },
     });
-  }
+  };
 
   console.error(err);
 
   return res.status(500).json({
-    error: "Internal server error",
-    code: "INTERNAL_SERVER_ERROR",
+    error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Internal server error",
+    },
   });
 };

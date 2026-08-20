@@ -4,7 +4,7 @@ export const accountsTable = pgTable("accounts", {
   id: serial().primaryKey(),
   name: varchar({ length: 255 }).notNull(),
   type: varchar({ length: 255 }).notNull(),
-  balance: numeric({ precision: 12, scale: 2 }).notNull(),
+  openingBalance: numeric({ precision: 12, scale: 2 }).notNull(),
   createdAt: timestamp().notNull().defaultNow(),
 });
 
@@ -30,7 +30,7 @@ export const transactionsTable = pgTable("transactions", {
 
   description: varchar({ length: 255 }),
 
-  date: date()
+  date: date({ mode: "date" })
     .notNull()
     .defaultNow(),
 

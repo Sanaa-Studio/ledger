@@ -5,10 +5,8 @@ import { accountsTable } from "@ledger/database/schema";
 // Convert db entry to Account
 export const toAccount = ((account: typeof accountsTable.$inferSelect): Account => {
     return AccountSchema.parse({
-        id: account.id,
-        name: account.name,
-        type: account.type,
-        balance: Number(account.balance),
+        ...account,
+        openingBalance: Number(account.openingBalance),
     });
 });
 
@@ -17,7 +15,7 @@ export const toAccountEntry = (account: CreateAccountInput): typeof accountsTabl
     const accountEntry: typeof accountsTable.$inferInsert = {
         name: account.name,
         type: account.type,
-        balance: String(account.balance)
+        openingBalance: String(account.openingBalance)
     };
 
     return accountEntry;

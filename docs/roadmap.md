@@ -44,21 +44,34 @@
 - [x] Share/import database schema with backend
 - [x] Make docker build db for backend
 - [x] Make one root package-lock.json rather than independent lockfiles
+
+## Phase 5: Refactor Services to Use Repositories
+
 - [x] Add repository layer for database access
 - [x] Refactor account GET services to use repositories
 - [x] Update logic for deleting account with transactions
 - [x] Standardize api responses
-- [ ] Run db migations to development and beta environments
-- [ ] Refactor transaction GET services with cursor pagination to use repositories
-- [ ] Refactor remaining CRUD operations
+- [x] Change how balances are calculated to sum transactions instead of storing a balance
+- [x] Implement a mapper for transactions
+- [x] Refactor transaction CRUD services to use repositories
+- [x] Standardize api responses for transaction services
+- [x] Standardize error handling for transaction services
+- [x] Use id verification middleware for transaction services
+- [ ] Add put and patch for transaction services
 - [ ] Remove remaining in-memory datastore dependencies
+- [ ] Reconsider ON DELETE CASCADE for the source account
+
+## Phase 6: DB Testing and Indexing
+
+- [ ] Run db migations to development and beta environments
 - [ ] Add service unit tests with mocked repositories
 - [ ] Add api tests
 - [ ] Add repository/database integration tests
 - [ ] Update API integration tests to use a test PostgreSQL database
 - [ ] Add indexes based on actual query patterns
+- [ ] Delete the in memory datastore
 
-## Phase 5: React Frontend
+## Phase 7: React Frontend
 
 - [ ] Learn core React concepts
 - [ ] Add frontend to npm workspace
@@ -74,7 +87,7 @@
 - [ ] Add loading and error states
 - [ ] Build monthly dashboard
 
-## Phase 6: Authentication and Authorization
+## Phase 8: Authentication and Authorization
 
 - [ ] Add user model
 - [ ] Register users
@@ -82,12 +95,13 @@
 - [ ] Protect authenticated routes
 - [ ] Associate accounts with users
 - [ ] Enforce account and transaction ownership
+- [ ] Add RLS to PostgreSQL for account and transaction ownership
 - [ ] Integrate authentication with the frontend
 - [ ] Add Redis to the local Docker Compose environment
 - [ ] Learn Redis keys, TTLs, and expiration
 - [ ] Implement API rate limiting with Redis
 
-## Phase 7: Deployment and Infrastructure
+## Phase 9: Deployment and Infrastructure
 
 - [ ] Containerize the production application
 - [ ] Configure production Docker Compose where appropriate
@@ -99,9 +113,10 @@
 - [ ] Configure production environment variables and secrets
 - [ ] Add production health checks and monitoring
 
-## Phase 8: Future Features
+## Phase 10: Future Features
 
 - [ ] Add monthly budgets
+- [ ] Refactor transaction GET services with cursor pagination
 - [ ] Add recurring transactions
 - [ ] Learn Redis-backed background job queues
 - [ ] Add CSV transaction imports

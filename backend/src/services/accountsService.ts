@@ -30,12 +30,10 @@ export const fetchAccounts = async (query: AccountQuery) => {
 
   const response: AccountQueryResponseType = {
     data: paginatedAccounts,
-    meta: {
-        page: page,
-        limit: limit,
-        total: total,
-        pages: Math.ceil(total / limit),
-    }
+    page: page,
+    limit: limit,
+    total: total,
+    pages: Math.ceil(total / limit),
   };
 
   return response;

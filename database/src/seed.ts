@@ -15,7 +15,7 @@ const main = async () => {
             const accountEntry: typeof accountsTable.$inferInsert = {
                 name: account.name,
                 type: account.type,
-                balance: String(account.balance),
+                openingBalance: String(account.balance),
             };
 
             await tx.insert(accountsTable).values(accountEntry);
@@ -29,7 +29,7 @@ const main = async () => {
                         transaction.destinationAccountId,
                     amount: String(transaction.amount),
                     description: transaction.description,
-                    date: transaction.date,
+                    date: new Date(transaction.date),
                 };
 
             await tx

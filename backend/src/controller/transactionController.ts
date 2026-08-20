@@ -1,58 +1,121 @@
-import { CreateTransactionSchema } from "../types/transactionTypes/transactionsSchemaType.js";
+import { CreateTransactionSchema, UpdateTransactionSchema } from "../types/transactionTypes/transactionsSchemaType.js";
 import type { Response, Request } from "express";
 import {
   fetchTransactions,
   fetchTransaction,
   makeTransaction,
   removeTransaction,
+  patchTransaction,
+  replaceTransaction
 } from "../services/transactionsService.js";
 import { TransactionQuerySchema } from "../types/transactionTypes/transactionQuerySchema.js";
+import { ValidationError } from "../errors/AppError.js";
 
 // GET
-export const getTransactions = (req: Request, res: Response) => {
+export const getTransactions = async (req: Request, res: Response) => {
   const query = TransactionQuerySchema.safeParse(req.query);
 
   if (!query.success){
-    return res.status(400).json({
-      error: "Invalid transaction data",
-      details: query.error.issues,
-    });
+    throw new ValidationError("Invalid transaction data", query.error.issues);
   };
 
-  const transactions = fetchTransactions(query.data);
-  res.json(transactions);
+  const transactions = await fetchTransactions(query.data);
+
+  const response = {
+    data: transactions.data,
+    meta: {
+        page: transactions.page,
+        limit: transactions.limit,
+        total: transactions.total,
+        pages: transactions.pages
+    }
+  };
+
+  res.status(200).json(response);
 };
 
-export const getTransaction = (req: Request, res: Response) => {
+export const getTransaction = async (req: Request, res: Response) => {
   const transactionId = Number(req.params.id);
-  const transaction = fetchTransaction(transactionId);
+  const transaction = await fetchTransaction(transactionId);
 
-  if (!transaction) {
-    return res.status(404).end();
-  }
+  const response = {
+    data: transaction
+  };
 
-  return res.status(200).json(transaction);
+  return res.status(200).json(response);
 };
 
 // POST
-export const createTransaction = (req: Request, res: Response) => {
+export const createTransaction = async (req: Request, res: Response) => {
   const transactionInput = CreateTransactionSchema.safeParse(req.body);
 
   if (!transactionInput.success) {
-    return res.status(400).json({
-      error: "Invalid transaction data",
-      details: transactionInput.error.issues,
-    });
+    throw new ValidationError("Invalid transaction data", transactionInput.error.issues)
+  };
+
+  const transaction = await makeTransaction(transactionInput.data);
+
+  const response = {
+    data: transaction
   }
 
-  const transaction = makeTransaction(transactionInput.data);
-  return res.status(201).json(transaction);
+  return res.status(201).json(response);
+};
+
+// PUT 
+export const putTransaction = async (
+  req: Request,
+  res: Response,
+) => {
+  const transactionId = Number(req.params.id);
+  const result = CreateTransactionSchema.safeParse(req.body);
+
+  if (!result.success) {
+    throw new ValidationError(
+      "Invalid transaction data",
+      result.error.issues,
+    );
+  }
+
+  const transaction = await replaceTransaction(
+    result.data,
+    transactionId,
+  );
+
+  return res.status(200).json({
+    data: transaction,
+  });
+};
+
+// PATCH
+export const updateTransaction = async (
+  req: Request,
+  res: Response,
+) => {
+  const transactionId = Number(req.params.id);
+  const result = UpdateTransactionSchema.safeParse(req.body);
+
+  if (!result.success) {
+    throw new ValidationError(
+      "Invalid transaction data",
+      result.error.issues,
+    );
+  }
+
+  const transaction = await patchTransaction(
+    result.data,
+    transactionId,
+  );
+
+  return res.status(200).json({
+    data: transaction,
+  });
 };
 
 // DELETE
-export const deleteTransaction = (req: Request, res: Response) => {
+export const deleteTransaction = async (req: Request, res: Response) => {
   const transactionId = Number(req.params.id);
-  removeTransaction(transactionId);
-
-  return res.status(204).end();
+  await removeTransaction(transactionId);
+ 
+  return res.status(204).send()
 };

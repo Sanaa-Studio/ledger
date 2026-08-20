@@ -1,13 +1,23 @@
 import express from "express";
-import * as accountController from "../controller/accountController.js";
+import {
+    getAccounts,
+    getAccountById,
+    postAccount,
+    putAccount,
+    updateAccount,
+    deleteAccount
+} from "../controller/accountController.js";
+import { validateId } from "../middleware/validateId.js";
 
 const router = express.Router();
 
-router.get("/", accountController.getAccounts);
-router.get("/:id", accountController.getAccountById);
-router.post("/", accountController.postAccount);
-router.put("/:id", accountController.putAccount);
-router.patch("/:id", accountController.updateAccount);
-router.delete("/:id", accountController.deleteAccount);
+router.param("id", validateId);
+
+router.get("/", getAccounts);
+router.get("/:id", getAccountById);
+router.post("/", postAccount);
+router.put("/:id", putAccount);
+router.patch("/:id", updateAccount);
+router.delete("/:id", deleteAccount);
 
 export default router;

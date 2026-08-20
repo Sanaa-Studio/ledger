@@ -29,7 +29,7 @@
 - [x] Run PostgreSQL locally with Docker
 - [x] Configure persistent database volumes
 
-## Phase 4: PostgreSQL and Redis
+## Phase 4: PostgreSQL
 
 - [x] Design relational database schema
 - [x] Define account and transaction relationships
@@ -45,10 +45,15 @@
 - [x] Make docker build db for backend
 - [x] Make one root package-lock.json rather than independent lockfiles
 - [x] Add repository layer for database access
-- [ ] Refactor GET services to use repositories
+- [x] Refactor account GET services to use repositories
+- [x] Update logic for deleting account with transactions
+- [x] Standardize api responses
+- [ ] Run db migations to development and beta environments
+- [ ] Refactor transaction GET services with cursor pagination to use repositories
 - [ ] Refactor remaining CRUD operations
 - [ ] Remove remaining in-memory datastore dependencies
 - [ ] Add service unit tests with mocked repositories
+- [ ] Add api tests
 - [ ] Add repository/database integration tests
 - [ ] Update API integration tests to use a test PostgreSQL database
 - [ ] Add indexes based on actual query patterns

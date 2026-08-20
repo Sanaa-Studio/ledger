@@ -20,7 +20,7 @@
     "db:migrate:beta": "APP_ENV=beta tsx src/migrate.ts",
     "db:seed:dev": "APP_ENV=development tsx src/seed.ts",
     "db:seed:beta": "APP_ENV=beta tsx src/seed.ts",
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

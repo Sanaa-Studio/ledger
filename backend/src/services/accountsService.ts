@@ -4,7 +4,7 @@ import type {
   UpdateAccountInput,
 } from "../types/accountTypes/accountsSchemaType.js";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
-import { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
+import type { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
 import type { AccountQueryResponseType } from "../types/accountTypes/accountQueryResponseType.js";
 import { 
     getAccounts, 
@@ -23,24 +23,26 @@ export const fetchAccounts = async (query: AccountQuery) => {
   const { page, limit } = query;
   const startIndex = (page - 1) * limit;
 
-  const [paginatedAccounts, totalAccounts] = await Promise.all([
+  const [paginatedAccounts, total] = await Promise.all([
     getAccounts(startIndex, limit),
     getAccountsCount(),
   ]);
 
   const response: AccountQueryResponseType = {
-    page,
-    limit,
-    totalAccounts,
-    pages: Math.ceil(totalAccounts / limit),
     data: paginatedAccounts,
+    meta: {
+        page: page,
+        limit: limit,
+        total: total,
+        pages: Math.ceil(total / limit),
+    }
   };
 
   return response;
 };
 
-export const fetchAccount = async (accountId: string) => {
-  const account = await getAccount(Number(accountId));
+export const fetchAccount = async (accountId: number) => {
+  const account = await getAccount(accountId);
 
   if (!account) {
     throw new NotFoundError("Account does not exist");

@@ -1,0 +1,2 @@
+ALTER TABLE "transactions" DROP CONSTRAINT "transactions_accountId_accounts_id_fkey", ADD CONSTRAINT "transactions_accountId_accounts_id_fkey" FOREIGN KEY ("accountId") REFERENCES "accounts"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "transactions" DROP CONSTRAINT "transactions_destinationAccountId_accounts_id_fkey", ADD CONSTRAINT "transactions_destinationAccountId_accounts_id_fkey" FOREIGN KEY ("destinationAccountId") REFERENCES "accounts"("id") ON DELETE SET NULL;

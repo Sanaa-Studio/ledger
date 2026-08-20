@@ -14,7 +14,7 @@ import {
 import { AccountQuerySchema } from "../types/accountTypes/accountQuerySchema.js";
 
 // GET
-export const getAccounts = (req: Request, res: Response) => {
+export const getAccounts = async (req: Request, res: Response) => {
   const query = AccountQuerySchema.safeParse(req.query);
 
   if (!query.success) {
@@ -24,18 +24,24 @@ export const getAccounts = (req: Request, res: Response) => {
     });
   }
 
-  res.status(200).json(fetchAccounts(query.data));
+  const response = await fetchAccounts(query.data);
+
+  res.status(200).json(response);
 };
 
-export const getAccountById = (req: Request, res: Response) => {
-  const accountId = req.params.id;
-  const account = fetchAccount(String(accountId));
+export const getAccountById = async (req: Request, res: Response) => {
+  const accountId = Number(req.params.id);
+  const account = await fetchAccount(accountId);
 
-  return res.status(200).json(account);
+  const response = {
+    data: account
+  };
+
+  return res.status(200).json(response);
 };
 
 // POST
-export const postAccount = (req: Request, res: Response) => {
+export const postAccount = async (req: Request, res: Response) => {
   const result = CreateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -45,12 +51,17 @@ export const postAccount = (req: Request, res: Response) => {
     });
   }
 
-  const account = createAccount(result.data);
-  return res.status(201).json(account);
+  const account = await createAccount(result.data);
+  
+  const response = {
+    data: account
+  };
+
+  return res.status(201).json(response);
 };
 
 // PUT
-export const putAccount = (req: Request, res: Response) => {
+export const putAccount = async (req: Request, res: Response) => {
   const result = CreateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -61,13 +72,17 @@ export const putAccount = (req: Request, res: Response) => {
   }
 
   const accountId = Number(req.params.id);
-  const account = replaceAccount(result.data, accountId);
+  const account = await replaceAccount(result.data, accountId);
 
-  return res.status(200).json(account);
+  const response = {
+    data: account
+  }
+
+  return res.status(200).json(response);
 };
 
 // PATCH
-export const updateAccount = (req: Request, res: Response) => {
+export const updateAccount = async (req: Request, res: Response) => {
   const accountId = Number(req.params.id);
   const result = UpdateAccountSchema.safeParse(req.body);
 
@@ -78,14 +93,23 @@ export const updateAccount = (req: Request, res: Response) => {
     });
   }
 
-  const account = patchAccount(result.data, accountId);
-  return res.status(200).json(account);
+  const account = await patchAccount(result.data, accountId);
+
+  const response  = {
+    data: account
+  };
+
+  return res.status(200).json(response);
 };
 
 // DELETE
-export const deleteAccount = (req: Request, res: Response) => {
+export const deleteAccount = async (req: Request, res: Response) => {
   const accountId = Number(req.params.id);
-  const deletedAccount = removeAccount(accountId);
+  const deletedAccount = await removeAccount(accountId);
 
-  return res.status(200).json(deletedAccount).end();
+  const response = {
+    data: deletedAccount
+  };
+
+  return res.status(200).json(response);
 };

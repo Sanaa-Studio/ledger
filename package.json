@@ -25,11 +25,16 @@
   },
   "scripts": {
     "db": "docker compose --env-file .env.compose exec postgres psql -U sanaastudio -d postgres",
+    "db:test": "docker compose --env-file .env.compose exec postgres-test sh -c 'psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"'",
+
     "docker:ps": "docker compose --env-file .env.compose ps",
     "docker:db": "docker compose --env-file .env.compose up -d postgres",
+    "docker:test-db": "docker compose --env-file .env.compose up -d postgres-test",
+
     "docker:up": "docker compose --env-file .env.compose up",
     "docker:down": "docker compose --env-file .env.compose down",
     "docker:build": "docker compose --env-file .env.compose up --build",
+    
     "build": "rm -rf dist && tsc",
     "build:db": "npm run build -w @ledger/database",
     "build:backend": "npm run build -w backend"

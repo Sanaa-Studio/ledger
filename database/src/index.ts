@@ -19,6 +19,10 @@ const getPool = (): Pool => {
         case "development": {
             return new Pool({connectionString: env.databaseUrl});
         };
+
+        case "test": {
+            return new Pool({connectionString: env.databaseUrl});
+        }
         
         case "production": {
             return new Pool(

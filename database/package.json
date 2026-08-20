@@ -18,6 +18,7 @@
     "db:generate": "npx drizzle-kit generate",
     "db:migrate:dev": "APP_ENV=development tsx src/migrate.ts",
     "db:migrate:beta": "APP_ENV=beta tsx src/migrate.ts",
+    "db:migrate:test": "APP_ENV=test tsx src/migrate.ts",
     "db:seed:dev": "APP_ENV=development tsx src/seed.ts",
     "db:seed:beta": "APP_ENV=beta tsx src/seed.ts",
     "build": "rm -rf dist && tsc"

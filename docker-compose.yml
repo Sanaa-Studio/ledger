@@ -13,6 +13,22 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql
 
+  postgres-test:
+    profiles:
+      - test
+    image: postgres:18
+
+    environment:
+      - POSTGRES_USER=${TEST_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TEST_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${TEST_POSTGRES_DB}
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - pgtestdata:/var/lib/postgresql
+
   backend:
     image: ledger-backend
     
@@ -32,3 +48,4 @@ services:
 
 volumes:
     pgdata:
+    pgtestdata:

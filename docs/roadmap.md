@@ -57,18 +57,15 @@
 - [x] Standardize api responses for transaction services
 - [x] Standardize error handling for transaction services
 - [x] Use id verification middleware for transaction services
-- [ ] Add put and patch for transaction services
-- [ ] Remove remaining in-memory datastore dependencies
-- [ ] Reconsider ON DELETE CASCADE for the source account
+- [x] Add put and patch for transaction services
 
-## Phase 6: DB Testing and Indexing
+## Phase 6: DB and API Testing
 
-- [ ] Run db migations to development and beta environments
+- [x] Run db migations to development and beta environments
 - [ ] Add service unit tests with mocked repositories
-- [ ] Add api tests
 - [ ] Add repository/database integration tests
 - [ ] Update API integration tests to use a test PostgreSQL database
-- [ ] Add indexes based on actual query patterns
+- [ ] Reconsider ON DELETE CASCADE for the source account
 - [ ] Delete the in memory datastore
 
 ## Phase 7: React Frontend
@@ -117,6 +114,7 @@
 
 - [ ] Add monthly budgets
 - [ ] Refactor transaction GET services with cursor pagination
+- [ ] Add indexes based on actual query patterns
 - [ ] Add recurring transactions
 - [ ] Learn Redis-backed background job queues
 - [ ] Add CSV transaction imports

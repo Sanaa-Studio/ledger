@@ -6,6 +6,12 @@ export type Env =
         databaseUrl: string,
     }
     | {
+        appEnv: "test",
+        port: number,
+        frontendUrl: string,
+        databaseUrl: string,
+    }
+    | {
         appEnv: "beta",
         port: number,
         frontendUrl: string,

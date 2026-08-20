@@ -10,6 +10,12 @@ const getPool = (): Pool => {
             });
         };
 
+        case "test": {
+            return new Pool({
+                connectionString: env.databaseUrl
+            });
+        };
+
         case "beta": {
             return new Pool({
                 connectionString: env.databaseUrl,

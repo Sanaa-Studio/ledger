@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import z from "zod";
 import type { Env } from "../types/envType.js";
 
-const appEnvSchema = z.enum(["development", "beta", "production"]);
+const appEnvSchema = z.enum(["development", "beta", "production", "test"]);
 
 const localDatabaseSchema = z.object({
     DATABASE_URL: z.string().nonempty(),
@@ -19,6 +19,15 @@ const loadEnv = (): Env => {
 
     switch (appEnv) {
         case "development": {
+            const parsedEnv = localDatabaseSchema.parse(process.env);
+
+            return {
+                appEnv,
+                databaseUrl: parsedEnv.DATABASE_URL
+            };
+        };
+
+        case "test": {
             const parsedEnv = localDatabaseSchema.parse(process.env);
 
             return {

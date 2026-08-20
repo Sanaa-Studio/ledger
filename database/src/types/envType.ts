@@ -4,6 +4,10 @@ export type Env =
         databaseUrl: string;
     }
     | {
+        appEnv: "test";
+        databaseUrl: string;
+    }
+    | {
         appEnv: "beta";
         databaseUrl: string;
         databaseCaCertificate: string;

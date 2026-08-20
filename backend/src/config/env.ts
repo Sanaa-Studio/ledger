@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import z from "zod";
 import type { Env } from "../types/envType/envType.js";
 
-const appEnvSchema = z.enum(["production", "beta", "development"]);
+const appEnvSchema = z.enum(["production", "beta", "development", "test"]);
 
 const localBackendSchema = z.object({
     PORT: z.coerce.number().default(5001),
@@ -20,6 +20,19 @@ const loadEnv = (): Env => {
 
     switch (appEnv) {
         case "development": {
+            const parsedEnv = localBackendSchema.parse(process.env);
+
+            const env: Env = {
+                appEnv: appEnv,
+                port: parsedEnv.PORT,
+                frontendUrl: parsedEnv.FRONTEND_URL,
+                databaseUrl: parsedEnv.DATABASE_URL
+            };
+
+            return env;
+        };
+
+        case "test": {
             const parsedEnv = localBackendSchema.parse(process.env);
 
             const env: Env = {

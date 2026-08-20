@@ -1,14 +1,22 @@
-import { setAccounts } from "../datastore/accountsData.js";
 import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
 } from "../types/accountTypes/accountsSchemaType.js";
-import { generateId } from "../utils/generateId.js";
-import { NotFoundError } from "../errors/AppError.js";
+import { NotFoundError, ConflictError } from "../errors/AppError.js";
 import { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
 import type { AccountQueryResponseType } from "../types/accountTypes/accountQueryResponseType.js";
-import { getAccounts, getAccount, getAccountsCount } from "../repository/accountsRepository.js";
+import { 
+    getAccounts, 
+    getAccount,
+    getAccountsCount, 
+    findAccount, 
+    postAccount,
+    deleteAccount,
+    putAccount,
+    updateAccount
+} 
+from "../repository/accountsRepository.js";
 
 // GET
 export const fetchAccounts = async (query: AccountQuery) => {
@@ -42,83 +50,51 @@ export const fetchAccount = async (accountId: string) => {
 };
 
 // POST
-export const createAccount = (input: CreateAccountInput): Account => {
-  const accounts = getAccounts();
-  const maxId =
-    accounts.length === 0
-      ? 0
-      : Math.max(...accounts.map((account) => account.id));
+export const createAccount = async (input: CreateAccountInput): Promise<Account> => {
+  const existingAccount = await findAccount(input);
 
-  const account: Account = {
-    id: generateId(maxId),
-    ...input,
-  };
+  if (existingAccount){
+    throw new ConflictError("Account already exists");
+  }
 
-  setAccounts([...accounts, account]);
-  return account;
+  return postAccount(input);
 };
 
 // DELETE
-export const removeAccount = (id: number) => {
-  const accounts = getAccounts();
-  const filteredAccounts = accounts.filter((account) => account.id !== id);
+export const removeAccount = async (id: number): Promise<Account> => {
+  const deletedAccount = await deleteAccount(id);
 
-  if (accounts.length === filteredAccounts.length) {
+  if (!deletedAccount) {
     throw new NotFoundError("Account does not exist");
   }
 
-  setAccounts(filteredAccounts);
+  return deletedAccount;
 };
 
 // PUT
-export const replaceAccount = (
+export const replaceAccount = async (
   input: CreateAccountInput,
   id: number,
-): Account => {
-  const accounts = getAccounts();
-  const accountIndex = accounts.findIndex((account) => account.id === id);
+): Promise<Account> => {
+  const updatedAccount = await putAccount(id, input);
 
-  if (accountIndex === -1) {
+  if (!updatedAccount) {
     throw new NotFoundError("Account does not exist");
-  }
-
-  const replacement: Account = {
-    id,
-    ...input,
   };
 
-  const updatedAccounts = [...accounts];
-  updatedAccounts[accountIndex] = replacement;
-
-  setAccounts(updatedAccounts);
-
-  return replacement;
+  return updatedAccount;
 };
 
 // PATCH
-export const patchAccount = (
+export const patchAccount = async (
   input: UpdateAccountInput,
   id: number,
-): Account => {
-  const accounts = getAccounts();
-  const existingAccount = accounts.find((account) => account.id === id);
+): Promise<Account> => {
+  const updatedAccount = await updateAccount(id, input);
 
-  if (!existingAccount) {
+  if (!updatedAccount){
     throw new NotFoundError("Account does not exist");
   }
-
-  const updatedAccount: Account = {
-    id,
-    name: input.name ?? existingAccount.name,
-    type: input.type ?? existingAccount.type,
-    balance: input.balance ?? existingAccount.balance,
-  };
-
-  const updatedAccounts = accounts.map((account) =>
-    account.id === id ? updatedAccount : account,
-  );
-
-  setAccounts(updatedAccounts);
 
   return updatedAccount;
 };

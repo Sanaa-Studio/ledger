@@ -85,7 +85,7 @@ export const updateAccount = (req: Request, res: Response) => {
 // DELETE
 export const deleteAccount = (req: Request, res: Response) => {
   const accountId = Number(req.params.id);
-  removeAccount(accountId);
+  const deletedAccount = removeAccount(accountId);
 
-  return res.status(200).end();
+  return res.status(200).json(deletedAccount).end();
 };

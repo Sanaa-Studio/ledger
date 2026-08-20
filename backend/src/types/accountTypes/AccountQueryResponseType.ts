@@ -5,5 +5,5 @@ export type AccountQueryResponseType = {
   limit: number;
   totalAccounts: number;
   pages: number;
-  data: Account[];
+  data: Account [];
 };

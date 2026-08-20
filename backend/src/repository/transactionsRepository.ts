@@ -1,0 +1,1 @@
+import {accountsTable, transactionsTable } from "@ledger/database/schema";

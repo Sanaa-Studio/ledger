@@ -1,4 +1,4 @@
-import { getAccounts, setAccounts } from "../datastore/accountsData.js";
+import { setAccounts } from "../datastore/accountsData.js";
 import type {
   Account,
   CreateAccountInput,
@@ -8,18 +8,17 @@ import { generateId } from "../utils/generateId.js";
 import { NotFoundError } from "../errors/AppError.js";
 import { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
 import type { AccountQueryResponseType } from "../types/accountTypes/accountQueryResponseType.js";
+import { getAccounts, getAccount, getAccountsCount } from "../repository/accountsRepository.js";
 
 // GET
-export const fetchAccounts = (query: AccountQuery) => {
-  const accounts = getAccounts();
-
+export const fetchAccounts = async (query: AccountQuery) => {
   const { page, limit } = query;
-
   const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
 
-  const totalAccounts = accounts.length;
-  const paginatedAccounts = accounts.slice(startIndex, endIndex);
+  const [paginatedAccounts, totalAccounts] = await Promise.all([
+    getAccounts(startIndex, limit),
+    getAccountsCount(),
+  ]);
 
   const response: AccountQueryResponseType = {
     page,
@@ -32,10 +31,8 @@ export const fetchAccounts = (query: AccountQuery) => {
   return response;
 };
 
-export const fetchAccount = (accountId: string) => {
-  const account = getAccounts().find(
-    (account) => account.id === Number(accountId),
-  );
+export const fetchAccount = async (accountId: string) => {
+  const account = await getAccount(Number(accountId));
 
   if (!account) {
     throw new NotFoundError("Account does not exist");

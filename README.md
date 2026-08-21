@@ -54,17 +54,18 @@ connected to PostgreSQL.
 - Vitest
 - Zod
 - Supertest
-- node:test
+- Jest
+- PostgreSQL
+- Drizzle
+- Docker and Docker Compose
 
 ### Planned for the MVP
 
-- PostgreSQL
-- Sequelize
 - Authentication and authorization: Passport, jsonwebtoken, and bcrypt
 - React
-- Docker and Docker Compose
 - GitHub Actions
 - AWS
+- Kubernetes
 - Redis cache and background jobs
 - Terraform
 
@@ -73,8 +74,6 @@ connected to PostgreSQL.
 - Event-driven processing with Kafka
 - OpenTelemetry
 - Service decomposition
-- Kubernetes
-- Jest
 - Prometheus and Grafana
 - D3.js
 

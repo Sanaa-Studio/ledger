@@ -71,17 +71,17 @@
 ## Phase 7: React Frontend
 
 - [ ] Learn core React concepts
+- [ ] Create Vite + React + TypeScript frontend
 - [ ] Add frontend to npm workspace
-- [ ] Create the frontend application
-- [ ] Build account views
-- [ ] Build transaction views
-- [ ] Design transfer data model
-- [ ] Implement transfers between accounts
-- [ ] Add forms for creating and updating data
+- [ ] Render hardcoded account data
+- [ ] Render hardcoded account data  
+- [ ] Replace hardcoded data with GET /api/accounts
+- [ ] Replace hardcoded data with GET /api/transactions
+- [ ] Loading / error / empty states
+- [ ] Account CRUD forms
+- [ ] Transaction CRUD forms
+- [ ] Implement transfers
 - [ ] Add transaction filtering
-- [ ] Test filtering
-- [ ] Connect the frontend to the Express API
-- [ ] Add loading and error states
 - [ ] Build monthly dashboard
 
 ## Phase 8: Authentication and Authorization

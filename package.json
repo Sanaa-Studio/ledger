@@ -27,9 +27,10 @@
     "db": "docker compose --env-file .env.compose exec postgres psql -U sanaastudio -d postgres",
     "db:test": "docker compose --env-file .env.compose exec postgres-test sh -c 'psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"'",
 
-    "docker:ps": "docker compose --env-file .env.compose ps",
+    "docker:ps": "docker compose --env-file .env.compose --profile test ps",
     "docker:db": "docker compose --env-file .env.compose up -d postgres",
     "docker:test-db": "docker compose --env-file .env.compose up -d postgres-test",
+    "docker:test-db:down": "docker compose --env-file .env.compose --profile test rm -sf postgres-test",
 
     "docker:up": "docker compose --env-file .env.compose up",
     "docker:down": "docker compose --env-file .env.compose down",

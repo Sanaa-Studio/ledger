@@ -62,11 +62,11 @@
 ## Phase 6: DB and API Testing
 
 - [x] Run db migations to development and beta environments
-- [ ] Add service unit tests with mocked repositories
-- [ ] Add repository/database integration tests
-- [ ] Update API integration tests to use a test PostgreSQL database
-- [ ] Reconsider ON DELETE CASCADE for the source account
-- [ ] Delete the in memory datastore
+- [x] Add service unit tests with mocked repositories
+- [x] Add repository/database integration tests
+- [x] Update API integration tests to use a test PostgreSQL database
+- [x] Reconsider ON DELETE CASCADE for the source account
+- [x] Delete the in memory datastore
 
 ## Phase 7: React Frontend
 

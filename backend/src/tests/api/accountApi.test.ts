@@ -1,364 +1,486 @@
+import {
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "@jest/globals";
+
 import request from "supertest";
-import { describe, it, beforeEach } from "node:test";
-import assert from "node:assert";
+
 import app from "../../app.js";
-import { getAccounts, setAccounts } from "../../datastore/accountsData.js";
-import getMaxId from "../utils/getMaxId.js";
-import type { CreateAccountInput } from "../../types/accountTypes/accountsSchemaType.js";
-import { AccountType } from "../../types/accountTypes/accountType.js";
+import { pool } from "../../db/db.js";
+import { resetTestDb } from "../helpers/resetTestDb.js";
 
-describe("Account controller test suite", () => {
-  const originalAccounts = structuredClone(getAccounts());
 
-  beforeEach(() => {
-    setAccounts(structuredClone(originalAccounts));
-  });
+// ======================================================
+// SETUP
+// ======================================================
 
-  describe("GET /api/accounts", () => {
-    it("Should return paginated accounts", async () => {
-    const accounts = getAccounts();
+beforeEach(async () => {
+  await resetTestDb();
+});
 
-    const result = await request(app).get(
-      "/api/accounts?page=1&limit=2",
-    );
+afterAll(async () => {
+  await pool.end();
+});
 
-    assert.strictEqual(result.statusCode, 200);
 
-    assert.strictEqual(result.body.page, 1);
-    assert.strictEqual(result.body.limit, 2);
-    assert.strictEqual(
-      result.body.totalAccounts,
-      accounts.length,
-    );
-    assert.strictEqual(
-      result.body.pages,
-      Math.ceil(accounts.length / 2),
-    );
+// ======================================================
+// GET /api/accounts
+// ======================================================
 
-    assert.deepStrictEqual(
-      result.body.data,
-      accounts.slice(0, 2),
-    );
-  });
+describe("GET /api/accounts", () => {
+  test("returns paginated accounts", async () => {
+    const response = await request(app)
+      .get("/api/accounts")
+      .expect(200);
 
-    it("Should return the second page of accounts", async () => {
-        const accounts = getAccounts();
-
-        const result = await request(app).get(
-        "/api/accounts?page=2&limit=2",
-        );
-
-        assert.strictEqual(result.statusCode, 200);
-        assert.strictEqual(result.body.page, 2);
-        assert.strictEqual(result.body.limit, 2);
-
-        assert.deepStrictEqual(
-        result.body.data,
-        accounts.slice(2, 4),
-        );
-    });
-
-    it("Should return an empty data array when page exceeds available accounts", async () => {
-        const result = await request(app).get(
-        "/api/accounts?page=100&limit=10",
-        );
-
-        assert.strictEqual(result.statusCode, 200);
-        assert.deepStrictEqual(result.body.data, []);
-    });
-
-    it("Should return 400 when page is invalid", async () => {
-        const result = await request(app).get(
-        "/api/accounts?page=0&limit=10",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
-        assert.strictEqual(
-        result.body.error,
-        "Invalid query parameters",
-        );
-    });
-
-    it("Should return 400 when limit is invalid", async () => {
-        const result = await request(app).get(
-        "/api/accounts?page=1&limit=0",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
-    });
-
-    it("Should return 400 when pagination parameters are not numeric", async () => {
-        const result = await request(app).get(
-        "/api/accounts?page=test&limit=test",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
-    });
-
-    it("Should use default pagination when query parameters are omitted", async () => {
-        const accounts = getAccounts();
-
-        const result = await request(app).get("/api/accounts");
-
-        assert.strictEqual(result.statusCode, 200);
-        assert.strictEqual(result.body.page, 1);
-        assert.strictEqual(result.body.limit, 10);
-        assert.strictEqual(result.body.totalAccounts, accounts.length);
-
-        assert.deepStrictEqual(
-            result.body.data,
-            accounts.slice(0, 10),
-        );
+    expect(response.body).toEqual({
+      data: [
+        {
+          id: 1,
+          name: "Test Checking",
+          type: "checking",
+          openingBalance: 1000,
+        },
+        {
+          id: 2,
+          name: "Test Savings",
+          type: "savings",
+          openingBalance: 500,
+        },
+      ],
+      meta: {
+        page: 1,
+        limit: 10,
+        total: 2,
+        pages: 1,
+      },
     });
   });
 
-  // GET individual account
-  describe("GET /api/accounts/:id", () => {
-  it("Should return an account", async () => {
-    const accounts = getAccounts();
-    const currentMaxId = getMaxId(accounts);
 
-    const expectedResult = accounts.find(
-      (account) => account.id === currentMaxId,
-    );
+  test("supports pagination query parameters", async () => {
+    const response = await request(app)
+      .get("/api/accounts?page=2&limit=1")
+      .expect(200);
 
-    const result = await request(app).get(
-      `/api/accounts/${currentMaxId}`,
-    );
-
-    assert.strictEqual(result.statusCode, 200);
-    assert.deepStrictEqual(result.body, expectedResult);
+    expect(response.body).toEqual({
+      data: [
+        {
+          id: 2,
+          name: "Test Savings",
+          type: "savings",
+          openingBalance: 500,
+        },
+      ],
+      meta: {
+        page: 2,
+        limit: 1,
+        total: 2,
+        pages: 2,
+      },
+    });
   });
 
-  it("Should return a 404 on invalid request", async () => {
-    const accounts = getAccounts();
-    const currentMaxId = getMaxId(accounts);
 
-    const result = await request(app).get(
-      `/api/accounts/${currentMaxId + 1}`,
-    );
+  test("returns empty data when page exceeds available accounts", async () => {
+    const response = await request(app)
+      .get("/api/accounts?page=100&limit=10")
+      .expect(200);
 
-    assert.strictEqual(result.statusCode, 404);
+    expect(response.body.data).toEqual([]);
+
+    expect(response.body.meta).toEqual({
+      page: 100,
+      limit: 10,
+      total: 2,
+      pages: 1,
+    });
+  });
+
+
+  test("returns validation error for invalid pagination", async () => {
+    const response = await request(app)
+      .get("/api/accounts?page=0")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+
+    expect(response.body.error.message)
+      .toBe("Invalid account data");
+
+    expect(response.body.error.details)
+      .toBeDefined();
+  });
+
+
+  test("rejects limit greater than 100", async () => {
+    const response = await request(app)
+      .get("/api/accounts?limit=101")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
   });
 });
 
-  // POST
-  describe("POST /api/accounts", () => {
-    it("Should create an account", async () => {
-      const accountsBefore = getAccounts();
-      const previousMaxId = getMaxId(accountsBefore);
 
-      const accountInput: CreateAccountInput = {
-        name: "Test Savings",
-        type: AccountType.Savings,
-        balance: 1500,
-      };
+// ======================================================
+// GET /api/accounts/:id
+// ======================================================
 
-      const result = await request(app)
-        .post("/api/accounts")
-        .send(accountInput);
+describe("GET /api/accounts/:id", () => {
+  test("returns an existing account", async () => {
+    const response = await request(app)
+      .get("/api/accounts/1")
+      .expect(200);
 
-      assert.strictEqual(result.statusCode, 201);
-
-      assert.strictEqual(result.body.id, previousMaxId + 1);
-
-      assert.strictEqual(result.body.name, accountInput.name);
-
-      assert.strictEqual(result.body.type, accountInput.type);
-
-      assert.strictEqual(result.body.balance, accountInput.balance);
-
-      const storedAccount = getAccounts().find(
-        (account) => account.id === result.body.id,
-      );
-
-      assert.ok(storedAccount);
-      assert.deepStrictEqual(storedAccount, result.body);
-    });
-
-    it("Should return 400 for invalid account data", async () => {
-      const invalidAccount = {
-        name: "",
-        type: AccountType.Savings,
-        balance: 1000,
-      };
-
-      const result = await request(app)
-        .post("/api/accounts")
-        .send(invalidAccount);
-
-      assert.strictEqual(result.statusCode, 400);
-      assert.strictEqual(result.body.error, "invalid account data");
-    });
-
-    it("Should not create an account when validation fails", async () => {
-      const accountsBefore = structuredClone(getAccounts());
-
-      const result = await request(app).post("/api/accounts").send({
-        name: "",
-        type: "invalid-type",
-        balance: "not-a-number",
-      });
-
-      assert.strictEqual(result.statusCode, 400);
-      assert.deepStrictEqual(getAccounts(), accountsBefore);
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
+        name: "Test Checking",
+        type: "checking",
+        openingBalance: 1000,
+      },
     });
   });
 
-  // PUT
-  describe("PUT /api/accounts/:id", () => {
-    it("Should replace an existing account", async () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
 
-      assert.ok(account);
+  test("returns 404 when account does not exist", async () => {
+    const response = await request(app)
+      .get("/api/accounts/999")
+      .expect(404);
 
-      const replacement: CreateAccountInput = {
-        name: "Replacement Account",
-        type: AccountType.Cash,
-        balance: 750,
-      };
+    expect(response.body).toEqual({
+      error: {
+        code: "NOT_FOUND",
+        message: "Account does not exist",
+      },
+    });
+  });
 
-      const result = await request(app)
-        .put(`/api/accounts/${account.id}`)
-        .send(replacement);
 
-      assert.strictEqual(result.statusCode, 200);
+  test("returns 400 for non-numeric id", async () => {
+    const response = await request(app)
+      .get("/api/accounts/abc")
+      .expect(400);
 
-      assert.deepStrictEqual(result.body, {
-        id: account.id,
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
+  });
+
+
+  test("returns 400 for non-positive id", async () => {
+    const response = await request(app)
+      .get("/api/accounts/0")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
+  });
+});
+
+
+// ======================================================
+// POST /api/accounts
+// ======================================================
+
+describe("POST /api/accounts", () => {
+  test("creates an account", async () => {
+    const input = {
+      name: "Test Cash",
+      type: "cash",
+      openingBalance: 250.5,
+    };
+
+    const response = await request(app)
+      .post("/api/accounts")
+      .send(input)
+      .expect(201);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 3,
+        name: "Test Cash",
+        type: "cash",
+        openingBalance: 250.5,
+      },
+    });
+
+
+    // Verify persistence through the API
+    const fetchResponse = await request(app)
+      .get("/api/accounts/3")
+      .expect(200);
+
+    expect(fetchResponse.body.data)
+      .toEqual(response.body.data);
+  });
+
+
+  test("returns validation error for invalid account data", async () => {
+    const input = {
+      name: "",
+      type: "checking",
+      openingBalance: 100,
+    };
+
+    const response = await request(app)
+      .post("/api/accounts")
+      .send(input)
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+
+    expect(response.body.error.details)
+      .toBeDefined();
+  });
+
+
+  test("returns validation error for invalid account type", async () => {
+    const input = {
+      name: "Invalid Account",
+      type: "crypto",
+      openingBalance: 100,
+    };
+
+    const response = await request(app)
+      .post("/api/accounts")
+      .send(input)
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+
+
+  test("returns conflict when account already exists", async () => {
+    const input = {
+      name: "Test Checking",
+      type: "checking",
+      openingBalance: 1000,
+    };
+
+    const response = await request(app)
+      .post("/api/accounts")
+      .send(input)
+      .expect(409);
+
+    expect(response.body).toEqual({
+      error: {
+        code: "CONFLICT",
+        message: "Account already exists",
+      },
+    });
+  });
+});
+
+
+// ======================================================
+// PUT /api/accounts/:id
+// ======================================================
+
+describe("PUT /api/accounts/:id", () => {
+  test("fully replaces an account", async () => {
+    const replacement = {
+      name: "Updated Account",
+      type: "investment",
+      openingBalance: 5000,
+    };
+
+    const response = await request(app)
+      .put("/api/accounts/1")
+      .send(replacement)
+      .expect(200);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
         ...replacement,
-      });
-
-      const storedAccount = getAccounts().find(
-        (stored) => stored.id === account.id,
-      );
-
-      assert.deepStrictEqual(storedAccount, result.body);
+      },
     });
 
-    it("Should return 400 for invalid replacement data", async () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
 
-      assert.ok(account);
+    const fetchResponse = await request(app)
+      .get("/api/accounts/1")
+      .expect(200);
 
-      const result = await request(app)
-        .put(`/api/accounts/${account.id}`)
-        .send({
-          name: "",
-          type: AccountType.Cash,
-          balance: 500,
-        });
+    expect(fetchResponse.body.data)
+      .toEqual(response.body.data);
+  });
 
-      assert.strictEqual(result.statusCode, 400);
-    });
 
-    it("Should return 404 when replacing nonexistent account", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
+  test("returns validation error when PUT is missing required fields", async () => {
+    const response = await request(app)
+      .put("/api/accounts/1")
+      .send({
+        name: "Incomplete Account",
+      })
+      .expect(400);
 
-      const replacement: CreateAccountInput = {
-        name: "Replacement",
-        type: AccountType.Checking,
-        balance: 500,
-      };
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
 
-      const result = await request(app)
-        .put(`/api/accounts/${currentMaxId + 1}`)
-        .send(replacement);
 
-      assert.strictEqual(result.statusCode, 404);
+  test("returns 404 when replacing nonexistent account", async () => {
+    const response = await request(app)
+      .put("/api/accounts/999")
+      .send({
+        name: "Missing Account",
+        type: "checking",
+        openingBalance: 100,
+      })
+      .expect(404);
+
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
+
+
+  test("returns 400 for invalid id", async () => {
+    const response = await request(app)
+      .put("/api/accounts/abc")
+      .send({
+        name: "Account",
+        type: "checking",
+        openingBalance: 100,
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
+  });
+});
+
+
+// ======================================================
+// PATCH /api/accounts/:id
+// ======================================================
+
+describe("PATCH /api/accounts/:id", () => {
+  test("updates only supplied fields", async () => {
+    const response = await request(app)
+      .patch("/api/accounts/1")
+      .send({
+        openingBalance: 1750,
+      })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
+        name: "Test Checking",
+        type: "checking",
+        openingBalance: 1750,
+      },
     });
   });
 
-  // PATCH
-  describe("PATCH /api/accounts/:id", () => {
-    it("Should partially update an account", async () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
 
-      assert.ok(account);
+  test("can update multiple fields", async () => {
+    const response = await request(app)
+      .patch("/api/accounts/2")
+      .send({
+        name: "Renamed Savings",
+        openingBalance: 800,
+      })
+      .expect(200);
 
-      const result = await request(app)
-        .patch(`/api/accounts/${account.id}`)
-        .send({
-          balance: 5000,
-        });
-
-      assert.strictEqual(result.statusCode, 200);
-
-      assert.strictEqual(result.body.id, account.id);
-
-      assert.strictEqual(result.body.balance, 5000);
-
-      // Fields omitted from PATCH should remain unchanged
-      assert.strictEqual(result.body.name, account.name);
-
-      assert.strictEqual(result.body.type, account.type);
-
-      const storedAccount = getAccounts().find(
-        (stored) => stored.id === account.id,
-      );
-
-      assert.deepStrictEqual(storedAccount, result.body);
-    });
-
-    it("Should return 400 for invalid patch data", async () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      const result = await request(app)
-        .patch(`/api/accounts/${account.id}`)
-        .send({
-          balance: "invalid balance",
-        });
-
-      assert.strictEqual(result.statusCode, 400);
-    });
-
-    it("Should return 404 when patching nonexistent account", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
-
-      const result = await request(app)
-        .patch(`/api/accounts/${currentMaxId + 1}`)
-        .send({
-          balance: 500,
-        });
-
-      assert.strictEqual(result.statusCode, 404);
+    expect(response.body.data).toEqual({
+      id: 2,
+      name: "Renamed Savings",
+      type: "savings",
+      openingBalance: 800,
     });
   });
 
-  // DELETE
-  describe("DELETE /api/accounts/:id", () => {
-    it("Should delete an existing account", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
 
-      const result = await request(app).delete(`/api/accounts/${currentMaxId}`);
+  test("rejects empty PATCH body", async () => {
+    const response = await request(app)
+      .patch("/api/accounts/1")
+      .send({})
+      .expect(400);
 
-      assert.strictEqual(result.statusCode, 200);
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
 
-      const deletedAccount = getAccounts().find(
-        (account) => account.id === currentMaxId,
-      );
 
-      assert.strictEqual(deletedAccount, undefined);
+  test("returns validation error for invalid PATCH field", async () => {
+    const response = await request(app)
+      .patch("/api/accounts/1")
+      .send({
+        type: "invalid-type",
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+
+
+  test("returns 404 when patching nonexistent account", async () => {
+    const response = await request(app)
+      .patch("/api/accounts/999")
+      .send({
+        openingBalance: 200,
+      })
+      .expect(404);
+
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
+});
+
+
+// ======================================================
+// DELETE /api/accounts/:id
+// ======================================================
+
+describe("DELETE /api/accounts/:id", () => {
+  test("deletes and returns the account", async () => {
+    const response = await request(app)
+      .delete("/api/accounts/2")
+      .expect(200);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 2,
+        name: "Test Savings",
+        type: "savings",
+        openingBalance: 500,
+      },
     });
 
-    it("Should return 404 when deleting nonexistent account", async () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
 
-      const result = await request(app).delete(
-        `/api/accounts/${currentMaxId + 1}`,
-      );
+    // Verify it is actually gone
+    await request(app)
+      .get("/api/accounts/2")
+      .expect(404);
+  });
 
-      assert.strictEqual(result.statusCode, 404);
-    });
+
+  test("returns 404 when deleting nonexistent account", async () => {
+    const response = await request(app)
+      .delete("/api/accounts/999")
+      .expect(404);
+
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
+
+
+  test("returns 400 for invalid id", async () => {
+    const response = await request(app)
+      .delete("/api/accounts/not-an-id")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
   });
 });

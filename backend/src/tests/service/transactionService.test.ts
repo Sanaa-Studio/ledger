@@ -1,320 +1,740 @@
-import { beforeEach, describe, it } from "node:test";
-import assert from "node:assert";
 import {
-  getTransactions,
-  setTransactions,
-} from "../../datastore/transactionsData.js";
-import * as transactionService from "../../services/transactionsService.js";
-import type { CreateTransactionInput } from "../../types/transactionTypes/transactionsSchemaType.js";
-import { NotFoundError, BadRequestError } from "../../errors/AppError.js";
-import { getAccounts } from "../../datastore/accountsData.js";
-import getMaxId from "../utils/getMaxId.js";
+  beforeEach,
+  describe,
+  expect,
+  test,
+  jest,
+} from "@jest/globals";
 
-describe("Test Suite for the Transaction Service", () => {
-  const originalTransactions = structuredClone(getTransactions());
+import { fakeTransactions } from "../fakeData/transactions/fakedTransactions.js";
+import { fakeAccounts } from "../fakeData/accounts/fakedAccounts.js";
 
-  beforeEach(() => {
-    setTransactions(structuredClone(originalTransactions));
-  });
+import type {
+  Transaction,
+  CreateTransactionInput,
+  UpdateTransactionInput,
+} from "../../types/transactionTypes/transactionsSchemaType.js";
 
-  //Happy tests for fetching transactions
-  describe("Happy tests for fetching transactions", () => {
-     it("Returns the first page of transactions", () => {
-    const transactions = getTransactions();
+import type { TransactionQueryResponse } from "../../types/transactionTypes/transactionQueryResponseType.js";
 
-    const result = transactionService.fetchTransactions({
+import {
+  BadRequestError,
+  NotFoundError,
+} from "../../errors/AppError.js";
+
+
+// ======================================================
+// Transaction repository mocks
+// ======================================================
+
+const getTransactionsMock = jest.fn(
+  async (
+    offset: number,
+    limit: number,
+  ): Promise<Transaction[]> =>
+    fakeTransactions.slice(
+      offset,
+      offset + limit,
+    ),
+);
+
+const getTransactionsCountMock = jest.fn(
+  async (): Promise<number> =>
+    fakeTransactions.length,
+);
+
+const getTransactionMock = jest.fn(
+  async (
+    id: number,
+  ): Promise<Transaction | undefined> =>
+    fakeTransactions.find(
+      (transaction) => transaction.id === id,
+    ),
+);
+
+const postTransactionMock = jest.fn(
+  async (
+    _input: CreateTransactionInput,
+  ): Promise<Transaction> =>
+    fakeTransactions[0]!,
+);
+
+const putTransactionMock = jest.fn(
+  async (
+    _id: number,
+    _input: CreateTransactionInput,
+  ): Promise<Transaction | undefined> =>
+    undefined,
+);
+
+const updateTransactionMock = jest.fn(
+  async (
+    _id: number,
+    _input: UpdateTransactionInput,
+  ): Promise<Transaction | undefined> =>
+    undefined,
+);
+
+const deleteTransactionMock = jest.fn(
+  async (
+    _id: number,
+  ): Promise<Transaction | undefined> =>
+    undefined,
+);
+
+
+// ======================================================
+// Account repository mock
+// ======================================================
+
+const getAccountMock = jest.fn(
+  async (id: number) =>
+    fakeAccounts.find(
+      (account) => account.id === id,
+    ),
+);
+
+
+// ======================================================
+// Replace repositories
+// ======================================================
+
+jest.unstable_mockModule(
+  "../../repository/transactionsRepository.js",
+  () => ({
+    getTransactions: getTransactionsMock,
+    getTransactionsCount:
+      getTransactionsCountMock,
+    getTransaction: getTransactionMock,
+    postTransaction: postTransactionMock,
+    putTransaction: putTransactionMock,
+    updateTransaction: updateTransactionMock,
+    deleteTransaction: deleteTransactionMock,
+  }),
+);
+
+jest.unstable_mockModule(
+  "../../repository/accountsRepository.js",
+  () => ({
+    getAccount: getAccountMock,
+  }),
+);
+
+
+// IMPORTANT: import service after mocks
+const {
+  fetchTransactions,
+  fetchTransaction,
+  makeTransaction,
+  replaceTransaction,
+  patchTransaction,
+  removeTransaction,
+} = await import(
+  "../../services/transactionsService.js"
+);
+
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+
+// ======================================================
+// GET ALL
+// ======================================================
+
+describe("fetchTransactions", () => {
+  test("successfully fetches first page", async () => {
+    const expected: TransactionQueryResponse = {
+      data: fakeTransactions.slice(0, 3),
       page: 1,
-      limit: 2,
+      limit: 3,
+      total: fakeTransactions.length,
+      pages: Math.ceil(
+        fakeTransactions.length / 3,
+      ),
+    };
+
+    const result = await fetchTransactions({
+      page: 1,
+      limit: 3,
     });
 
-    assert.strictEqual(result.page, 1);
-    assert.strictEqual(result.limit, 2);
-    assert.strictEqual(result.totalTransactions, transactions.length);
-    assert.strictEqual(
-      result.pages,
-      Math.ceil(transactions.length / 2),
-    );
+    expect(result).toEqual(expected);
 
-    assert.deepStrictEqual(
-      result.data,
-      transactions.slice(0, 2),
-    );
+    expect(getTransactionsMock)
+      .toHaveBeenCalledWith(0, 3);
+
+    expect(getTransactionsCountMock)
+      .toHaveBeenCalledTimes(1);
   });
 
-  it("Returns the second page of transactions", () => {
-    const transactions = getTransactions();
 
-    const result = transactionService.fetchTransactions({
+  test("successfully fetches second page", async () => {
+    const result = await fetchTransactions({
       page: 2,
-      limit: 2,
+      limit: 3,
     });
 
-    assert.strictEqual(result.page, 2);
-    assert.strictEqual(result.limit, 2);
-
-    assert.deepStrictEqual(
-      result.data,
-      transactions.slice(2, 4),
+    expect(result.data).toEqual(
+      fakeTransactions.slice(3, 6),
     );
+
+    expect(result.page).toBe(2);
+    expect(result.limit).toBe(3);
+    expect(result.total).toBe(
+      fakeTransactions.length,
+    );
+
+    expect(getTransactionsMock)
+      .toHaveBeenCalledWith(3, 3);
   });
 
-    it("Returns a partial final page", () => {
-    const transactions = getTransactions();
 
-    assert.ok(transactions.length >= 5);
-
-    setTransactions(transactions.slice(0, 5));
-
-    const result = transactionService.fetchTransactions({
-        page: 3,
-        limit: 2,
-    });
-
-    assert.strictEqual(result.page, 3);
-    assert.strictEqual(result.limit, 2);
-    assert.strictEqual(result.pages, 3);
-    assert.strictEqual(result.totalTransactions, 5);
-    assert.strictEqual(result.data.length, 1);
-
-    assert.deepStrictEqual(
-        result.data,
-        transactions.slice(4, 5),
-    );
-    });
-
-  it("Returns an empty array when page exceeds available transactions", () => {
-    const transactions = getTransactions();
-
-    const result = transactionService.fetchTransactions({
+  test("returns empty data when page exceeds available transactions", async () => {
+    const result = await fetchTransactions({
       page: 100,
-      limit: 10,
+      limit: 3,
     });
 
-    assert.strictEqual(result.page, 100);
-    assert.strictEqual(result.totalTransactions, transactions.length);
-    assert.deepStrictEqual(result.data, []);
+    expect(result.data).toEqual([]);
+
+    expect(result.total).toBe(
+      fakeTransactions.length,
+    );
+
+    expect(getTransactionsMock)
+      .toHaveBeenCalledWith(297, 3);
   });
 
-  it("Calculates the correct number of pages", () => {
-    const transactions = getTransactions();
 
-    const result = transactionService.fetchTransactions({
+  test("calculates page count correctly", async () => {
+    const result = await fetchTransactions({
       page: 1,
-      limit: 2,
+      limit: 5,
     });
 
-    assert.strictEqual(
-      result.pages,
-      Math.ceil(transactions.length / 2),
+    expect(result.pages).toBe(
+      Math.ceil(fakeTransactions.length / 5),
     );
   });
+});
 
-  it("Fetching existing transaction", () => {
-    const transactions = getTransactions();
-    const currentMaxId = getMaxId(transactions);
 
-    const initialTransaction = transactions.find(
-      (transaction) => transaction.id === currentMaxId,
+// ======================================================
+// GET ONE
+// ======================================================
+
+describe("fetchTransaction", () => {
+  test("successfully fetches transaction", async () => {
+    const transaction = fakeTransactions[0]!;
+
+    const result = await fetchTransaction(
+      transaction.id,
     );
 
-    const fetchedTransaction =
-      transactionService.fetchTransaction(currentMaxId);
+    expect(result).toEqual(transaction);
 
-    assert.ok(fetchedTransaction);
-    assert.deepStrictEqual(initialTransaction, fetchedTransaction);
-  });
+    expect(getTransactionMock)
+      .toHaveBeenCalledWith(transaction.id);
   });
 
-  // Error test for fetching transaction
-  describe("Error tests for fetching transaction", () => {
-    it("Raises error on fetching non-existing transaction", () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      assert.throws(() => {
-        transactionService.fetchTransaction(currentMaxId + 1);
-      }, NotFoundError);
-    });
+  test("throws NotFoundError when transaction does not exist", async () => {
+    getTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      fetchTransaction(999),
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(getTransactionMock)
+      .toHaveBeenCalledWith(999);
+  });
+});
+
+
+// ======================================================
+// POST
+// ======================================================
+
+describe("makeTransaction", () => {
+  test("successfully creates a normal transaction", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      amount: -100,
+      description: "Restaurant",
+      date: new Date("2026-08-20"),
+    };
+
+    const createdTransaction: Transaction = {
+      id: 9,
+      accountId: 1,
+      destinationAccountId: null,
+      amount: -100,
+      description: "Restaurant",
+      date: new Date("2026-08-20"),
+    };
+
+    postTransactionMock.mockResolvedValueOnce(
+      createdTransaction,
+    );
+
+    const result =
+      await makeTransaction(input);
+
+    expect(result).toEqual(
+      createdTransaction,
+    );
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(1);
+
+    expect(postTransactionMock)
+      .toHaveBeenCalledWith(input);
   });
 
-  // Happy test for creating transaction
-  describe("Happy test for creating transaction", () => {
-    it("Succesfully creates a transaction", () => {
-      const initialTransactions = getTransactions();
-      const previousMaxId = getMaxId(initialTransactions);
 
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
+  test("successfully creates a transfer", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      destinationAccountId: 2,
+      amount: -500,
+      description: "Transfer to savings",
+      date: new Date("2026-08-20"),
+    };
 
-      assert.ok(sourceAccount);
+    const createdTransaction: Transaction = {
+      id: 9,
+      accountId: 1,
+      destinationAccountId: 2,
+      amount: -500,
+      description: "Transfer to savings",
+      date: new Date("2026-08-20"),
+    };
 
-      const transactionInput: CreateTransactionInput = {
-        accountId: sourceAccount.id,
-        amount: 100,
-        description: "Test transaction",
-        date: new Date(),
-      };
+    postTransactionMock.mockResolvedValueOnce(
+      createdTransaction,
+    );
 
-      const createdTransaction =
-        transactionService.makeTransaction(transactionInput);
+    const result =
+      await makeTransaction(input);
 
-      const transactionsAfter = getTransactions();
+    expect(result).toEqual(
+      createdTransaction,
+    );
 
-      assert.strictEqual(createdTransaction.id, previousMaxId + 1);
-      assert.strictEqual(
-        createdTransaction.accountId,
-        transactionInput.accountId,
-      );
-      assert.strictEqual(createdTransaction.amount, transactionInput.amount);
-      assert.strictEqual(
-        createdTransaction.description,
-        transactionInput.description,
-      );
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(1);
 
-      assert.ok(
-        transactionsAfter.some(
-          (transaction) => transaction.id === createdTransaction.id,
-        ),
-      );
-    });
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(2);
 
-    it("Successfully creates a transaction with a destination account", () => {
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
-      const destinationAccount = accounts[1];
-
-      assert.ok(sourceAccount);
-      assert.ok(destinationAccount);
-
-      const transactionInput: CreateTransactionInput = {
-        accountId: sourceAccount.id,
-        destinationAccountId: destinationAccount.id,
-        amount: 250,
-        description: "Transfer",
-        date: new Date(),
-      };
-
-      const createdTransaction =
-        transactionService.makeTransaction(transactionInput);
-
-      assert.strictEqual(createdTransaction.accountId, sourceAccount.id);
-
-      assert.strictEqual(
-        createdTransaction.destinationAccountId,
-        destinationAccount.id,
-      );
-
-      assert.strictEqual(createdTransaction.amount, 250);
-
-      const storedTransaction = getTransactions().find(
-        (transaction) => transaction.id === createdTransaction.id,
-      );
-
-      assert.deepStrictEqual(storedTransaction, createdTransaction);
-    });
-  });
-  describe("Error tests for creating transactions", () => {
-    it("Throws when origin account does not exist", () => {
-      const accounts = getAccounts();
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
-
-      const transactionInput: CreateTransactionInput = {
-        accountId: maxAccountId + 1,
-        amount: 100,
-        description: "Invalid transaction",
-        date: new Date(),
-      };
-
-      assert.throws(() => {
-        transactionService.makeTransaction(transactionInput);
-      }, NotFoundError);
-    });
-    it("Throws when destination account does not exist", () => {
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
-
-      assert.ok(sourceAccount);
-
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
-
-      const transactionInput: CreateTransactionInput = {
-        accountId: sourceAccount.id,
-        destinationAccountId: maxAccountId + 1,
-        amount: 100,
-        description: "Invalid transfer",
-        date: new Date(),
-      };
-
-      assert.throws(() => {
-        transactionService.makeTransaction(transactionInput);
-      }, NotFoundError);
-    });
-    it("Throws when origin and destination are the same account", () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      const transactionInput: CreateTransactionInput = {
-        accountId: account.id,
-        destinationAccountId: account.id,
-        amount: 100,
-        description: "Invalid transfer",
-        date: new Date(),
-      };
-
-      assert.throws(() => {
-        transactionService.makeTransaction(transactionInput);
-      }, BadRequestError);
-    });
-
-    it("Does not create a transaction when origin account does not exist", () => {
-      const transactionsBefore = getTransactions();
-      const accounts = getAccounts();
-
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
-
-      const transactionInput: CreateTransactionInput = {
-        accountId: maxAccountId + 1,
-        amount: 100,
-        description: "Invalid transaction",
-        date: new Date(),
-      };
-
-      assert.throws(() => {
-        transactionService.makeTransaction(transactionInput);
-      }, NotFoundError);
-
-      const transactionsAfter = getTransactions();
-
-      assert.deepStrictEqual(transactionsAfter, transactionsBefore);
-    });
+    expect(postTransactionMock)
+      .toHaveBeenCalledWith(input);
   });
 
-  describe("Happy tests for deleting transactions", () => {
-    it("Successfully deletes an existing transaction", () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      const result = transactionService.removeTransaction(currentMaxId);
+  test("throws BadRequestError when origin account does not exist", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 999,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
 
-      const deletedTransaction = getTransactions().find(
-        (transaction) => transaction.id === currentMaxId,
-      );
+    await expect(
+      makeTransaction(input),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
 
-      assert.strictEqual(result, true);
-      assert.strictEqual(deletedTransaction, undefined);
-    });
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(999);
+
+    expect(postTransactionMock)
+      .not.toHaveBeenCalled();
   });
 
-  describe("Error tests for deleting transactions", () => {
-    it("Throws when deleting a nonexistent transaction", () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      assert.throws(() => {
-        transactionService.removeTransaction(currentMaxId + 1);
-      }, NotFoundError);
-    });
+  test("throws BadRequestError when destination account does not exist", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      destinationAccountId: 999,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
+
+    await expect(
+      makeTransaction(input),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(1);
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(999);
+
+    expect(postTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws BadRequestError when origin and destination are the same", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      destinationAccountId: 1,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
+
+    await expect(
+      makeTransaction(input),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
+
+    expect(postTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+});
+
+
+// ======================================================
+// PUT
+// ======================================================
+
+describe("replaceTransaction", () => {
+  test("successfully replaces transaction", async () => {
+    const existingTransaction =
+      fakeTransactions[6]!;
+
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      destinationAccountId: 2,
+      amount: -750,
+      description: "Updated transfer",
+      date: new Date("2026-08-20"),
+    };
+
+    const updatedTransaction: Transaction = {
+      id: existingTransaction.id,
+      accountId: 1,
+      destinationAccountId: 2,
+      amount: -750,
+      description: "Updated transfer",
+      date: new Date("2026-08-20"),
+    };
+
+    putTransactionMock.mockResolvedValueOnce(
+      updatedTransaction,
+    );
+
+    const result = await replaceTransaction(
+      input,
+      existingTransaction.id,
+    );
+
+    expect(result).toEqual(
+      updatedTransaction,
+    );
+
+    expect(getTransactionMock)
+      .toHaveBeenCalledWith(
+        existingTransaction.id,
+      );
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(1);
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(2);
+
+    expect(putTransactionMock)
+      .toHaveBeenCalledWith(
+        existingTransaction.id,
+        input,
+      );
+  });
+
+
+  test("throws NotFoundError when transaction does not exist", async () => {
+    getTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
+
+    await expect(
+      replaceTransaction(input, 999),
+    ).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+
+    expect(putTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws BadRequestError when replacement accounts are invalid", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      destinationAccountId: 1,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
+
+    await expect(
+      replaceTransaction(
+        input,
+        fakeTransactions[0]!.id,
+      ),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
+
+    expect(putTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws NotFoundError when repository fails to return updated transaction", async () => {
+    const input: CreateTransactionInput = {
+      accountId: 1,
+      amount: -100,
+      date: new Date("2026-08-20"),
+    };
+
+    putTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      replaceTransaction(
+        input,
+        fakeTransactions[0]!.id,
+      ),
+    ).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+  });
+});
+
+
+// ======================================================
+// PATCH
+// ======================================================
+
+describe("patchTransaction", () => {
+  test("successfully patches transaction amount", async () => {
+    const existingTransaction =
+      fakeTransactions[1]!;
+
+    const input: UpdateTransactionInput = {
+      amount: -75,
+    };
+
+    const updatedTransaction: Transaction = {
+      ...existingTransaction,
+      amount: -75,
+    };
+
+    updateTransactionMock.mockResolvedValueOnce(
+      updatedTransaction,
+    );
+
+    const result = await patchTransaction(
+      input,
+      existingTransaction.id,
+    );
+
+    expect(result).toEqual(
+      updatedTransaction,
+    );
+
+    expect(getTransactionMock)
+      .toHaveBeenCalledWith(
+        existingTransaction.id,
+      );
+
+    // existing source account is still validated
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(
+        existingTransaction.accountId,
+      );
+
+    expect(updateTransactionMock)
+      .toHaveBeenCalledWith(
+        existingTransaction.id,
+        input,
+      );
+  });
+
+
+  test("successfully removes destination account with null", async () => {
+    const transfer = fakeTransactions.find(
+      (transaction) =>
+        transaction.destinationAccountId !== null,
+    )!;
+
+    const input: UpdateTransactionInput = {
+      destinationAccountId: null,
+    };
+
+    const updatedTransaction: Transaction = {
+      ...transfer,
+      destinationAccountId: null,
+    };
+
+    updateTransactionMock.mockResolvedValueOnce(
+      updatedTransaction,
+    );
+
+    const result = await patchTransaction(
+      input,
+      transfer.id,
+    );
+
+    expect(result.destinationAccountId)
+      .toBeNull();
+
+    expect(updateTransactionMock)
+      .toHaveBeenCalledWith(
+        transfer.id,
+        input,
+      );
+  });
+
+
+  test("throws NotFoundError when patched transaction does not exist", async () => {
+    getTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    const input: UpdateTransactionInput = {
+      amount: -100,
+    };
+
+    await expect(
+      patchTransaction(input, 999),
+    ).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+
+    expect(updateTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws BadRequestError when patch makes origin and destination the same", async () => {
+    const transfer = fakeTransactions.find(
+      (transaction) =>
+        transaction.destinationAccountId !== null,
+    )!;
+
+    const input: UpdateTransactionInput = {
+      destinationAccountId:
+        transfer.accountId,
+    };
+
+    await expect(
+      patchTransaction(
+        input,
+        transfer.id,
+      ),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
+
+    expect(updateTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws BadRequestError when patched destination account does not exist", async () => {
+    const input: UpdateTransactionInput = {
+      destinationAccountId: 999,
+    };
+
+    await expect(
+      patchTransaction(
+        input,
+        fakeTransactions[0]!.id,
+      ),
+    ).rejects.toBeInstanceOf(
+      BadRequestError,
+    );
+
+    expect(updateTransactionMock)
+      .not.toHaveBeenCalled();
+  });
+
+
+  test("throws NotFoundError when repository fails to return patched transaction", async () => {
+    const input: UpdateTransactionInput = {
+      amount: -200,
+    };
+
+    updateTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      patchTransaction(
+        input,
+        fakeTransactions[0]!.id,
+      ),
+    ).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+  });
+});
+
+
+// ======================================================
+// DELETE
+// ======================================================
+
+describe("removeTransaction", () => {
+  test("successfully removes transaction", async () => {
+    const transaction =
+      fakeTransactions[0]!;
+
+    deleteTransactionMock.mockResolvedValueOnce(
+      transaction,
+    );
+
+    const result = await removeTransaction(
+      transaction.id,
+    );
+
+    expect(result).toEqual(transaction);
+
+    expect(deleteTransactionMock)
+      .toHaveBeenCalledWith(
+        transaction.id,
+      );
+  });
+
+
+  test("throws NotFoundError when transaction does not exist", async () => {
+    deleteTransactionMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      removeTransaction(999),
+    ).rejects.toBeInstanceOf(
+      NotFoundError,
+    );
+
+    expect(deleteTransactionMock)
+      .toHaveBeenCalledWith(999);
   });
 });

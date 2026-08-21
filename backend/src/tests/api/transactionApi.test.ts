@@ -1,372 +1,646 @@
-import request from "supertest";
-import { describe, it, beforeEach } from "node:test";
-import assert from "node:assert";
-import app from "../../app.js";
 import {
-  getTransactions,
-  setTransactions,
-} from "../../datastore/transactionsData.js";
-import { getAccounts, setAccounts } from "../../datastore/accountsData.js";
-import getMaxId from "../utils/getMaxId.js";
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "@jest/globals";
 
-describe("Transaction API test suite", () => {
-  const originalTransactions = structuredClone(getTransactions());
-  const originalAccounts = structuredClone(getAccounts());
+import request from "supertest";
 
-  beforeEach(() => {
-    setTransactions(structuredClone(originalTransactions));
-    setAccounts(structuredClone(originalAccounts));
-  });
+import app from "../../app.js";
+import { pool } from "../../db/db.js";
+import { resetTestDb } from "../helpers/resetTestDb.js";
 
-  // GET ALL
-  describe("GET /api/transactions", () => {
-    it("Should return paginated transactions", async () => {
-        const transactions = getTransactions();
 
-        const expectedTransactions = transactions
-        .slice(0, 2)
-        .map((transaction) => ({
-            ...transaction,
-            date: transaction.date.toISOString(),
-        }));
+beforeEach(async () => {
+  await resetTestDb();
+});
 
-        const result = await request(app).get(
-        "/api/transactions?page=1&limit=2",
-        );
+afterAll(async () => {
+  await pool.end();
+});
 
-        assert.strictEqual(result.statusCode, 200);
 
-        assert.strictEqual(result.body.page, 1);
-        assert.strictEqual(result.body.limit, 2);
-        assert.strictEqual(
-        result.body.totalTransactions,
-        transactions.length,
-        );
-        assert.strictEqual(
-        result.body.pages,
-        Math.ceil(transactions.length / 2),
-        );
+// ======================================================
+// GET /api/transactions
+// ======================================================
 
-        assert.deepStrictEqual(
-        result.body.data,
-        expectedTransactions,
-        );
-    });
+describe("GET /api/transactions", () => {
+  test("returns paginated transactions", async () => {
+    const response = await request(app)
+      .get("/api/transactions")
+      .expect(200);
 
-    it("Should return the second page of transactions", async () => {
-    const transactions = getTransactions();
-
-    const expectedTransactions = transactions
-      .slice(2, 4)
-      .map((transaction) => ({
-        ...transaction,
-        date: transaction.date.toISOString(),
-      }));
-
-    const result = await request(app).get(
-      "/api/transactions?page=2&limit=2",
-    );
-
-    assert.strictEqual(result.statusCode, 200);
-    assert.strictEqual(result.body.page, 2);
-    assert.strictEqual(result.body.limit, 2);
-
-    assert.deepStrictEqual(
-      result.body.data,
-      expectedTransactions,
-    );
-  });
-
-    it("Should return an empty data array when page exceeds available transactions", async () => {
-        const result = await request(app).get(
-        "/api/transactions?page=100&limit=10",
-        );
-
-        assert.strictEqual(result.statusCode, 200);
-        assert.deepStrictEqual(result.body.data, []);
-    });
-
-    it("Should return 400 when page is invalid", async () => {
-        const result = await request(app).get(
-        "/api/transactions?page=0&limit=10",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
-        assert.strictEqual(
-        result.body.error,
-        "Invalid transaction data",
-        );
-    });
-
-    it("Should return 400 when limit is invalid", async () => {
-        const result = await request(app).get(
-        "/api/transactions?page=1&limit=0",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
-    });
-
-    it("Should return 400 when pagination parameters are not numeric", async () => {
-        const result = await request(app).get(
-        "/api/transactions?page=abc&limit=xyz",
-        );
-
-        assert.strictEqual(result.statusCode, 400);
+    expect(response.body).toEqual({
+      data: [
+        {
+          id: 1,
+          accountId: 1,
+          destinationAccountId: null,
+          amount: -50,
+          description: "Groceries",
+          date: "2026-08-01T00:00:00.000Z",
+        },
+      ],
+      meta: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        pages: 1,
+      },
     });
   });
 
-  // GET ONE
-  describe("GET /api/transactions/:id", () => {
-    it("Should return an existing transaction", async () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      const transaction = transactions.find(
-        (transaction) => transaction.id === currentMaxId,
-      );
+  test("supports pagination query parameters", async () => {
+    // Add another transaction through the API
+    await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: 1,
+        amount: -25,
+        description: "Dinner",
+        date: "2026-08-10",
+      })
+      .expect(201);
 
-      assert.ok(transaction);
+    // Newest transaction comes first
+    const response = await request(app)
+      .get("/api/transactions?page=2&limit=1")
+      .expect(200);
 
-      const expectedTransaction = {
-        ...transaction,
-        date: transaction.date.toISOString(),
-      };
-
-      assert.ok(expectedTransaction);
-
-      const result = await request(app).get(
-        `/api/transactions/${currentMaxId}`,
-      );
-
-      assert.strictEqual(result.statusCode, 200);
-
-      assert.deepStrictEqual(result.body, expectedTransaction);
-    });
-
-    it("Should return 404 for a nonexistent transaction", async () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
-
-      const result = await request(app).get(
-        `/api/transactions/${currentMaxId + 1}`,
-      );
-
-      assert.strictEqual(result.statusCode, 404);
+    expect(response.body).toEqual({
+      data: [
+        {
+          id: 1,
+          accountId: 1,
+          destinationAccountId: null,
+          amount: -50,
+          description: "Groceries",
+          date: "2026-08-01T00:00:00.000Z",
+        },
+      ],
+      meta: {
+        page: 2,
+        limit: 1,
+        total: 2,
+        pages: 2,
+      },
     });
   });
 
-  // POST
-  describe("POST /api/transactions", () => {
-    it("Should create a transaction", async () => {
-      const transactionsBefore = getTransactions();
-      const previousMaxId = getMaxId(transactionsBefore);
 
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
+  test("returns empty data when page exceeds available transactions", async () => {
+    const response = await request(app)
+      .get("/api/transactions?page=100&limit=10")
+      .expect(200);
 
-      assert.ok(sourceAccount);
+    expect(response.body.data).toEqual([]);
 
-      const transactionInput = {
-        accountId: sourceAccount.id,
-        amount: 100,
-        description: "Test transaction",
-        date: new Date().toISOString(),
-      };
+    expect(response.body.meta).toEqual({
+      page: 100,
+      limit: 10,
+      total: 1,
+      pages: 1,
+    });
+  });
 
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(transactionInput);
 
-      assert.strictEqual(result.statusCode, 201);
+  test("returns validation error for invalid page", async () => {
+    const response = await request(app)
+      .get("/api/transactions?page=0")
+      .expect(400);
 
-      assert.strictEqual(result.body.id, previousMaxId + 1);
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
 
-      assert.strictEqual(result.body.accountId, transactionInput.accountId);
+    expect(response.body.error.message)
+      .toBe("Invalid transaction data");
 
-      assert.strictEqual(result.body.amount, transactionInput.amount);
+    expect(response.body.error.details)
+      .toBeDefined();
+  });
 
-      assert.strictEqual(result.body.description, transactionInput.description);
 
-      const storedTransaction = getTransactions().find(
-        (transaction) => transaction.id === result.body.id,
-      );
+  test("rejects limit greater than 100", async () => {
+    const response = await request(app)
+      .get("/api/transactions?limit=101")
+      .expect(400);
 
-      assert.ok(storedTransaction);
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+});
+
+
+// ======================================================
+// GET /api/transactions/:id
+// ======================================================
+
+describe("GET /api/transactions/:id", () => {
+  test("returns an existing transaction", async () => {
+    const response = await request(app)
+      .get("/api/transactions/1")
+      .expect(200);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
+        accountId: 1,
+        destinationAccountId: null,
+        amount: -50,
+        description: "Groceries",
+        date: "2026-08-01T00:00:00.000Z",
+      },
+    });
+  });
+
+
+  test("returns 404 for nonexistent transaction", async () => {
+    const response = await request(app)
+      .get("/api/transactions/999")
+      .expect(404);
+
+    expect(response.body).toEqual({
+      error: {
+        code: "NOT_FOUND",
+        message: "Transaction does not exist",
+      },
+    });
+  });
+
+
+  test("returns 400 for invalid transaction id", async () => {
+    const response = await request(app)
+      .get("/api/transactions/abc")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
+  });
+
+
+  test("returns 400 for non-positive transaction id", async () => {
+    const response = await request(app)
+      .get("/api/transactions/0")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
+  });
+});
+
+
+// ======================================================
+// POST /api/transactions
+// ======================================================
+
+describe("POST /api/transactions", () => {
+  test("creates a normal transaction", async () => {
+    const input = {
+      accountId: 1,
+      amount: -75.5,
+      description: "Restaurant",
+      date: "2026-08-20",
+    };
+
+    const response = await request(app)
+      .post("/api/transactions")
+      .send(input)
+      .expect(201);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 2,
+        accountId: 1,
+        destinationAccountId: null,
+        amount: -75.5,
+        description: "Restaurant",
+        date: "2026-08-20T00:00:00.000Z",
+      },
     });
 
-    it("Should create a transaction with a destination account", async () => {
-      const accounts = getAccounts();
+    // Verify persistence
+    const fetchResponse = await request(app)
+      .get("/api/transactions/2")
+      .expect(200);
 
-      const sourceAccount = accounts[0];
-      const destinationAccount = accounts[1];
+    expect(fetchResponse.body.data)
+      .toEqual(response.body.data);
+  });
 
-      assert.ok(sourceAccount);
-      assert.ok(destinationAccount);
 
-      const transactionInput = {
-        accountId: sourceAccount.id,
-        destinationAccountId: destinationAccount.id,
-        amount: 250,
+  test("creates a transfer transaction", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: 1,
+        destinationAccountId: 2,
+        amount: -250,
+        description: "Transfer to savings",
+        date: "2026-08-20",
+      })
+      .expect(201);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 2,
+        accountId: 1,
+        destinationAccountId: 2,
+        amount: -250,
+        description: "Transfer to savings",
+        date: "2026-08-20T00:00:00.000Z",
+      },
+    });
+  });
+
+
+  test("returns validation error for invalid transaction data", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: -1,
+        amount: -50,
+        date: "2026-08-20",
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+
+
+  test("returns validation error when required fields are missing", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        description: "Missing important stuff",
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+
+
+  test("returns 400 when origin account does not exist", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: 999,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(400);
+
+    expect(response.body).toEqual({
+      error: {
+        code: "BAD_REQUEST",
+        message: "Origin account does not exist",
+      },
+    });
+  });
+
+
+  test("returns 400 when destination account does not exist", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: 1,
+        destinationAccountId: 999,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(400);
+
+    expect(response.body).toEqual({
+      error: {
+        code: "BAD_REQUEST",
+        message: "Destination account does not exist",
+      },
+    });
+  });
+
+
+  test("returns 400 when origin and destination are identical", async () => {
+    const response = await request(app)
+      .post("/api/transactions")
+      .send({
+        accountId: 1,
+        destinationAccountId: 1,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("BAD_REQUEST");
+  });
+});
+
+
+// ======================================================
+// PUT /api/transactions/:id
+// ======================================================
+
+describe("PUT /api/transactions/:id", () => {
+  test("fully replaces an existing transaction", async () => {
+    const replacement = {
+      accountId: 2,
+      amount: 500,
+      description: "Updated transaction",
+      date: "2026-08-15",
+    };
+
+    const response = await request(app)
+      .put("/api/transactions/1")
+      .send(replacement)
+      .expect(200);
+
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
+        accountId: 2,
+        destinationAccountId: null,
+        amount: 500,
+        description: "Updated transaction",
+        date: "2026-08-15T00:00:00.000Z",
+      },
+    });
+
+
+    const fetchResponse = await request(app)
+      .get("/api/transactions/1")
+      .expect(200);
+
+    expect(fetchResponse.body.data)
+      .toEqual(response.body.data);
+  });
+
+
+  test("can replace transaction with a transfer", async () => {
+    const response = await request(app)
+      .put("/api/transactions/1")
+      .send({
+        accountId: 1,
+        destinationAccountId: 2,
+        amount: -500,
         description: "Transfer",
-        date: new Date().toISOString(),
-      };
+        date: "2026-08-20",
+      })
+      .expect(200);
 
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(transactionInput);
+    expect(response.body.data.destinationAccountId)
+      .toBe(2);
 
-      assert.strictEqual(result.statusCode, 201);
+    expect(response.body.data.amount)
+      .toBe(-500);
+  });
 
-      assert.strictEqual(result.body.accountId, sourceAccount.id);
 
-      assert.strictEqual(
-        result.body.destinationAccountId,
-        destinationAccount.id,
-      );
+  test("returns validation error for incomplete PUT", async () => {
+    const response = await request(app)
+      .put("/api/transactions/1")
+      .send({
+        amount: -100,
+      })
+      .expect(400);
 
-      assert.strictEqual(result.body.amount, 250);
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
 
-      const storedTransaction = getTransactions().find(
-        (transaction) => transaction.id === result.body.id,
-      );
 
-      assert.ok(storedTransaction);
-    });
+  test("returns 404 when transaction does not exist", async () => {
+    const response = await request(app)
+      .put("/api/transactions/999")
+      .send({
+        accountId: 1,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(404);
 
-    it("Should return 400 for invalid transaction data", async () => {
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
 
-      assert.ok(sourceAccount);
 
-      const invalidTransaction = {
-        accountId: sourceAccount.id,
-        amount: "not a number",
-        description: "Invalid transaction",
-        date: new Date().toISOString(),
-      };
+  test("returns 400 when replacement origin account does not exist", async () => {
+    const response = await request(app)
+      .put("/api/transactions/1")
+      .send({
+        accountId: 999,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(400);
 
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(invalidTransaction);
+    expect(response.body.error.code)
+      .toBe("BAD_REQUEST");
+  });
 
-      assert.strictEqual(result.statusCode, 400);
-      assert.strictEqual(result.body.error, "Invalid transaction data");
-    });
 
-    it("Should return 404 when origin account does not exist", async () => {
-      const accounts = getAccounts();
+  test("returns 400 when replacement accounts are identical", async () => {
+    const response = await request(app)
+      .put("/api/transactions/1")
+      .send({
+        accountId: 1,
+        destinationAccountId: 1,
+        amount: -100,
+        date: "2026-08-20",
+      })
+      .expect(400);
 
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
+    expect(response.body.error.code)
+      .toBe("BAD_REQUEST");
+  });
+});
 
-      const transactionInput = {
-        accountId: maxAccountId + 1,
-        amount: 100,
-        description: "Invalid transaction",
-        date: new Date().toISOString(),
-      };
 
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(transactionInput);
+// ======================================================
+// PATCH /api/transactions/:id
+// ======================================================
 
-      assert.strictEqual(result.statusCode, 404);
-    });
+describe("PATCH /api/transactions/:id", () => {
+  test("updates only supplied fields", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        amount: -125,
+      })
+      .expect(200);
 
-    it("Should return 404 when destination account does not exist", async () => {
-      const accounts = getAccounts();
-      const sourceAccount = accounts[0];
-
-      assert.ok(sourceAccount);
-
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
-
-      const transactionInput = {
-        accountId: sourceAccount.id,
-        destinationAccountId: maxAccountId + 1,
-        amount: 100,
-        description: "Invalid transfer",
-        date: new Date().toISOString(),
-      };
-
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(transactionInput);
-
-      assert.strictEqual(result.statusCode, 404);
-    });
-
-    it("Should return 400 when origin and destination are the same", async () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      const transactionInput = {
-        accountId: account.id,
-        destinationAccountId: account.id,
-        amount: 100,
-        description: "Invalid transfer",
-        date: new Date().toISOString(),
-      };
-
-      const result = await request(app)
-        .post("/api/transactions")
-        .send(transactionInput);
-
-      assert.strictEqual(result.statusCode, 400);
-    });
-
-    it("Should not create a transaction when request fails", async () => {
-      const transactionsBefore = structuredClone(getTransactions());
-
-      const accounts = getAccounts();
-
-      const maxAccountId = Math.max(...accounts.map((account) => account.id));
-
-      const result = await request(app)
-        .post("/api/transactions")
-        .send({
-          accountId: maxAccountId + 1,
-          amount: 100,
-          description: "Invalid transaction",
-          date: new Date().toISOString(),
-        });
-
-      assert.strictEqual(result.statusCode, 404);
-
-      assert.deepStrictEqual(getTransactions(), transactionsBefore);
+    expect(response.body).toEqual({
+      data: {
+        id: 1,
+        accountId: 1,
+        destinationAccountId: null,
+        amount: -125,
+        description: "Groceries",
+        date: "2026-08-01T00:00:00.000Z",
+      },
     });
   });
 
-  // DELETE
-  describe("DELETE /api/transactions/:id", () => {
-    it("Should delete an existing transaction", async () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      const result = await request(app).delete(
-        `/api/transactions/${currentMaxId}`,
-      );
+  test("can update multiple fields", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        amount: -200,
+        description: "Updated groceries",
+        date: "2026-08-15",
+      })
+      .expect(200);
 
-      assert.strictEqual(result.statusCode, 204);
-
-      const deletedTransaction = getTransactions().find(
-        (transaction) => transaction.id === currentMaxId,
-      );
-
-      assert.strictEqual(deletedTransaction, undefined);
+    expect(response.body.data).toEqual({
+      id: 1,
+      accountId: 1,
+      destinationAccountId: null,
+      amount: -200,
+      description: "Updated groceries",
+      date: "2026-08-15T00:00:00.000Z",
     });
+  });
 
-    it("Should return 404 when deleting a nonexistent transaction", async () => {
-      const transactions = getTransactions();
-      const currentMaxId = getMaxId(transactions);
 
-      const result = await request(app).delete(
-        `/api/transactions/${currentMaxId + 1}`,
-      );
+  test("can add a destination account", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        destinationAccountId: 2,
+      })
+      .expect(200);
 
-      assert.strictEqual(result.statusCode, 404);
-    });
+    expect(response.body.data.destinationAccountId)
+      .toBe(2);
+  });
+
+
+  test("can explicitly remove destination account with null", async () => {
+    // First turn transaction into transfer
+    await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        destinationAccountId: 2,
+      })
+      .expect(200);
+
+    // Then explicitly clear it
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        destinationAccountId: null,
+      })
+      .expect(200);
+
+    expect(response.body.data.destinationAccountId)
+      .toBeNull();
+  });
+
+
+  test("can explicitly clear description with null", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        description: null,
+      })
+      .expect(200);
+
+    expect(response.body.data.description)
+      .toBeNull();
+  });
+
+
+  test("rejects empty PATCH body", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({})
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("VALIDATION_ERROR");
+  });
+
+
+  test("returns 404 when transaction does not exist", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/999")
+      .send({
+        amount: -100,
+      })
+      .expect(404);
+
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
+
+
+  test("returns 400 when patch creates identical origin and destination", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        destinationAccountId: 1,
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("BAD_REQUEST");
+  });
+
+
+  test("returns 400 when patched destination account does not exist", async () => {
+    const response = await request(app)
+      .patch("/api/transactions/1")
+      .send({
+        destinationAccountId: 999,
+      })
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("BAD_REQUEST");
+  });
+});
+
+
+// ======================================================
+// DELETE /api/transactions/:id
+// ======================================================
+
+describe("DELETE /api/transactions/:id", () => {
+  test("deletes an existing transaction", async () => {
+    const response = await request(app)
+      .delete("/api/transactions/1")
+      .expect(204);
+
+    // 204 should have no response body
+    expect(response.text).toBe("");
+
+    // Verify persistence
+    await request(app)
+      .get("/api/transactions/1")
+      .expect(404);
+  });
+
+
+  test("returns 404 when transaction does not exist", async () => {
+    const response = await request(app)
+      .delete("/api/transactions/999")
+      .expect(404);
+
+    expect(response.body.error.code)
+      .toBe("NOT_FOUND");
+  });
+
+
+  test("returns 400 for invalid transaction id", async () => {
+    const response = await request(app)
+      .delete("/api/transactions/abc")
+      .expect(400);
+
+    expect(response.body.error.code)
+      .toBe("INVALID_ID");
   });
 });

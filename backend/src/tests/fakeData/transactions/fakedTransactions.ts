@@ -1,0 +1,68 @@
+import type { Transaction } from "../../../types/transactionTypes/transactionsSchemaType.js";
+
+export const fakeTransactions: Transaction[] = [
+  {
+    id: 8,
+    accountId: 5,
+    destinationAccountId: null,
+    amount: 325.8,
+    description: "Investment gain",
+    date: new Date("2026-08-18"),
+  },
+  {
+    id: 7,
+    accountId: 1,
+    destinationAccountId: null,
+    amount: -52.16,
+    description: "Gas",
+    date: new Date("2026-08-16"),
+  },
+  {
+    id: 6,
+    accountId: 3,
+    destinationAccountId: null,
+    amount: -142.37,
+    description: "Flight",
+    date: new Date("2026-08-14"),
+  },
+  {
+    id: 5,
+    accountId: 1,
+    destinationAccountId: 2,
+    amount: -500,
+    description: "Transfer to savings",
+    date: new Date("2026-08-12"),
+  },
+  {
+    id: 4,
+    accountId: 4,
+    destinationAccountId: null,
+    amount: -18.5,
+    description: "Lunch",
+    date: new Date("2026-08-10"),
+  },
+  {
+    id: 3,
+    accountId: 3,
+    destinationAccountId: null,
+    amount: -64.99,
+    description: "Internet bill",
+    date: new Date("2026-08-08"),
+  },
+  {
+    id: 2,
+    accountId: 1,
+    destinationAccountId: null,
+    amount: 2500,
+    description: "Paycheck",
+    date: new Date("2026-08-05"),
+  },
+  {
+    id: 1,
+    accountId: 1,
+    destinationAccountId: null,
+    amount: -85.42,
+    description: "Groceries",
+    date: new Date("2026-08-02"),
+  },
+];

@@ -1,368 +1,425 @@
-import { describe, it, beforeEach } from "node:test";
-import { NotFoundError } from "../../errors/AppError.js";
-import assert from "node:assert";
-import { setAccounts, getAccounts } from "../../datastore/accountsData.js";
-import * as accountService from "../../services/accountsService.js";
+import {
+  beforeEach,
+  describe,
+  expect,
+  test,
+  jest,
+} from "@jest/globals";
+
+import { fakeAccounts } from "../fakeData/accounts/fakedAccounts.js";
+
 import type {
+  Account,
   CreateAccountInput,
   UpdateAccountInput,
 } from "../../types/accountTypes/accountsSchemaType.js";
-import { AccountType } from "../../types/accountTypes/accountType.js";
-import getMaxId from "../utils/getMaxId.js";
-import type { AccountQuery } from "../../types/accountTypes/accountQuerySchema.js";
 
-describe("Testing account service logic", () => {
-  const originalAccounts = structuredClone(getAccounts());
+import type { AccountQueryResponseType } from "../../types/accountTypes/accountQueryResponseType.js";
 
-  beforeEach(() => {
-    setAccounts(structuredClone(originalAccounts));
+import {
+  NotFoundError,
+  ConflictError,
+} from "../../errors/AppError.js";
+
+
+// -----------------------------
+// Repository mocks
+// -----------------------------
+
+const getAccountsMock = jest.fn(
+  async (offset: number, limit: number): Promise<Account[]> =>
+    fakeAccounts.slice(offset, offset + limit),
+);
+
+const getAccountsCountMock = jest.fn(
+  async (): Promise<number> => fakeAccounts.length,
+);
+
+const getAccountMock = jest.fn(
+  async (_id: number): Promise<Account | undefined> =>
+    undefined,
+);
+
+const findAccountMock = jest.fn(
+  async (
+    _input: CreateAccountInput,
+  ): Promise<Account | undefined> => undefined,
+);
+
+const postAccountMock = jest.fn(
+  async (
+    _input: CreateAccountInput,
+  ): Promise<Account> => fakeAccounts[0]!,
+);
+
+const deleteAccountMock = jest.fn(
+  async (_id: number): Promise<Account | undefined> =>
+    undefined,
+);
+
+const putAccountMock = jest.fn(
+  async (
+    _id: number,
+    _input: CreateAccountInput,
+  ): Promise<Account | undefined> => undefined,
+);
+
+const updateAccountMock = jest.fn(
+  async (
+    _id: number,
+    _input: UpdateAccountInput,
+  ): Promise<Account | undefined> => undefined,
+);
+
+
+// -----------------------------
+// Replace real repository
+// -----------------------------
+
+jest.unstable_mockModule(
+  "../../repository/accountsRepository.js",
+  () => ({
+    getAccounts: getAccountsMock,
+    getAccountsCount: getAccountsCountMock,
+    getAccount: getAccountMock,
+    findAccount: findAccountMock,
+    postAccount: postAccountMock,
+    deleteAccount: deleteAccountMock,
+    putAccount: putAccountMock,
+    updateAccount: updateAccountMock,
+  }),
+);
+
+
+// Service must be imported AFTER the mock
+const {
+  fetchAccounts,
+  fetchAccount,
+  createAccount,
+  removeAccount,
+  replaceAccount,
+  patchAccount,
+} = await import("../../services/accountsService.js");
+
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+
+// ======================================================
+// GET ALL
+// ======================================================
+
+describe("fetchAccounts", () => {
+  test("successfully fetches first page of accounts", async () => {
+    const expected: AccountQueryResponseType = {
+      data: fakeAccounts.slice(0, 3),
+      page: 1,
+      limit: 3,
+      total: 6,
+      pages: 2,
+    };
+
+    const result = await fetchAccounts({
+      page: 1,
+      limit: 3,
+    });
+
+    expect(result).toEqual(expected);
+
+    expect(getAccountsMock)
+      .toHaveBeenCalledWith(0, 3);
+
+    expect(getAccountsCountMock)
+      .toHaveBeenCalledTimes(1);
   });
 
-  // Happy tests for fetching accounts
-  describe("Happy tests for fetching accounts", () => {
-    it("Returns the first page of accounts", () => {
-      const accounts = getAccounts();
 
-      const query: AccountQuery = { 
-        page: 1, 
-        limit: 2 
-      };
-
-      const result = accountService.fetchAccounts(query);
-      
-      assert.strictEqual(result.page, 1);
-      assert.strictEqual(result.limit, 2);
-      assert.strictEqual(result.totalAccounts, accounts.length);
-      assert.strictEqual(result.pages, Math.ceil(accounts.length / 2));
-
-      assert.deepStrictEqual(result.data, accounts.slice(0, 2));
+  test("successfully fetches second page of accounts", async () => {
+    const result = await fetchAccounts({
+      page: 2,
+      limit: 3,
     });
 
-    it("Returns the second page of accounts", () => {
-        const accounts = getAccounts();
+    expect(result.data).toEqual(
+      fakeAccounts.slice(3, 6),
+    );
 
-        const query: AccountQuery = {
-        page: 2,
-        limit: 2,
-        };
+    expect(result.page).toBe(2);
+    expect(result.limit).toBe(3);
+    expect(result.total).toBe(6);
+    expect(result.pages).toBe(2);
 
-        const result = accountService.fetchAccounts(query);
-
-        assert.strictEqual(result.page, 2);
-        assert.strictEqual(result.limit, 2);
-        assert.deepStrictEqual(result.data, accounts.slice(2, 4));
-    });
-
-      it("Returns a partial final page", () => {
-        setAccounts([
-        {
-            id: 1,
-            name: "Account 1",
-            type: AccountType.Checking,
-            balance: 100,
-        },
-        {
-            id: 2,
-            name: "Account 2",
-            type: AccountType.Savings,
-            balance: 200,
-        },
-        {
-            id: 3,
-            name: "Account 3",
-            type: AccountType.Cash,
-            balance: 300,
-        },
-        {
-            id: 4,
-            name: "Account 4",
-            type: AccountType.Checking,
-            balance: 400,
-        },
-        {
-            id: 5,
-            name: "Account 5",
-            type: AccountType.Savings,
-            balance: 500,
-        },
-        ]);
-
-        const result = accountService.fetchAccounts({
-        page: 3,
-        limit: 2,
-        });
-
-        assert.strictEqual(result.page, 3);
-        assert.strictEqual(result.pages, 3);
-        assert.strictEqual(result.totalAccounts, 5);
-
-        assert.deepStrictEqual(result.data, [
-        {
-            id: 5,
-            name: "Account 5",
-            type: AccountType.Savings,
-            balance: 500,
-        },
-        ]);
-    });
-
-    it("Returns an empty array when page is beyond available accounts", () => {
-        const accounts = getAccounts();
-
-        const result = accountService.fetchAccounts({
-        page: 100,
-        limit: 10,
-        });
-
-        assert.strictEqual(result.page, 100);
-        assert.strictEqual(result.totalAccounts, accounts.length);
-        assert.deepStrictEqual(result.data, []);
-    });
-
-    it("Calculates the correct number of pages", () => {
-        setAccounts([
-        {
-            id: 1,
-            name: "Account 1",
-            type: AccountType.Checking,
-            balance: 100,
-        },
-        {
-            id: 2,
-            name: "Account 2",
-            type: AccountType.Checking,
-            balance: 200,
-        },
-        {
-            id: 3,
-            name: "Account 3",
-            type: AccountType.Checking,
-            balance: 300,
-        },
-        {
-            id: 4,
-            name: "Account 4",
-            type: AccountType.Checking,
-            balance: 400,
-        },
-        {
-            id: 5,
-            name: "Account 5",
-            type: AccountType.Checking,
-            balance: 500,
-        },
-        ]);
-
-        const result = accountService.fetchAccounts({
-        page: 1,
-        limit: 2,
-        });
-
-        assert.strictEqual(result.pages, 3);
-    });
-
-    it("Fetching existing account", () => {
-        const accounts = getAccounts();
-
-        const result = accountService.fetchAccount("1");
-
-        assert.ok(result);
-        assert.deepStrictEqual(result, accounts[0]);
-    });
+    expect(getAccountsMock)
+      .toHaveBeenCalledWith(3, 3);
   });
 
-  // Error handling tests
-  describe("Testing error handling for fetching accounts", () => {
-    it("Raises error on fetching non-existing account", () => {
-      const accounts = getAccounts();
-      const currentMaxIdx = getMaxId(accounts);
 
-      assert.throws(() => {
-        accountService.fetchAccount(String(currentMaxIdx + 1));
-      }, NotFoundError);
+  test("returns empty data when page exceeds available accounts", async () => {
+    const result = await fetchAccounts({
+      page: 100,
+      limit: 3,
     });
+
+    expect(result.data).toEqual([]);
+    expect(result.total).toBe(6);
+    expect(result.pages).toBe(2);
+
+    expect(getAccountsMock)
+      .toHaveBeenCalledWith(297, 3);
   });
 
-  // Happy tests for Creating account
-  describe("Happy tests for creating accounts", () => {
-    it("Creates account successfully", () => {
-      const accountsBefore = getAccounts();
-      const previousMaxId = getMaxId(accountsBefore);
 
-      const accountInput: CreateAccountInput = {
-        name: "Test Bank Account",
-        type: AccountType.Savings,
-        balance: 1000,
-      };
-
-      const result = accountService.createAccount(accountInput);
-      const accountsAfter = getAccounts();
-
-      assert.strictEqual(result.balance, accountInput.balance);
-      assert.strictEqual(result.id, previousMaxId + 1);
-      assert.strictEqual(result.name, accountInput.name);
-      assert.strictEqual(result.type, accountInput.type);
-      assert.ok(accountsAfter.some((account) => account.id === result.id));
+  test("calculates number of pages correctly", async () => {
+    const result = await fetchAccounts({
+      page: 1,
+      limit: 4,
     });
+
+    expect(result.pages).toBe(2);
+
+    expect(getAccountsMock)
+      .toHaveBeenCalledWith(0, 4);
+  });
+});
+
+
+// ======================================================
+// GET ONE
+// ======================================================
+
+describe("fetchAccount", () => {
+  test("successfully fetches an account", async () => {
+    const account = fakeAccounts[0]!;
+
+    getAccountMock.mockResolvedValueOnce(account);
+
+    const result = await fetchAccount(account.id);
+
+    expect(result).toEqual(account);
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(account.id);
+
+    expect(getAccountMock)
+      .toHaveBeenCalledTimes(1);
   });
 
-  // Happy test for Deleting accounts
-  describe("Happy tests for deleting accounts", () => {
-    it("Testing successful deleting of accounts", () => {
-      const accounts = getAccounts();
-      const currentMaxIdx = getMaxId(accounts);
-      accountService.removeAccount(currentMaxIdx);
-      const deletedAccount = getAccounts().find(
-        (account) => account.id === currentMaxIdx,
+
+  test("throws NotFoundError when account does not exist", async () => {
+    getAccountMock.mockResolvedValueOnce(undefined);
+
+    await expect(
+      fetchAccount(999),
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(getAccountMock)
+      .toHaveBeenCalledWith(999);
+  });
+});
+
+
+// ======================================================
+// POST
+// ======================================================
+
+describe("createAccount", () => {
+  const accountInput: CreateAccountInput = {
+    name: "New Checking",
+    type: "checking",
+    openingBalance: 1000,
+  };
+
+
+  test("successfully creates an account", async () => {
+    const createdAccount: Account = {
+      id: 7,
+      ...accountInput,
+    };
+
+    findAccountMock.mockResolvedValueOnce(undefined);
+
+    postAccountMock.mockResolvedValueOnce(
+      createdAccount,
+    );
+
+    const result = await createAccount(
+      accountInput,
+    );
+
+    expect(result).toEqual(createdAccount);
+
+    expect(findAccountMock)
+      .toHaveBeenCalledWith(accountInput);
+
+    expect(postAccountMock)
+      .toHaveBeenCalledWith(accountInput);
+  });
+
+
+  test("throws ConflictError when account already exists", async () => {
+    findAccountMock.mockResolvedValueOnce(
+      fakeAccounts[0]!,
+    );
+
+    await expect(
+      createAccount(accountInput),
+    ).rejects.toBeInstanceOf(ConflictError);
+
+    expect(findAccountMock)
+      .toHaveBeenCalledWith(accountInput);
+
+    expect(postAccountMock)
+      .not.toHaveBeenCalled();
+  });
+});
+
+
+// ======================================================
+// DELETE
+// ======================================================
+
+describe("removeAccount", () => {
+  test("successfully removes an account", async () => {
+    const account = fakeAccounts[0]!;
+
+    deleteAccountMock.mockResolvedValueOnce(
+      account,
+    );
+
+    const result = await removeAccount(
+      account.id,
+    );
+
+    expect(result).toEqual(account);
+
+    expect(deleteAccountMock)
+      .toHaveBeenCalledWith(account.id);
+  });
+
+
+  test("throws NotFoundError when deleting nonexistent account", async () => {
+    deleteAccountMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      removeAccount(999),
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(deleteAccountMock)
+      .toHaveBeenCalledWith(999);
+  });
+});
+
+
+// ======================================================
+// PUT
+// ======================================================
+
+describe("replaceAccount", () => {
+  const replacement: CreateAccountInput = {
+    name: "Updated Checking",
+    type: "checking",
+    openingBalance: 5000,
+  };
+
+
+  test("successfully replaces an account", async () => {
+    const updatedAccount: Account = {
+      id: 1,
+      ...replacement,
+    };
+
+    putAccountMock.mockResolvedValueOnce(
+      updatedAccount,
+    );
+
+    const result = await replaceAccount(
+      replacement,
+      1,
+    );
+
+    expect(result).toEqual(updatedAccount);
+
+    expect(putAccountMock)
+      .toHaveBeenCalledWith(
+        1,
+        replacement,
       );
-      assert.strictEqual(deletedAccount, undefined);
-    });
   });
 
-  // Error tests for Deleting accounts
-  describe("Error tests for deleting accounts", () => {
-    it("Testing Error handling for deleting of accounts", () => {
-      const accounts = getAccounts();
-      const currentMaxIdx = getMaxId(accounts);
 
-      assert.throws(() => {
-        accountService.removeAccount(currentMaxIdx + 1);
-      }, NotFoundError);
-    });
+  test("throws NotFoundError when replacing nonexistent account", async () => {
+    putAccountMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      replaceAccount(replacement, 999),
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(putAccountMock)
+      .toHaveBeenCalledWith(
+        999,
+        replacement,
+      );
+  });
+});
+
+
+// ======================================================
+// PATCH
+// ======================================================
+
+describe("patchAccount", () => {
+  test("successfully patches an account", async () => {
+    const update: UpdateAccountInput = {
+      openingBalance: 3000,
+    };
+
+    const updatedAccount: Account = {
+      ...fakeAccounts[0]!,
+      openingBalance: 3000,
+    };
+
+    updateAccountMock.mockResolvedValueOnce(
+      updatedAccount,
+    );
+
+    const result = await patchAccount(
+      update,
+      1,
+    );
+
+    expect(result).toEqual(updatedAccount);
+
+    expect(updateAccountMock)
+      .toHaveBeenCalledWith(
+        1,
+        update,
+      );
   });
 
-  // Happy testing for Replacing accounts
-  describe("Happy tests for replacing accounts", () => {
-    it("Testing accounts are replaced sucessfully", () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
-      const currentAccount = accounts.find(
-        (account) => account.id === currentMaxId,
+
+  test("throws NotFoundError when patching nonexistent account", async () => {
+    const update: UpdateAccountInput = {
+      name: "Updated Name",
+    };
+
+    updateAccountMock.mockResolvedValueOnce(
+      undefined,
+    );
+
+    await expect(
+      patchAccount(update, 999),
+    ).rejects.toBeInstanceOf(NotFoundError);
+
+    expect(updateAccountMock)
+      .toHaveBeenCalledWith(
+        999,
+        update,
       );
-
-      assert.ok(currentAccount);
-
-      const acccountInput: CreateAccountInput = {
-        name: "Replacement Account",
-        type: AccountType.Cash,
-        balance: 500,
-      };
-
-      const replacement = accountService.replaceAccount(
-        acccountInput,
-        currentAccount.id,
-      );
-
-      const storedAccount = getAccounts().find(
-        (account) => account.id === currentAccount.id,
-      );
-
-      assert.deepStrictEqual(storedAccount, replacement);
-      assert.strictEqual(replacement.id, currentAccount.id);
-      assert.strictEqual(replacement.name, acccountInput.name);
-      assert.strictEqual(replacement.balance, acccountInput.balance);
-      assert.strictEqual(replacement.type, acccountInput.type);
-    });
-  });
-
-  describe("Error tests for replacing accounts", () => {
-    it("Testing Error handling for replacing account", () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
-      const acccountInput: CreateAccountInput = {
-        name: "Failing replacement account",
-        type: AccountType.Cash,
-        balance: 500,
-      };
-
-      assert.throws(() => {
-        accountService.replaceAccount(acccountInput, currentMaxId + 1);
-      }, NotFoundError);
-    });
-  });
-
-  describe("Happy tests for patching accounts", () => {
-    it("Updates one account field and preserves the others", () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      const updateInput: UpdateAccountInput = {
-        balance: 2000,
-      };
-
-      const updatedAccount = accountService.patchAccount(
-        updateInput,
-        account.id,
-      );
-
-      assert.strictEqual(updatedAccount.id, account.id);
-      assert.strictEqual(updatedAccount.balance, 2000);
-
-      // unchanged fields
-      assert.strictEqual(updatedAccount.name, account.name);
-      assert.strictEqual(updatedAccount.type, account.type);
-    });
-
-    it("Updates multiple account fields", () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      const updateInput: UpdateAccountInput = {
-        name: "Updated Account",
-        type: AccountType.Cash,
-        balance: 750,
-      };
-
-      const updatedAccount = accountService.patchAccount(
-        updateInput,
-        account.id,
-      );
-
-      assert.strictEqual(updatedAccount.id, account.id);
-      assert.strictEqual(updatedAccount.name, "Updated Account");
-      assert.strictEqual(updatedAccount.type, AccountType.Cash);
-      assert.strictEqual(updatedAccount.balance, 750);
-    });
-
-    it("Updates the account in the datastore", () => {
-      const accounts = getAccounts();
-      const account = accounts[0];
-
-      assert.ok(account);
-
-      accountService.patchAccount(
-        {
-          balance: 5000,
-        },
-        account.id,
-      );
-
-      const storedAccount = getAccounts().find(
-        (storedAccount) => storedAccount.id === account.id,
-      );
-
-      assert.ok(storedAccount);
-      assert.strictEqual(storedAccount.balance, 5000);
-    });
-  });
-
-  describe("Error tests for patching accounts", () => {
-    it("Throws when attempting to patch a nonexistent account", () => {
-      const accounts = getAccounts();
-      const currentMaxId = getMaxId(accounts);
-
-      assert.throws(() => {
-        accountService.patchAccount(
-          {
-            balance: 1000,
-          },
-          currentMaxId + 1,
-        );
-      }, NotFoundError);
-    });
   });
 });

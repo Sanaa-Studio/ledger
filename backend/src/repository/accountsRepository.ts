@@ -2,7 +2,7 @@ import { db } from "../db/db.js";
 import {accountsTable } from "@ledger/database/schema";
 import { eq, asc, count, and } from "drizzle-orm";
 import { toAccount, toAccountEntry } from "../mappers/accountMapper.js";
-import type {  Account, CreateAccountInput, UpdateAccountInput } from "../types/accountTypes/accountsSchemaType.js";
+import type {  Account, CreateAccountInput, UpdateAccountInput } from "@ledger/contracts";
 
 // GET
 export const getAccounts = async (offset: number, limit: number) => {

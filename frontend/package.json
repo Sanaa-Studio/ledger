@@ -5,13 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:beta": "vite --mode beta",
+
     "build": "tsc -b && vite build",
+    "build:beta": "tsc -b && vite build --mode beta",
+
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ledger/contracts": "^1.0.0",
     "axios": "^1.19.0",
-    "dotenv": "^17.4.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",

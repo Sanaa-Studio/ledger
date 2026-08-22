@@ -12,9 +12,9 @@ import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
-} from "../../types/accountTypes/accountsSchemaType.js";
+} from "@ledger/contracts";
 
-import type { AccountQueryResponseType } from "../../types/accountTypes/accountQueryResponseType.js";
+import type { AccountQueryResponseType } from "@ledger/contracts";
 
 import {
   NotFoundError,

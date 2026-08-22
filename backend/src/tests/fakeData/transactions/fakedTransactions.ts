@@ -1,4 +1,4 @@
-import type { Transaction } from "../../../types/transactionTypes/transactionsSchemaType.js";
+import type { Transaction } from "@ledger/contracts";
 
 export const fakeTransactions: Transaction[] = [
   {

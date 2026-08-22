@@ -1,4 +1,4 @@
-import { CreateTransactionSchema, UpdateTransactionSchema } from "../types/transactionTypes/transactionsSchemaType.js";
+import { CreateTransactionSchema, UpdateTransactionSchema } from "@ledger/contracts";
 import type { Response, Request } from "express";
 import {
   fetchTransactions,
@@ -8,7 +8,7 @@ import {
   patchTransaction,
   replaceTransaction
 } from "../services/transactionsService.js";
-import { TransactionQuerySchema } from "../types/transactionTypes/transactionQuerySchema.js";
+import { TransactionQuerySchema } from "@ledger/contracts";
 import { ValidationError } from "../errors/AppError.js";
 
 // GET

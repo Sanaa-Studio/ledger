@@ -1,5 +1,5 @@
 import { transactionsTable } from "@ledger/database/schema";
-import type { CreateTransactionInput, UpdateTransactionInput, Transaction } from "../types/transactionTypes/transactionsSchemaType.js";
+import type { CreateTransactionInput, UpdateTransactionInput, Transaction } from "@ledger/contracts";
 import { db } from "../db/db.js";
 import { toTransaction, toTransactionEntry } from "../mappers/transactionMapper.js";
 import { eq, count, desc } from "drizzle-orm";

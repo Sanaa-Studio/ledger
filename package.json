@@ -4,7 +4,8 @@
   "workspaces": [
     "backend",
     "database",
-    "frontend"
+    "frontend",
+    "contracts"
   ],
   "version": "1.0.0",
   "description": "Personal budgeting application",

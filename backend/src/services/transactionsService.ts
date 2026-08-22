@@ -2,10 +2,10 @@ import {
   CreateTransactionInput,
   UpdateTransactionInput,
   Transaction,
-} from "../types/transactionTypes/transactionsSchemaType.js";
+} from "@ledger/contracts";
 import { BadRequestError, NotFoundError } from "../errors/AppError.js";
-import type { TransactionQuery } from "../types/transactionTypes/transactionQuerySchema.js";
-import type { TransactionQueryResponse } from "../types/transactionTypes/transactionQueryResponseType.js";
+import type { TransactionQuery } from "@ledger/contracts";
+import type { TransactionQueryResponse } from "@ledger/contracts";
 import { 
     getTransaction, 
     getTransactions, 

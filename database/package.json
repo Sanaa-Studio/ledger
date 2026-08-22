@@ -9,8 +9,8 @@
   "main": "index.js",
   "exports": {
     "./schema": {
-        "types": "./dist/schema.d.ts",
-        "import": "./dist/schema.js"
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js"
     }
   },
   "scripts": {

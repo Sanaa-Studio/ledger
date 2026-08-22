@@ -2,10 +2,10 @@ import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
-} from "../types/accountTypes/accountsSchemaType.js";
+  AccountQuery, 
+  AccountQueryResponseType
+} from "@ledger/contracts";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
-import type { AccountQuery } from "../types/accountTypes/accountQuerySchema.js";
-import type { AccountQueryResponseType } from "../types/accountTypes/accountQueryResponseType.js";
 import { 
     getAccounts, 
     getAccount,

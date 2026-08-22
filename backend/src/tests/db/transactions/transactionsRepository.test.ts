@@ -22,7 +22,7 @@ import { pool } from "../../../db/db.js";
 import type {
   CreateTransactionInput,
   UpdateTransactionInput,
-} from "../../../types/transactionTypes/transactionsSchemaType.js";
+} from "@ledger/contracts";
 
 
 beforeEach(async () => {

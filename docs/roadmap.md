@@ -72,13 +72,13 @@
 
 - [x] Learn core React concepts
 - [x] Create Vite + React + TypeScript frontend
-- [ ] Add frontend to npm workspace
-- [ ] Make a workspace for api contracts and share types between backend and frontend
-- [ ] Set up env files for frontend
-- [ ] Replace hardcoded data with GET /api/accounts
+- [x] Add frontend to npm workspace
+- [x] Make a workspace for api contracts and share types between backend and frontend
+- [x] Set up env files for frontend
+- [x] Replace hardcoded data with GET /api/accounts
+- [ ] Validate API responses with Zod
 - [ ] Replace hardcoded data with GET /api/transactions
 - [ ] Handle pagination for accounts and transactions
-- [ ] Validate API responses with Zod
 - [ ] Loading / error / empty states
 - [ ] Account CRUD forms
 - [ ] Transaction CRUD forms
@@ -122,6 +122,7 @@
 - [ ] Add recurring transactions
 - [ ] Learn Redis-backed background job queues
 - [ ] Add CSV transaction imports
+- [ ] Add a dropdown to change number of transactions per page
 - [ ] Add transaction categories
 - [ ] Add spending analytics
 - [ ] Add data visualization with D3.js

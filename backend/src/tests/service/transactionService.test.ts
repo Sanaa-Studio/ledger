@@ -13,9 +13,9 @@ import type {
   Transaction,
   CreateTransactionInput,
   UpdateTransactionInput,
-} from "../../types/transactionTypes/transactionsSchemaType.js";
+} from "@ledger/contracts";
 
-import type { TransactionQueryResponse } from "../../types/transactionTypes/transactionQueryResponseType.js";
+import type { TransactionQueryResponse } from "@ledger/contracts";
 
 import {
   BadRequestError,

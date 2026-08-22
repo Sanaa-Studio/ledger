@@ -5,31 +5,23 @@
   "main": "index.js",
   "scripts": {
     "prepare": "husky",
-
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "validate": "npm run lint && npm run format:check && npm run typecheck",
-
     "dev": "APP_ENV=development NODE_ENV=development tsx watch src/index.ts",
     "beta": "APP_ENV=beta NODE_ENV=production npm run build && node dist/index.js",
     "build": "rm -rf dist && tsc",
     "start": "node dist/index.js",
-
     "test": "npm run test:service",
     "test:service": "APP_ENV=test NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest src/tests/service",
-
     "test:db": "APP_ENV=test NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest src/tests/db --runInBand",
     "test:api": "APP_ENV=test NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest src/tests/api --runInBand",
-
     "test:integration": "npm run test:db && npm run test:api",
-
     "test:all": "npm run test:service && npm run test:db && npm run test:api",
-
     "test:watch": "APP_ENV=test NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest src/tests/service --watch",
-
     "db:test-connection": "APP_ENV=development tsx src/utils/testingDbConnection.ts"
   },
   "keywords": [],
@@ -37,6 +29,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@ledger/contracts": "^1.0.0",
     "@ledger/database": "1.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

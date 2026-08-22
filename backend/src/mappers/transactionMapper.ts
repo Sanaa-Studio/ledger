@@ -1,5 +1,5 @@
-import { TransactionSchema } from "../types/transactionTypes/transactionsSchemaType.js";
-import type { Transaction, CreateTransactionInput } from "../types/transactionTypes/transactionsSchemaType.js"
+import { TransactionSchema } from "@ledger/contracts";
+import type { Transaction, CreateTransactionInput } from "@ledger/contracts"
 import { transactionsTable } from "@ledger/database/schema";
 
 export const toTransaction = (transaction: typeof transactionsTable.$inferSelect): Transaction => {

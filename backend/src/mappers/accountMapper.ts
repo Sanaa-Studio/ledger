@@ -1,5 +1,5 @@
-import type { Account, CreateAccountInput } from "../types/accountTypes/accountsSchemaType.js";
-import { AccountSchema } from "../types/accountTypes/accountsSchemaType.js";
+import type { Account, CreateAccountInput } from "@ledger/contracts";
+import { AccountSchema } from "@ledger/contracts";
 import { accountsTable } from "@ledger/database/schema";
 
 // Convert db entry to Account

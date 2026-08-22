@@ -10,8 +10,8 @@ import { type Request, type Response } from "express";
 import {
   CreateAccountSchema,
   UpdateAccountSchema,
-} from "../types/accountTypes/accountsSchemaType.js";
-import { AccountQuerySchema } from "../types/accountTypes/accountQuerySchema.js";
+  AccountQuerySchema
+} from "@ledger/contracts";
 import { ValidationError } from "../errors/AppError.js";
 
 // GET

@@ -1,0 +1,19 @@
+{
+  "name": "@ledger/contracts",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Sanaa Studio",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}

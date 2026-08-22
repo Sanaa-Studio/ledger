@@ -2,18 +2,22 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import "../styles/Accounts.css";
 import AccountCard from "./AccountCard";
+import { AccountsResponseSchema } from "@ledger/contracts";
+import type {Account} from "@ledger/contracts"
+import { env } from "../config/env";
 
 const Accounts = () => {
-    const [accounts, setAccounts] = useState([]);
+    const [accounts, setAccounts] = useState<Account[]>([]);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [total, setTotal] = useState(0);
-    const [pages, setPages] = useState(0)
+    const [pages, setPages] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getAccounts = async () => {
             const response = await axios.get(
-                "http://localhost:5001/api/accounts",
+                env.accountsUrl,
                 { 
                     timeout: 5000,
                     params: {
@@ -21,23 +25,17 @@ const Accounts = () => {
                         limit
                     }
                 }
-            )
-            setAccounts(response.data.data);
-            setPage(response.data.meta.page);
-            setPages(response.data.meta.pages);
-            setTotal(response.data.meta.total);
-            setLimit(response.data.meta.limit);
+            );
+            const parsedResponse = AccountsResponseSchema.parse(response.data);
+        
+            setAccounts(parsedResponse.data);
+            setPages(parsedResponse.meta.pages);
+            setTotal(parsedResponse.meta.total);
+            setLoading(false);
         };
 
         void getAccounts();
     }, [page, limit]);
-
-    console.log("In Accounts component");
-    console.log(`Fetched accounts`, accounts);
-    console.log(`Current page`, page);
-    console.log("Total number of accounts", total);
-    console.log("Total number of pages", pages)
-    console.log("Limit", limit)
 
     return(
         <>

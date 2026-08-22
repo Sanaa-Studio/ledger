@@ -70,16 +70,19 @@
 
 ## Phase 7: React Frontend
 
-- [ ] Learn core React concepts
-- [ ] Create Vite + React + TypeScript frontend
+- [x] Learn core React concepts
+- [x] Create Vite + React + TypeScript frontend
 - [ ] Add frontend to npm workspace
-- [ ] Render hardcoded account data
-- [ ] Render hardcoded account data  
+- [ ] Make a workspace for api contracts and share types between backend and frontend
+- [ ] Set up env files for frontend
 - [ ] Replace hardcoded data with GET /api/accounts
 - [ ] Replace hardcoded data with GET /api/transactions
+- [ ] Handle pagination for accounts and transactions
+- [ ] Validate API responses with Zod
 - [ ] Loading / error / empty states
 - [ ] Account CRUD forms
 - [ ] Transaction CRUD forms
+- [ ] Style the frontend with Tailwind CSS
 - [ ] Implement transfers
 - [ ] Add transaction filtering
 - [ ] Build monthly dashboard
@@ -89,6 +92,7 @@
 - [ ] Add user model
 - [ ] Register users
 - [ ] Log users in
+- [ ] Make hook to check if session is valid
 - [ ] Protect authenticated routes
 - [ ] Associate accounts with users
 - [ ] Enforce account and transaction ownership

@@ -6,20 +6,20 @@
   "scripts": {
     "dev": "vite",
     "dev:beta": "vite --mode beta",
-
     "build": "tsc -b && vite build",
     "build:beta": "tsc -b && vite build --mode beta",
-
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@ledger/contracts": "^1.0.0",
+    "@sindresorhus/base62": "^1.0.0",
     "axios": "^1.19.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

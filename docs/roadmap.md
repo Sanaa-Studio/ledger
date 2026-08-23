@@ -68,7 +68,7 @@
 - [x] Reconsider ON DELETE CASCADE for the source account
 - [x] Delete the in memory datastore
 
-## Phase 7: React Frontend
+## Phase 7A: Frontend Foundation
 
 - [x] Learn core React concepts
 - [x] Create Vite + React + TypeScript frontend
@@ -76,53 +76,118 @@
 - [x] Make a workspace for api contracts and share types between backend and frontend
 - [x] Set up env files for frontend
 - [x] Replace hardcoded data with GET /api/accounts
-- [ ] Validate API responses with Zod
-- [ ] Replace hardcoded data with GET /api/transactions
-- [ ] Handle pagination for accounts and transactions
-- [ ] Loading / error / empty states
-- [ ] Account CRUD forms
-- [ ] Transaction CRUD forms
-- [ ] Style the frontend with Tailwind CSS
-- [ ] Implement transfers
-- [ ] Add transaction filtering
-- [ ] Build monthly dashboard
+- [x] Validate API responses with Zod
+
+## Phase 7B: Read only Application
+
+- [x] Fetch and render accounts
+- [ ] Fetch and render transactions
+- [ ] Handle account pagination
+- [ ] Handle transaction pagination
+- [ ] Add loading states
+- [ ] Add error states
+- [ ] Add empty states
+- [ ] Account details page
+- [ ] Add account-specific transaction filtering for account details page
+- [ ] Transaction details page
+
+## Phase 7C: CRUD UI
+
+- [ ] Add account creation form
+- [ ] Add account update form
+- [ ] Add account deletion confirmation modal
+- [ ] Add transaction creation form
+- [ ] Add transaction update form
+- [ ] Add transaction deletion confirmation modal
+- [ ] Form validation with Zod
+- [ ] Refresh/update UI after mutations
+- [ ] Add frontend tests for critical user flows
+
+## Phase 7D: Application Structure/Wireframes
+
+- [ ] Finalize application navigation/sidebar
+- [ ] Homepage wireframe
+- [ ] Dashboard wireframe
+- [x] Accounts list wireframe
+- [x] Account details wireframe
+- [ ] Transactions list wireframe
+- [ ] Transaction details wireframe
+
+## Phase 7E: Styling
+
+- [ ] Establish global typography/colors/background
+- [ ] Style application shell/sidebar
+- [ ] Style buttons and shared controls
+- [ ] Style accounts page
+- [ ] Style account details page
+- [ ] Style transactions page
+- [ ] Style transaction details page
+- [ ] Style forms
+- [ ] Responsive layouts
+- [ ] Loading/error/empty states styling
 
 ## Phase 8: Authentication and Authorization
 
 - [ ] Add user model
 - [ ] Register users
 - [ ] Log users in
-- [ ] Make hook to check if session is valid
+- [ ] Add frontend session/authentication state management
 - [ ] Protect authenticated routes
-- [ ] Associate accounts with users
+- [ ] Associate accounts and transactions with users
 - [ ] Enforce account and transaction ownership
 - [ ] Add RLS to PostgreSQL for account and transaction ownership
 - [ ] Integrate authentication with the frontend
-- [ ] Add Redis to the local Docker Compose environment
-- [ ] Learn Redis keys, TTLs, and expiration
-- [ ] Implement API rate limiting with Redis
 
-## Phase 9: Deployment and Infrastructure
+## Phase 9A: Deployment and Infrastructure
 
 - [ ] Containerize the production application
-- [ ] Configure production Docker Compose where appropriate
+- [ ] Define production container/deployment architecture
 - [ ] Add CI/CD with GitHub Actions
 - [ ] Provision AWS infrastructure with Terraform
 - [ ] Deploy PostgreSQL with Amazon RDS
 - [ ] Deploy backend services to AWS
 - [ ] Deploy frontend
 - [ ] Configure production environment variables and secrets
-- [ ] Add production health checks and monitoring
+- [ ] Implement structured application logging
+- [ ] Centralize production logs
+- [ ] Implement health/readiness checks
+- [ ] Set up basic metrics/alerts
 
-## Phase 10: Future Features
+## Phase 9B: Infrastructure Improvements
 
+- [ ] Add Redis to local Docker Compose
+- [ ] Learn Redis keys/TTL
+- [ ] Implement Redis-backed API rate limiting
+
+## Phase 10: Product Features
+
+- [ ] Implement transfers
+- [ ] Add transaction filtering
+- [ ] Build monthly dashboard
 - [ ] Add monthly budgets
-- [ ] Refactor transaction GET services with cursor pagination
-- [ ] Add indexes based on actual query patterns
 - [ ] Add recurring transactions
-- [ ] Learn Redis-backed background job queues
-- [ ] Add CSV transaction imports
-- [ ] Add a dropdown to change number of transactions per page
-- [ ] Add transaction categories
+- [ ] Add CSV imports
 - [ ] Add spending analytics
 - [ ] Add data visualization with D3.js
+
+## Phase 11A: Future Features - Backend Implementation
+
+- [ ] Add email notifications for budget overspending
+- [ ] Add search for transactions
+- [ ] Refactor transaction GET services with cursor pagination
+- [ ] Add indexes based on actual query patterns
+- [ ] Learn Redis-backed background job queues
+- [ ] Add transaction categories
+
+## Phase 11B: Future Features - Frontend Implementation
+
+- [ ] Advanced filtering UI
+- [ ] Saved views
+- [ ] Keyboard shortcuts
+- [ ] Accessibility improvements
+- [ ] Offline/cache behavior
+
+## Phase 12: Future Architecture Improvements
+- [ ] Do University of Helsinki Docker Course
+- [ ] Do University of Helsinki Kubernetes course
+- [ ] Deploy with Kubernetes

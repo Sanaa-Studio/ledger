@@ -93,6 +93,7 @@ Ledger currently has the core backend and database foundation in place.
 - Docker Compose
 - Git
 - npm workspaces
+- Github Actions
 
 ## Repository Structure
 

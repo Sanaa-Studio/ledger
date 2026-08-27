@@ -12,7 +12,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.3.0",
     "@ledger/contracts": "^1.0.0",
+    "@mui/material": "^9.3.1",
     "@sindresorhus/base62": "^1.0.0",
     "axios": "^1.19.0",
     "react": "^19.2.8",

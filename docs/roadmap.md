@@ -81,15 +81,14 @@
 ## Phase 7B: Read only Application
 
 - [x] Fetch and render accounts
-- [ ] Fetch and render transactions
+- [x] Fetch and render transactions
 - [ ] Handle account pagination
 - [ ] Handle transaction pagination
 - [ ] Add loading states
 - [ ] Add error states
 - [ ] Add empty states
 - [ ] Account details page
-- [ ] Add account-specific transaction filtering for account details page
-- [ ] Transaction details page
+- [ ] Transaction details page: also change how i represent date
 
 ## Phase 7C: CRUD UI
 
@@ -134,6 +133,7 @@
 - [ ] Add frontend session/authentication state management
 - [ ] Protect authenticated routes
 - [ ] Associate accounts and transactions with users
+- [ ] Add account-specific transaction filtering for account details page
 - [ ] Enforce account and transaction ownership
 - [ ] Add RLS to PostgreSQL for account and transaction ownership
 - [ ] Integrate authentication with the frontend

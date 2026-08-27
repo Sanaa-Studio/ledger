@@ -1,88 +1,113 @@
 # Ledger
 
-Ledger is a full-stack personal finance application for tracking accounts,
-transactions, budgets, and monthly spending.
+Ledger is a full-stack personal finance application for tracking financial accounts, transactions, budgets, and spending.
+
+The project is being built as an end-to-end, production-style application with an emphasis on backend architecture, data modeling, testing, containerization, and cloud deployment.
 
 ## Project Goal
 
-The goal of this project is to build an end-to-end production-style
-application while developing stronger backend and frontend skills.
+The goal of Ledger is to build a realistic application from the database layer through deployment while developing stronger software engineering practices around:
+
+- API design
+- Relational data modeling
+- Validation and type safety
+- Automated testing
+- Environment configuration
+- Containerization
+- CI/CD
+- Cloud infrastructure
+- Authentication and authorization
+- Observability
 
 ## MVP
 
-The first version will allow a user to:
+The initial version of Ledger will allow users to:
 
-- Create financial accounts
-- View their accounts
+- Create and manage financial accounts
 - Add income and expense transactions
 - Edit and delete transactions
 - Categorize transactions
 - Filter transactions by account, category, type, and date
-- View a monthly income and expense summary
-
-## Initial Entities
-
-- User
-- Account
-- Transaction
-- Category
-
-## Future Features
-
-- Monthly budgets
-- Recurring transactions
-- CSV transaction imports
-- Spending analytics
-- Dockerized local development
-- AWS deployment
-- Terraform infrastructure
+- View monthly income and expense summaries
+- Create monthly budgets
+- Authenticate and securely access their financial data
 
 ## Current Status
 
-Ledger is currently in the backend-foundation phase. The initial Express API
-and project structure are being developed before accounts and transactions are
-connected to PostgreSQL.
+Ledger currently has the core backend and database foundation in place.
+
+### Implemented
+
+- TypeScript and Node.js backend using Express
+- REST APIs for accounts and transactions
+- PostgreSQL persistence
+- Database schemas and migrations using Drizzle ORM
+- Controller, service, and repository layers
+- Shared Zod schemas for validation and type-safe contracts
+- Pagination and filtering support
+- Service-level and API-level automated tests
+- React and TypeScript frontend foundation
+- Frontend integration with backend account APIs
+- Dockerized backend and PostgreSQL development environment
+- Separate development, test, beta, and production environment configuration
+- Dedicated PostgreSQL test database
+
+### In Progress / Next
+
+- Authentication and authorization
+- Additional frontend account and transaction workflows
+- Budget functionality
+- Recurring transactions
+- CI/CD
+- AWS deployment
+- Production observability and monitoring
 
 ## Technology Stack
 
-### Current
+### Backend
 
 - Node.js
 - TypeScript
 - Express
 - REST APIs
-- Vitest
 - Zod
-- Supertest
-- Jest
 - PostgreSQL
-- Drizzle
-- Docker and Docker Compose
+- Drizzle ORM
 
-### Planned for the MVP
+### Frontend
 
-- Authentication and authorization: Passport, jsonwebtoken, and bcrypt
 - React
-- GitHub Actions
-- AWS
-- Kubernetes
-- Redis cache and background jobs
-- Terraform
+- TypeScript
+- Vite
+- Axios
 
-### Future Exploration
+### Testing
 
-- Event-driven processing with Kafka
-- OpenTelemetry
-- Service decomposition
-- Prometheus and Grafana
-- D3.js
+- Jest
+- Vitest
+- Supertest
 
-## Architecture
+### Infrastructure & Development
 
-Ledger will begin as a modular monolith with domain-oriented modules for users,
-accounts, transactions, categories, and budgets. Background processing and
-independent services will be introduced only when a workflow requires separate
-scaling, deployment, or asynchronous execution.
+- Docker
+- Docker Compose
+- Git
+- npm workspaces
+
+## Repository Structure
+
+Ledger is organized as a monorepo with separate packages for the application layers:
+
+```text
+ledger/
+├── backend/        # Express API, business logic, repositories, and tests
+├── contracts/      # Shared schemas and TypeScript contracts
+├── database/       # PostgreSQL schema, migrations, and seed data
+├── frontend/       # React frontend
+├── docs/           # Architecture, roadmap, and project documentation
+├── scripts/        # Development and project automation scripts
+└── docker-compose.yml
+```
 
 ## Documentation
 

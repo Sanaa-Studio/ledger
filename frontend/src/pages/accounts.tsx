@@ -3,6 +3,8 @@ import { AccountsResponseSchema, type Account } from "@ledger/contracts";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import {env} from "../config/env";
+import PageSelector from "../components/PageSelector";
+import "../styles/AccountsPage.css"
 
 const AccountsPage = () => {
     const [accounts, setAccounts] = useState<Account[]>([]);
@@ -11,6 +13,8 @@ const AccountsPage = () => {
     const [total, setTotal] = useState(0);
     const [limit, setLimit] = useState(10); 
     const [loading, setLoading] = useState(true);
+
+    const url = "accounts";
 
     useEffect(() => {
         const getAccounts = async () => {
@@ -51,10 +55,16 @@ const AccountsPage = () => {
 
     return (
         <>
-            <AccountsDetails 
-                accounts={accounts}
+            <div className="accountsPageContainer">
+                <AccountsDetails 
+                    accounts={accounts}
+                    >
+                </AccountsDetails>
+                <PageSelector
+                page={page} url={url} pages={pages} limit={limit}
                 >
-            </AccountsDetails>
+                </PageSelector>
+            </div>
         </>
     );
 };

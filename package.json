@@ -39,7 +39,9 @@
     
     "build": "rm -rf dist && tsc",
     "build:db": "npm run build -w @ledger/database",
-    "build:backend": "npm run build -w backend"
+    "build:backend": "npm run build -w backend",
+
+    "dev": "npm run docker:db & npm run dev -w backend & npm run dev -w frontend"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

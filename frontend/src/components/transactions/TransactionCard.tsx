@@ -5,6 +5,7 @@ import base62 from "@sindresorhus/base62";
 import {env} from "../../config/env";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import "../../styles/TransactionCard.css"
 
 const TransactionCard = (
     {transaction}: 
@@ -46,7 +47,7 @@ const TransactionCard = (
 
     return (
         <>
-            <li>
+            <li className="transactionCardContainer">
                 <Link 
                 to={destinationUrl}
                 state={[srcAccount?.name, destAccount?.name]}>

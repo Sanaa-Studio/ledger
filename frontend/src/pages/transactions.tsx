@@ -3,7 +3,8 @@ import { TransactionsResponseSchema, type Transaction } from "@ledger/contracts"
 import axios from "axios";
 import { useEffect, useState } from "react";
 import TransactionsDetails from "../components/transactions/TransactionsDetails";
-import { AccountResponseSchema, type Account } from "@ledger/contracts";
+import PageSelector from "../components/PageSelector";
+import "../styles/TransactionsPage.css"
 
 const TransactionsPage = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -30,6 +31,8 @@ const TransactionsPage = () => {
             setTransactions(parsedResponse.data);
             setPages(parsedResponse.meta.pages);
             setTotal(parsedResponse.meta.total);
+            setPage(parsedResponse.meta.page)
+            setLimit(parsedResponse.meta.limit);
             setLoading(false);
         };
 
@@ -38,10 +41,19 @@ const TransactionsPage = () => {
 
     return (
         <>
-           <TransactionsDetails 
-           transactions={transactions}
-           >
-           </TransactionsDetails>
+            <div className="transactionsPageContainer">
+                <TransactionsDetails 
+                    transactions={transactions}
+                >
+                </TransactionsDetails>
+                <PageSelector
+                    page={page}
+                    pages={pages}
+                    setPage={setPage}
+                >
+
+                </PageSelector>
+            </div>
         </>
     );
 };

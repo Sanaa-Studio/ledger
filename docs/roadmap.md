@@ -82,8 +82,8 @@
 
 - [x] Fetch and render accounts
 - [x] Fetch and render transactions
-- [ ] Handle account pagination
-- [ ] Handle transaction pagination
+- [x] Handle account pagination
+- [x] Handle transaction pagination
 - [ ] Add loading states
 - [ ] Add error states
 - [ ] Add empty states

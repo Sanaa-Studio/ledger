@@ -14,10 +14,11 @@ const AccountsPage = () => {
     const [limit, setLimit] = useState(10); 
     const [loading, setLoading] = useState(true);
 
-    const url = "accounts";
-
     useEffect(() => {
         const getAccounts = async () => {
+            console.log("fetching accounts")
+            console.log("Limit", limit)
+            console.log("page", page);
             const response = await axios.get(
                 env.accountsUrl,
                 {
@@ -32,7 +33,9 @@ const AccountsPage = () => {
 
             setAccounts(parsedResponse.data);
             setPage(parsedResponse.meta.page);
+            setPages(parsedResponse.meta.pages)
             setTotal(parsedResponse.meta.total);
+            setLimit(parsedResponse.meta.limit);
             setLoading(false);
         };
         void getAccounts();
@@ -61,7 +64,7 @@ const AccountsPage = () => {
                     >
                 </AccountsDetails>
                 <PageSelector
-                page={page} url={url} pages={pages} limit={limit}
+                page={page} pages={pages} setPage={setPage}
                 >
                 </PageSelector>
             </div>

@@ -1,5 +1,6 @@
 import type { Transaction } from "@ledger/contracts";
 import TransactionCard from "./TransactionCard";
+import "../../styles/Transactions.css"
 
 const TransactionsDetails = (
     {transactions}: 
@@ -8,7 +9,7 @@ const TransactionsDetails = (
 ) => {
     return (
         <>
-            <ul>
+            <ul className="transactionsContainer">
                 {transactions.map((transaction) => 
                     <TransactionCard
                         key={transaction.id}

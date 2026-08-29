@@ -12,7 +12,6 @@ const TransactionsPage = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [pages, setPages] = useState(1);
-    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         const getTransactions = async () => {
@@ -30,7 +29,6 @@ const TransactionsPage = () => {
             const parsedResponse = TransactionsResponseSchema.parse(response.data);
             setTransactions(parsedResponse.data);
             setPages(parsedResponse.meta.pages);
-            setTotal(parsedResponse.meta.total);
             setPage(parsedResponse.meta.page)
             setLimit(parsedResponse.meta.limit);
             setLoading(false);
@@ -38,6 +36,10 @@ const TransactionsPage = () => {
 
         void getTransactions();
     }, [page, limit]);
+
+    if (loading) {
+        return (<p>Loading...</p>);
+    }
 
     return (
         <>

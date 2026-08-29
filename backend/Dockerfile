@@ -3,38 +3,47 @@ FROM node:24-alpine AS builder
 
 WORKDIR /usr/src/app
 
+# Enable the pnpm version declared in package.json
+RUN corepack enable
+
 # Copy workspace manifests first for dependency caching
-COPY --chown=node:node package.json package-lock.json ./
+COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
 COPY --chown=node:node backend/package.json ./backend/package.json
 COPY --chown=node:node database/package.json ./database/package.json
+COPY --chown=node:node contracts/package.json ./contracts/package.json
+COPY --chown=node:node frontend/package.json ./frontend/package.json
 
-RUN npm ci
+# Install exactly what pnpm-lock.yaml specifies
+RUN pnpm install --frozen-lockfile
 
-# Copy source
+# Copy application source
 COPY --chown=node:node backend ./backend
 COPY --chown=node:node database ./database
+COPY --chown=node:node contracts ./contracts
 
-# Database must build first because backend imports @ledger/database/schema
-RUN npm run build -w @ledger/database
-RUN npm run build -w backend
+# Build workspace dependencies before backend
+RUN pnpm --filter @ledger/contracts build
+RUN pnpm --filter @ledger/database build
+RUN pnpm --filter backend build
+
+# Create a self-contained production backend.
+# --legacy avoids requiring injectWorkspacePackages for deploy.
+RUN pnpm --filter backend --prod deploy --legacy /prod/backend
+
 
 # Stage 2: Production
 FROM node:24-alpine
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node package.json package-lock.json ./
-COPY --chown=node:node backend/package.json ./backend/package.json
-COPY --chown=node:node database/package.json ./database/package.json
-
-RUN npm ci --omit=dev --ignore-scripts
+ENV NODE_ENV=production
 
 # Backend runtime code
-COPY --from=builder --chown=node:node /usr/src/app/backend/dist ./backend/dist
-
-# Shared database package runtime code
-COPY --from=builder --chown=node:node /usr/src/app/database/dist ./database/dist
+COPY --from=builder --chown=node:node /prod/backend ./
 
 USER node
 
-CMD ["npm", "run", "start", "-w", "backend"]
+EXPOSE 5001
+
+CMD ["node", "dist/index.js"]

@@ -1,6 +1,6 @@
 import type {Transaction, Account} from "@ledger/contracts";
 import { AccountResponseSchema } from "@ledger/contracts";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import base62 from "@sindresorhus/base62";
 import {env} from "../../config/env";
 import axios from "axios";

@@ -1,5 +1,5 @@
 import "../../styles/AccountCard.css";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import base62 from '@sindresorhus/base62';
 import type { Account } from "@ledger/contracts"
 

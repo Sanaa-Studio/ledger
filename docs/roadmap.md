@@ -84,11 +84,11 @@
 - [x] Fetch and render transactions
 - [x] Handle account pagination
 - [x] Handle transaction pagination
-- [ ] Add loading states
-- [ ] Add error states
-- [ ] Add empty states
+- [x] Add loading states
+- [x] Add error states for accounts
+- [ ] Add error and empty states for transactions  
 - [ ] Account details page
-- [ ] Transaction details page: also change how i represent date
+- [ ] Transaction details page: also change how I represent date
 
 ## Phase 7C: CRUD UI
 

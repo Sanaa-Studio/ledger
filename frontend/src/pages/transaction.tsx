@@ -10,6 +10,7 @@ import * as z from "zod";
 const TransactionPage = () => {
     console.log("In transaction page");
     const [transaction, setTransaction] = useState<Transaction>();
+    const [loading, setLoading] = useState(true);
 
     const {transactionId} = useParams();
 
@@ -36,11 +37,16 @@ const TransactionPage = () => {
 
             const parsedResponse = TransactionResponseSchema.parse(response.data);
             setTransaction(parsedResponse.data);
+            setLoading(false);
         };
 
         void getTransaction();
     }, [url]);
 
+    if (loading) {
+        return (<p>Loading...</p>)
+    }
+    
     if (!transaction) {
         return (<p>Transaction Unavailable</p>)
     }

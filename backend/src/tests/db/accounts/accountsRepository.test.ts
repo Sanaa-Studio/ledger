@@ -1,10 +1,4 @@
-import {
-  afterAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-} from "@jest/globals";
+import { afterAll, beforeEach, describe, expect, test } from "@jest/globals";
 
 import {
   getAccounts,
@@ -20,11 +14,7 @@ import {
 import { resetTestDb } from "../../helpers/resetTestDb.js";
 import { pool } from "../../../db/db.js";
 
-import type {
-  CreateAccountInput,
-  UpdateAccountInput,
-} from "@ledger/contracts";
-
+import type { CreateAccountInput, UpdateAccountInput } from "@ledger/contracts";
 
 beforeEach(async () => {
   await resetTestDb();
@@ -33,7 +23,6 @@ beforeEach(async () => {
 afterAll(async () => {
   await pool.end();
 });
-
 
 // ======================================================
 // GET ALL
@@ -59,7 +48,6 @@ describe("getAccounts", () => {
     ]);
   });
 
-
   test("applies offset and limit", async () => {
     const accounts = await getAccounts(1, 1);
 
@@ -73,14 +61,12 @@ describe("getAccounts", () => {
     ]);
   });
 
-
   test("returns empty array when offset exceeds rows", async () => {
     const accounts = await getAccounts(100, 10);
 
     expect(accounts).toEqual([]);
   });
 });
-
 
 // ======================================================
 // GET ONE
@@ -98,14 +84,12 @@ describe("getAccount", () => {
     });
   });
 
-
   test("returns undefined for nonexistent account", async () => {
     const account = await getAccount(999);
 
     expect(account).toBeUndefined();
   });
 });
-
 
 // ======================================================
 // COUNT
@@ -118,7 +102,6 @@ describe("getAccountsCount", () => {
     expect(count).toBe(2);
   });
 });
-
 
 // ======================================================
 // FIND
@@ -142,7 +125,6 @@ describe("findAccount", () => {
     });
   });
 
-
   test("returns undefined when account is not found", async () => {
     const input: CreateAccountInput = {
       name: "Does Not Exist",
@@ -155,7 +137,6 @@ describe("findAccount", () => {
     expect(account).toBeUndefined();
   });
 });
-
 
 // ======================================================
 // POST
@@ -184,7 +165,6 @@ describe("postAccount", () => {
   });
 });
 
-
 // ======================================================
 // DELETE
 // ======================================================
@@ -200,13 +180,10 @@ describe("deleteAccount", () => {
       openingBalance: 500,
     });
 
-    const accountAfterDelete =
-      await getAccount(2);
+    const accountAfterDelete = await getAccount(2);
 
-    expect(accountAfterDelete)
-      .toBeUndefined();
+    expect(accountAfterDelete).toBeUndefined();
   });
-
 
   test("returns undefined when account does not exist", async () => {
     const result = await deleteAccount(999);
@@ -214,7 +191,6 @@ describe("deleteAccount", () => {
     expect(result).toBeUndefined();
   });
 });
-
 
 // ======================================================
 // PUT
@@ -228,10 +204,7 @@ describe("putAccount", () => {
       openingBalance: 5000,
     };
 
-    const updatedAccount = await putAccount(
-      1,
-      input,
-    );
+    const updatedAccount = await putAccount(1, input);
 
     expect(updatedAccount).toEqual({
       id: 1,
@@ -242,11 +215,8 @@ describe("putAccount", () => {
 
     const storedAccount = await getAccount(1);
 
-    expect(storedAccount).toEqual(
-      updatedAccount,
-    );
+    expect(storedAccount).toEqual(updatedAccount);
   });
-
 
   test("returns undefined when account does not exist", async () => {
     const input: CreateAccountInput = {
@@ -255,15 +225,11 @@ describe("putAccount", () => {
       openingBalance: 100,
     };
 
-    const result = await putAccount(
-      999,
-      input,
-    );
+    const result = await putAccount(999, input);
 
     expect(result).toBeUndefined();
   });
 });
-
 
 // ======================================================
 // PATCH
@@ -275,8 +241,7 @@ describe("updateAccount", () => {
       openingBalance: 1750,
     };
 
-    const updatedAccount =
-      await updateAccount(1, input);
+    const updatedAccount = await updateAccount(1, input);
 
     expect(updatedAccount).toEqual({
       id: 1,
@@ -290,15 +255,13 @@ describe("updateAccount", () => {
     });
   });
 
-
   test("can update multiple supplied fields", async () => {
     const input: UpdateAccountInput = {
       name: "Renamed Savings",
       openingBalance: 800,
     };
 
-    const updatedAccount =
-      await updateAccount(2, input);
+    const updatedAccount = await updateAccount(2, input);
 
     expect(updatedAccount).toEqual({
       id: 2,
@@ -308,16 +271,12 @@ describe("updateAccount", () => {
     });
   });
 
-
   test("returns undefined when account does not exist", async () => {
     const input: UpdateAccountInput = {
       name: "Missing",
     };
 
-    const result = await updateAccount(
-      999,
-      input,
-    );
+    const result = await updateAccount(999, input);
 
     expect(result).toBeUndefined();
   });

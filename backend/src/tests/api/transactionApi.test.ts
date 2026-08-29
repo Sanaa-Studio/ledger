@@ -1,17 +1,10 @@
-import {
-  afterAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-} from "@jest/globals";
+import { afterAll, beforeEach, describe, expect, test } from "@jest/globals";
 
 import request from "supertest";
 
 import app from "../../app.js";
 import { pool } from "../../db/db.js";
 import { resetTestDb } from "../helpers/resetTestDb.js";
-
 
 beforeEach(async () => {
   await resetTestDb();
@@ -21,16 +14,13 @@ afterAll(async () => {
   await pool.end();
 });
 
-
 // ======================================================
 // GET /api/transactions
 // ======================================================
 
 describe("GET /api/transactions", () => {
   test("returns paginated transactions", async () => {
-    const response = await request(app)
-      .get("/api/transactions")
-      .expect(200);
+    const response = await request(app).get("/api/transactions").expect(200);
 
     expect(response.body).toEqual({
       data: [
@@ -51,7 +41,6 @@ describe("GET /api/transactions", () => {
       },
     });
   });
-
 
   test("supports pagination query parameters", async () => {
     // Add another transaction through the API
@@ -90,7 +79,6 @@ describe("GET /api/transactions", () => {
     });
   });
 
-
   test("returns empty data when page exceeds available transactions", async () => {
     const response = await request(app)
       .get("/api/transactions?page=100&limit=10")
@@ -106,33 +94,26 @@ describe("GET /api/transactions", () => {
     });
   });
 
-
   test("returns validation error for invalid page", async () => {
     const response = await request(app)
       .get("/api/transactions?page=0")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
 
-    expect(response.body.error.message)
-      .toBe("Invalid transaction data");
+    expect(response.body.error.message).toBe("Invalid transaction data");
 
-    expect(response.body.error.details)
-      .toBeDefined();
+    expect(response.body.error.details).toBeDefined();
   });
-
 
   test("rejects limit greater than 100", async () => {
     const response = await request(app)
       .get("/api/transactions?limit=101")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
 });
-
 
 // ======================================================
 // GET /api/transactions/:id
@@ -140,9 +121,7 @@ describe("GET /api/transactions", () => {
 
 describe("GET /api/transactions/:id", () => {
   test("returns an existing transaction", async () => {
-    const response = await request(app)
-      .get("/api/transactions/1")
-      .expect(200);
+    const response = await request(app).get("/api/transactions/1").expect(200);
 
     expect(response.body).toEqual({
       data: {
@@ -155,7 +134,6 @@ describe("GET /api/transactions/:id", () => {
       },
     });
   });
-
 
   test("returns 404 for nonexistent transaction", async () => {
     const response = await request(app)
@@ -170,27 +148,20 @@ describe("GET /api/transactions/:id", () => {
     });
   });
 
-
   test("returns 400 for invalid transaction id", async () => {
     const response = await request(app)
       .get("/api/transactions/abc")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
-
 
   test("returns 400 for non-positive transaction id", async () => {
-    const response = await request(app)
-      .get("/api/transactions/0")
-      .expect(400);
+    const response = await request(app).get("/api/transactions/0").expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
 });
-
 
 // ======================================================
 // POST /api/transactions
@@ -226,10 +197,8 @@ describe("POST /api/transactions", () => {
       .get("/api/transactions/2")
       .expect(200);
 
-    expect(fetchResponse.body.data)
-      .toEqual(response.body.data);
+    expect(fetchResponse.body.data).toEqual(response.body.data);
   });
-
 
   test("creates a transfer transaction", async () => {
     const response = await request(app)
@@ -255,7 +224,6 @@ describe("POST /api/transactions", () => {
     });
   });
 
-
   test("returns validation error for invalid transaction data", async () => {
     const response = await request(app)
       .post("/api/transactions")
@@ -266,10 +234,8 @@ describe("POST /api/transactions", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns validation error when required fields are missing", async () => {
     const response = await request(app)
@@ -279,10 +245,8 @@ describe("POST /api/transactions", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns 400 when origin account does not exist", async () => {
     const response = await request(app)
@@ -301,7 +265,6 @@ describe("POST /api/transactions", () => {
       },
     });
   });
-
 
   test("returns 400 when destination account does not exist", async () => {
     const response = await request(app)
@@ -322,7 +285,6 @@ describe("POST /api/transactions", () => {
     });
   });
 
-
   test("returns 400 when origin and destination are identical", async () => {
     const response = await request(app)
       .post("/api/transactions")
@@ -334,11 +296,9 @@ describe("POST /api/transactions", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("BAD_REQUEST");
+    expect(response.body.error.code).toBe("BAD_REQUEST");
   });
 });
-
 
 // ======================================================
 // PUT /api/transactions/:id
@@ -369,15 +329,12 @@ describe("PUT /api/transactions/:id", () => {
       },
     });
 
-
     const fetchResponse = await request(app)
       .get("/api/transactions/1")
       .expect(200);
 
-    expect(fetchResponse.body.data)
-      .toEqual(response.body.data);
+    expect(fetchResponse.body.data).toEqual(response.body.data);
   });
-
 
   test("can replace transaction with a transfer", async () => {
     const response = await request(app)
@@ -391,13 +348,10 @@ describe("PUT /api/transactions/:id", () => {
       })
       .expect(200);
 
-    expect(response.body.data.destinationAccountId)
-      .toBe(2);
+    expect(response.body.data.destinationAccountId).toBe(2);
 
-    expect(response.body.data.amount)
-      .toBe(-500);
+    expect(response.body.data.amount).toBe(-500);
   });
-
 
   test("returns validation error for incomplete PUT", async () => {
     const response = await request(app)
@@ -407,10 +361,8 @@ describe("PUT /api/transactions/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns 404 when transaction does not exist", async () => {
     const response = await request(app)
@@ -422,10 +374,8 @@ describe("PUT /api/transactions/:id", () => {
       })
       .expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
-
 
   test("returns 400 when replacement origin account does not exist", async () => {
     const response = await request(app)
@@ -437,10 +387,8 @@ describe("PUT /api/transactions/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("BAD_REQUEST");
+    expect(response.body.error.code).toBe("BAD_REQUEST");
   });
-
 
   test("returns 400 when replacement accounts are identical", async () => {
     const response = await request(app)
@@ -453,11 +401,9 @@ describe("PUT /api/transactions/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("BAD_REQUEST");
+    expect(response.body.error.code).toBe("BAD_REQUEST");
   });
 });
-
 
 // ======================================================
 // PATCH /api/transactions/:id
@@ -484,7 +430,6 @@ describe("PATCH /api/transactions/:id", () => {
     });
   });
 
-
   test("can update multiple fields", async () => {
     const response = await request(app)
       .patch("/api/transactions/1")
@@ -505,7 +450,6 @@ describe("PATCH /api/transactions/:id", () => {
     });
   });
 
-
   test("can add a destination account", async () => {
     const response = await request(app)
       .patch("/api/transactions/1")
@@ -514,10 +458,8 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(200);
 
-    expect(response.body.data.destinationAccountId)
-      .toBe(2);
+    expect(response.body.data.destinationAccountId).toBe(2);
   });
-
 
   test("can explicitly remove destination account with null", async () => {
     // First turn transaction into transfer
@@ -536,10 +478,8 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(200);
 
-    expect(response.body.data.destinationAccountId)
-      .toBeNull();
+    expect(response.body.data.destinationAccountId).toBeNull();
   });
-
 
   test("can explicitly clear description with null", async () => {
     const response = await request(app)
@@ -549,10 +489,8 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(200);
 
-    expect(response.body.data.description)
-      .toBeNull();
+    expect(response.body.data.description).toBeNull();
   });
-
 
   test("rejects empty PATCH body", async () => {
     const response = await request(app)
@@ -560,10 +498,8 @@ describe("PATCH /api/transactions/:id", () => {
       .send({})
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns 404 when transaction does not exist", async () => {
     const response = await request(app)
@@ -573,10 +509,8 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
-
 
   test("returns 400 when patch creates identical origin and destination", async () => {
     const response = await request(app)
@@ -586,10 +520,8 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("BAD_REQUEST");
+    expect(response.body.error.code).toBe("BAD_REQUEST");
   });
-
 
   test("returns 400 when patched destination account does not exist", async () => {
     const response = await request(app)
@@ -599,11 +531,9 @@ describe("PATCH /api/transactions/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("BAD_REQUEST");
+    expect(response.body.error.code).toBe("BAD_REQUEST");
   });
 });
-
 
 // ======================================================
 // DELETE /api/transactions/:id
@@ -619,28 +549,22 @@ describe("DELETE /api/transactions/:id", () => {
     expect(response.text).toBe("");
 
     // Verify persistence
-    await request(app)
-      .get("/api/transactions/1")
-      .expect(404);
+    await request(app).get("/api/transactions/1").expect(404);
   });
-
 
   test("returns 404 when transaction does not exist", async () => {
     const response = await request(app)
       .delete("/api/transactions/999")
       .expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
-
 
   test("returns 400 for invalid transaction id", async () => {
     const response = await request(app)
       .delete("/api/transactions/abc")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
 });

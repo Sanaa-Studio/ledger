@@ -11,20 +11,20 @@ import Auth from "./pages/auth";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
-    console.log(`In app page`);
-    return (
-        <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="analytics" element={<Analytics/>}/>
-            <Route path="dashboard" element={<Dashboard/>}/>
-            <Route path="settings" element={<Settings/>}/>
-            <Route path="transactions" element={<Transactions/>}/>
-            <Route path="transactions/:transactionId" element={<Transaction/>}/>
-            <Route path="accounts" element={<Accounts/>}/>
-            <Route path="accounts/:accountId" element={<Account/>}/>
-            <Route path="login/*" element={<Auth/>}/>
-        </Routes>
-    );
+  console.log(`In app page`);
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="analytics" element={<Analytics />} />
+      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="settings" element={<Settings />} />
+      <Route path="transactions" element={<Transactions />} />
+      <Route path="transactions/:transactionId" element={<Transaction />} />
+      <Route path="accounts" element={<Accounts />} />
+      <Route path="accounts/:accountId" element={<Account />} />
+      <Route path="login/*" element={<Auth />} />
+    </Routes>
+  );
 };
 
 export default App;

@@ -21,26 +21,23 @@
   "packageManager": "pnpm@11.24.0",
   "scripts": {
     "prepare": "husky",
-
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "pnpm format:check && pnpm -r --if-present validate",
     "db": "docker compose --env-file .env.compose exec postgres psql -U sanaastudio -d postgres",
     "db:test": "docker compose --env-file .env.compose exec postgres-test sh -c 'psql -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"'",
-
     "docker:ps": "docker compose --env-file .env.compose --profile test ps",
     "docker:db": "docker compose --env-file .env.compose up -d postgres",
-
     "docker:up": "docker compose --env-file .env.compose up",
     "docker:down": "docker compose --env-file .env.compose down",
     "docker:build": "docker compose --env-file .env.compose up --build",
-    
     "build": "pnpm -r --if-present build",
     "build:db": "pnpm --filter @ledger/database build",
     "build:backend": "pnpm --filter backend build",
     "build:frontend": "pnpm --filter frontend build",
-
     "test": "trap 'pnpm test:down' EXIT; pnpm test:setup && pnpm --filter backend test",
     "test:setup": "docker compose --env-file .env.compose --profile test up -d --wait postgres-test && pnpm --filter @ledger/database db:migrate:test",
     "test:down": "docker compose --env-file .env.compose --profile test rm -sf postgres-test",
-
     "dev": "pnpm docker:db && pnpm --filter backend --filter frontend --parallel run dev"
   },
   "dependencies": {
@@ -49,12 +46,13 @@
     "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "^1.0.0-rc.4",
-    "tsx": "^4.23.12",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0"
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12"
   }
 }

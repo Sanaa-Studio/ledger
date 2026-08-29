@@ -1,41 +1,37 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
-import env from "./config/env.js"
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import env from "./config/env.js";
 
 const getPool = (): Pool => {
-    switch (env.appEnv){
-        case "beta": {
-            return new Pool(
-                { 
-                    connectionString: env.databaseUrl,
-                    ssl: {
-                        rejectUnauthorized: true,
-                        ca: env.databaseCaCertificate
-                    }
-                }
-            );
-        };
+  switch (env.appEnv) {
+    case "beta": {
+      return new Pool({
+        connectionString: env.databaseUrl,
+        ssl: {
+          rejectUnauthorized: true,
+          ca: env.databaseCaCertificate,
+        },
+      });
+    }
 
-        case "development": {
-            return new Pool({connectionString: env.databaseUrl});
-        };
+    case "development": {
+      return new Pool({ connectionString: env.databaseUrl });
+    }
 
-        case "test": {
-            return new Pool({connectionString: env.databaseUrl});
-        }
-        
-        case "production": {
-            return new Pool(
-                {
-                    connectionString: env.databaseUrl,
-                    ssl: {
-                        rejectUnauthorized: true,
-                        ca: env.databaseCaCertificate
-                    }
-                }
-            );
-        };
-    };
+    case "test": {
+      return new Pool({ connectionString: env.databaseUrl });
+    }
+
+    case "production": {
+      return new Pool({
+        connectionString: env.databaseUrl,
+        ssl: {
+          rejectUnauthorized: true,
+          ca: env.databaseCaCertificate,
+        },
+      });
+    }
+  }
 };
 
 export const pool = getPool();

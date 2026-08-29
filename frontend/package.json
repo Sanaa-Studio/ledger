@@ -9,6 +9,8 @@
     "build": "tsc -b && vite build",
     "build:beta": "tsc -b && vite build --mode beta",
     "lint": "eslint .",
+    "typecheck": "tsc -b",
+    "validate": "pnpm lint && pnpm typecheck",
     "preview": "vite preview"
   },
   "dependencies": {

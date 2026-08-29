@@ -10,7 +10,7 @@ import { type Request, type Response } from "express";
 import {
   CreateAccountSchema,
   UpdateAccountSchema,
-  AccountQuerySchema
+  AccountQuerySchema,
 } from "@ledger/contracts";
 import { ValidationError } from "../errors/AppError.js";
 
@@ -27,11 +27,11 @@ export const getAccounts = async (req: Request, res: Response) => {
   const response = {
     data: result.data,
     meta: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        pages: result.pages
-    }
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      pages: result.pages,
+    },
   };
 
   return res.status(200).json(response);
@@ -42,7 +42,7 @@ export const getAccountById = async (req: Request, res: Response) => {
   const account = await fetchAccount(accountId);
 
   const response = {
-    data: account
+    data: account,
   };
 
   return res.status(200).json(response);
@@ -53,13 +53,13 @@ export const postAccount = async (req: Request, res: Response) => {
   const result = CreateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
-   throw new ValidationError("Invalid account data", result.error.issues);
-  };
+    throw new ValidationError("Invalid account data", result.error.issues);
+  }
 
   const account = await createAccount(result.data);
-  
+
   const response = {
-    data: account
+    data: account,
   };
 
   return res.status(201).json(response);
@@ -71,14 +71,14 @@ export const putAccount = async (req: Request, res: Response) => {
 
   if (!result.success) {
     throw new ValidationError("Invalid account data", result.error.issues);
-  };
+  }
 
   const accountId = Number(req.params.id);
   const account = await replaceAccount(result.data, accountId);
 
   const response = {
-    data: account
-  }
+    data: account,
+  };
 
   return res.status(200).json(response);
 };
@@ -90,12 +90,12 @@ export const updateAccount = async (req: Request, res: Response) => {
 
   if (!result.success) {
     throw new ValidationError("Invalid account data", result.error.issues);
-  };
+  }
 
   const account = await patchAccount(result.data, accountId);
 
-  const response  = {
-    data: account
+  const response = {
+    data: account,
   };
 
   return res.status(200).json(response);
@@ -107,7 +107,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
   const deletedAccount = await removeAccount(accountId);
 
   const response = {
-    data: deletedAccount
+    data: deletedAccount,
   };
 
   return res.status(200).json(response);

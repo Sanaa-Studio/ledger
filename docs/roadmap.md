@@ -17,7 +17,7 @@
 - [x] Define consistent API responses and error handling
 - [x] Add unit tests for services
 - [x] Add endpoint integration tests using Supertest
-- [X] Add pagination for accounts
+- [x] Add pagination for accounts
 - [x] Add pagination for transactions
 - [x] Add testing for pagination
 
@@ -86,7 +86,7 @@
 - [x] Handle transaction pagination
 - [x] Add loading states
 - [x] Add error states for accounts
-- [ ] Add error and empty states for transactions  
+- [ ] Add error and empty states for transactions
 - [ ] Account details page
 - [ ] Transaction details page: also change how I represent date
 
@@ -188,6 +188,7 @@
 - [ ] Offline/cache behavior
 
 ## Phase 12: Future Architecture Improvements
+
 - [ ] Do University of Helsinki Docker Course
 - [ ] Do University of Helsinki Kubernetes course
 - [ ] Deploy with Kubernetes

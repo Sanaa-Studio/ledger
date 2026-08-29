@@ -1,11 +1,11 @@
 import express from "express";
 import {
-    getTransactions,
-    getTransaction,
-    createTransaction,
-    deleteTransaction,
-    putTransaction,
-    updateTransaction
+  getTransactions,
+  getTransaction,
+  createTransaction,
+  deleteTransaction,
+  putTransaction,
+  updateTransaction,
 } from "../controller/transactionController.js";
 import { validateId } from "../middleware/validateId.js";
 

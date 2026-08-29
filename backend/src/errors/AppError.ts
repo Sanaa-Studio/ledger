@@ -4,11 +4,11 @@ export class AppError extends Error {
   details?: unknown;
 
   constructor(
-    message: string, 
+    message: string,
     statusCode: number,
     code: string,
-    details?: unknown
-) {
+    details?: unknown,
+  ) {
     super(message);
 
     this.name = "AppError";
@@ -37,13 +37,13 @@ export class ConflictError extends AppError {
 }
 
 export class ValidationError extends AppError {
-    constructor(message: string, details?: unknown) {
-        super(message, 400, "VALIDATION_ERROR", details);
-    }
+  constructor(message: string, details?: unknown) {
+    super(message, 400, "VALIDATION_ERROR", details);
+  }
 }
 
 export class InvalidIdError extends AppError {
-    constructor(message = "Invalid ID") {
-        super(message, 400, "INVALID_ID");
-    }
+  constructor(message = "Invalid ID") {
+    super(message, 400, "INVALID_ID");
+  }
 }

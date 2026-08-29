@@ -1,17 +1,10 @@
-import {
-  afterAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-} from "@jest/globals";
+import { afterAll, beforeEach, describe, expect, test } from "@jest/globals";
 
 import request from "supertest";
 
 import app from "../../app.js";
 import { pool } from "../../db/db.js";
 import { resetTestDb } from "../helpers/resetTestDb.js";
-
 
 // ======================================================
 // SETUP
@@ -25,16 +18,13 @@ afterAll(async () => {
   await pool.end();
 });
 
-
 // ======================================================
 // GET /api/accounts
 // ======================================================
 
 describe("GET /api/accounts", () => {
   test("returns paginated accounts", async () => {
-    const response = await request(app)
-      .get("/api/accounts")
-      .expect(200);
+    const response = await request(app).get("/api/accounts").expect(200);
 
     expect(response.body).toEqual({
       data: [
@@ -60,7 +50,6 @@ describe("GET /api/accounts", () => {
     });
   });
 
-
   test("supports pagination query parameters", async () => {
     const response = await request(app)
       .get("/api/accounts?page=2&limit=1")
@@ -84,7 +73,6 @@ describe("GET /api/accounts", () => {
     });
   });
 
-
   test("returns empty data when page exceeds available accounts", async () => {
     const response = await request(app)
       .get("/api/accounts?page=100&limit=10")
@@ -100,33 +88,24 @@ describe("GET /api/accounts", () => {
     });
   });
 
-
   test("returns validation error for invalid pagination", async () => {
-    const response = await request(app)
-      .get("/api/accounts?page=0")
-      .expect(400);
+    const response = await request(app).get("/api/accounts?page=0").expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
 
-    expect(response.body.error.message)
-      .toBe("Invalid account data");
+    expect(response.body.error.message).toBe("Invalid account data");
 
-    expect(response.body.error.details)
-      .toBeDefined();
+    expect(response.body.error.details).toBeDefined();
   });
-
 
   test("rejects limit greater than 100", async () => {
     const response = await request(app)
       .get("/api/accounts?limit=101")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
 });
-
 
 // ======================================================
 // GET /api/accounts/:id
@@ -134,9 +113,7 @@ describe("GET /api/accounts", () => {
 
 describe("GET /api/accounts/:id", () => {
   test("returns an existing account", async () => {
-    const response = await request(app)
-      .get("/api/accounts/1")
-      .expect(200);
+    const response = await request(app).get("/api/accounts/1").expect(200);
 
     expect(response.body).toEqual({
       data: {
@@ -148,11 +125,8 @@ describe("GET /api/accounts/:id", () => {
     });
   });
 
-
   test("returns 404 when account does not exist", async () => {
-    const response = await request(app)
-      .get("/api/accounts/999")
-      .expect(404);
+    const response = await request(app).get("/api/accounts/999").expect(404);
 
     expect(response.body).toEqual({
       error: {
@@ -162,27 +136,18 @@ describe("GET /api/accounts/:id", () => {
     });
   });
 
-
   test("returns 400 for non-numeric id", async () => {
-    const response = await request(app)
-      .get("/api/accounts/abc")
-      .expect(400);
+    const response = await request(app).get("/api/accounts/abc").expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
-
 
   test("returns 400 for non-positive id", async () => {
-    const response = await request(app)
-      .get("/api/accounts/0")
-      .expect(400);
+    const response = await request(app).get("/api/accounts/0").expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
 });
-
 
 // ======================================================
 // POST /api/accounts
@@ -210,16 +175,11 @@ describe("POST /api/accounts", () => {
       },
     });
 
-
     // Verify persistence through the API
-    const fetchResponse = await request(app)
-      .get("/api/accounts/3")
-      .expect(200);
+    const fetchResponse = await request(app).get("/api/accounts/3").expect(200);
 
-    expect(fetchResponse.body.data)
-      .toEqual(response.body.data);
+    expect(fetchResponse.body.data).toEqual(response.body.data);
   });
-
 
   test("returns validation error for invalid account data", async () => {
     const input = {
@@ -233,13 +193,10 @@ describe("POST /api/accounts", () => {
       .send(input)
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
 
-    expect(response.body.error.details)
-      .toBeDefined();
+    expect(response.body.error.details).toBeDefined();
   });
-
 
   test("returns validation error for invalid account type", async () => {
     const input = {
@@ -253,10 +210,8 @@ describe("POST /api/accounts", () => {
       .send(input)
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns conflict when account already exists", async () => {
     const input = {
@@ -278,7 +233,6 @@ describe("POST /api/accounts", () => {
     });
   });
 });
-
 
 // ======================================================
 // PUT /api/accounts/:id
@@ -304,15 +258,10 @@ describe("PUT /api/accounts/:id", () => {
       },
     });
 
+    const fetchResponse = await request(app).get("/api/accounts/1").expect(200);
 
-    const fetchResponse = await request(app)
-      .get("/api/accounts/1")
-      .expect(200);
-
-    expect(fetchResponse.body.data)
-      .toEqual(response.body.data);
+    expect(fetchResponse.body.data).toEqual(response.body.data);
   });
-
 
   test("returns validation error when PUT is missing required fields", async () => {
     const response = await request(app)
@@ -322,10 +271,8 @@ describe("PUT /api/accounts/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns 404 when replacing nonexistent account", async () => {
     const response = await request(app)
@@ -337,10 +284,8 @@ describe("PUT /api/accounts/:id", () => {
       })
       .expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
-
 
   test("returns 400 for invalid id", async () => {
     const response = await request(app)
@@ -352,11 +297,9 @@ describe("PUT /api/accounts/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
 });
-
 
 // ======================================================
 // PATCH /api/accounts/:id
@@ -381,7 +324,6 @@ describe("PATCH /api/accounts/:id", () => {
     });
   });
 
-
   test("can update multiple fields", async () => {
     const response = await request(app)
       .patch("/api/accounts/2")
@@ -399,17 +341,14 @@ describe("PATCH /api/accounts/:id", () => {
     });
   });
 
-
   test("rejects empty PATCH body", async () => {
     const response = await request(app)
       .patch("/api/accounts/1")
       .send({})
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns validation error for invalid PATCH field", async () => {
     const response = await request(app)
@@ -419,10 +358,8 @@ describe("PATCH /api/accounts/:id", () => {
       })
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("VALIDATION_ERROR");
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
   });
-
 
   test("returns 404 when patching nonexistent account", async () => {
     const response = await request(app)
@@ -432,11 +369,9 @@ describe("PATCH /api/accounts/:id", () => {
       })
       .expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
 });
-
 
 // ======================================================
 // DELETE /api/accounts/:id
@@ -444,9 +379,7 @@ describe("PATCH /api/accounts/:id", () => {
 
 describe("DELETE /api/accounts/:id", () => {
   test("deletes and returns the account", async () => {
-    const response = await request(app)
-      .delete("/api/accounts/2")
-      .expect(200);
+    const response = await request(app).delete("/api/accounts/2").expect(200);
 
     expect(response.body).toEqual({
       data: {
@@ -457,30 +390,21 @@ describe("DELETE /api/accounts/:id", () => {
       },
     });
 
-
     // Verify it is actually gone
-    await request(app)
-      .get("/api/accounts/2")
-      .expect(404);
+    await request(app).get("/api/accounts/2").expect(404);
   });
-
 
   test("returns 404 when deleting nonexistent account", async () => {
-    const response = await request(app)
-      .delete("/api/accounts/999")
-      .expect(404);
+    const response = await request(app).delete("/api/accounts/999").expect(404);
 
-    expect(response.body.error.code)
-      .toBe("NOT_FOUND");
+    expect(response.body.error.code).toBe("NOT_FOUND");
   });
-
 
   test("returns 400 for invalid id", async () => {
     const response = await request(app)
       .delete("/api/accounts/not-an-id")
       .expect(400);
 
-    expect(response.body.error.code)
-      .toBe("INVALID_ID");
+    expect(response.body.error.code).toBe("INVALID_ID");
   });
 });

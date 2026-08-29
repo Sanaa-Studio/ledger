@@ -1,9 +1,9 @@
 .transactionsContainer {
-    display: grid;
-    grid-template-rows: repeat(2, 15vh);
-    grid-template-columns: repeat(3, 15vw);
-    grid-auto-rows: 10vw;
-    row-gap: 15%;
-    column-gap: 10%;
-    list-style-type: none;
+  display: grid;
+  grid-template-rows: repeat(2, 15vh);
+  grid-template-columns: repeat(3, 15vw);
+  grid-auto-rows: 10vw;
+  row-gap: 15%;
+  column-gap: 10%;
+  list-style-type: none;
 }

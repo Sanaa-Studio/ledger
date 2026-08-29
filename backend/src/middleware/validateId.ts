@@ -1,22 +1,18 @@
-import type {
-    Request,
-    Response,
-    NextFunction,
-} from "express";
+import type { Request, Response, NextFunction } from "express";
 
 import { InvalidIdError } from "../errors/AppError.js";
 
 export const validateId = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-    value: string,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  value: string,
 ) => {
-    const id = Number(value);
+  const id = Number(value);
 
-    if (!Number.isInteger(id) || id <= 0) {
-        throw new InvalidIdError("ID must be a positive integer");
-    }
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new InvalidIdError("ID must be a positive integer");
+  }
 
-    next();
+  next();
 };

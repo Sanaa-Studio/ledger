@@ -13,18 +13,18 @@ export const errorHandler = (
         code: err.code,
         message: err.message,
         ...(err.details !== undefined && {
-            details: err.details,
+          details: err.details,
         }),
       },
     });
-  };
+  }
 
   console.error(err);
 
   return res.status(500).json({
     error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Internal server error",
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Internal server error",
     },
   });
 };

@@ -1,1 +1,1 @@
-npm test
+pnpm validate && pnpm test

@@ -2,21 +2,20 @@ import type {
   Account,
   CreateAccountInput,
   UpdateAccountInput,
-  AccountQuery, 
-  AccountQueryResponseType
+  AccountQuery,
+  AccountQueryResponseType,
 } from "@ledger/contracts";
 import { NotFoundError, ConflictError } from "../errors/AppError.js";
-import { 
-    getAccounts, 
-    getAccount,
-    getAccountsCount, 
-    findAccount, 
-    postAccount,
-    deleteAccount,
-    putAccount,
-    updateAccount
-} 
-from "../repository/accountsRepository.js";
+import {
+  getAccounts,
+  getAccount,
+  getAccountsCount,
+  findAccount,
+  postAccount,
+  deleteAccount,
+  putAccount,
+  updateAccount,
+} from "../repository/accountsRepository.js";
 
 // GET
 export const fetchAccounts = async (query: AccountQuery) => {
@@ -50,10 +49,12 @@ export const fetchAccount = async (accountId: number) => {
 };
 
 // POST
-export const createAccount = async (input: CreateAccountInput): Promise<Account> => {
+export const createAccount = async (
+  input: CreateAccountInput,
+): Promise<Account> => {
   const existingAccount = await findAccount(input);
 
-  if (existingAccount){
+  if (existingAccount) {
     throw new ConflictError("Account already exists");
   }
 
@@ -80,7 +81,7 @@ export const replaceAccount = async (
 
   if (!updatedAccount) {
     throw new NotFoundError("Account does not exist");
-  };
+  }
 
   return updatedAccount;
 };
@@ -92,7 +93,7 @@ export const patchAccount = async (
 ): Promise<Account> => {
   const updatedAccount = await updateAccount(id, input);
 
-  if (!updatedAccount){
+  if (!updatedAccount) {
     throw new NotFoundError("Account does not exist");
   }
 

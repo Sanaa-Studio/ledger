@@ -1,11 +1,11 @@
 import express from "express";
 import {
-    getAccounts,
-    getAccountById,
-    postAccount,
-    putAccount,
-    updateAccount,
-    deleteAccount
+  getAccounts,
+  getAccountById,
+  postAccount,
+  putAccount,
+  updateAccount,
+  deleteAccount,
 } from "../controller/accountController.js";
 import { validateId } from "../middleware/validateId.js";
 

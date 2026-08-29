@@ -1,13 +1,11 @@
 const AuthPage = () => {
-    return (
-        <>
-            <div>
-                <p>
-                    Authentication Page
-                </p>
-            </div>
-        </>
-    );
+  return (
+    <>
+      <div>
+        <p>Authentication Page</p>
+      </div>
+    </>
+  );
 };
 
 export default AuthPage;

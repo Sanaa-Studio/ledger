@@ -31,12 +31,12 @@ services:
 
   backend:
     image: ledger-backend
-    
-    build: 
+
+    build:
       context: .
       dockerfile: backend/Dockerfile
 
-    ports: 
+    ports:
       - "5001:5001"
 
     environment:
@@ -47,5 +47,5 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
 volumes:
-    pgdata:
-    pgtestdata:
+  pgdata:
+  pgtestdata:

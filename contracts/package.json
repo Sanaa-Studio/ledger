@@ -8,6 +8,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "typecheck": "tsc --noEmit",
+    "validate": "pnpm typecheck",
     "build": "tsc"
   },
   "dependencies": {

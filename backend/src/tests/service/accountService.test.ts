@@ -1,10 +1,4 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  test,
-  jest,
-} from "@jest/globals";
+import { beforeEach, describe, expect, test, jest } from "@jest/globals";
 
 import { fakeAccounts } from "../fakeData/accounts/fakedAccounts.js";
 
@@ -16,11 +10,7 @@ import type {
 
 import type { AccountQueryResponseType } from "@ledger/contracts";
 
-import {
-  NotFoundError,
-  ConflictError,
-} from "../../errors/AppError.js";
-
+import { NotFoundError, ConflictError } from "../../errors/AppError.js";
 
 // -----------------------------
 // Repository mocks
@@ -36,25 +26,19 @@ const getAccountsCountMock = jest.fn(
 );
 
 const getAccountMock = jest.fn(
-  async (_id: number): Promise<Account | undefined> =>
-    undefined,
+  async (_id: number): Promise<Account | undefined> => undefined,
 );
 
 const findAccountMock = jest.fn(
-  async (
-    _input: CreateAccountInput,
-  ): Promise<Account | undefined> => undefined,
+  async (_input: CreateAccountInput): Promise<Account | undefined> => undefined,
 );
 
 const postAccountMock = jest.fn(
-  async (
-    _input: CreateAccountInput,
-  ): Promise<Account> => fakeAccounts[0]!,
+  async (_input: CreateAccountInput): Promise<Account> => fakeAccounts[0]!,
 );
 
 const deleteAccountMock = jest.fn(
-  async (_id: number): Promise<Account | undefined> =>
-    undefined,
+  async (_id: number): Promise<Account | undefined> => undefined,
 );
 
 const putAccountMock = jest.fn(
@@ -71,25 +55,20 @@ const updateAccountMock = jest.fn(
   ): Promise<Account | undefined> => undefined,
 );
 
-
 // -----------------------------
 // Replace real repository
 // -----------------------------
 
-jest.unstable_mockModule(
-  "../../repository/accountsRepository.js",
-  () => ({
-    getAccounts: getAccountsMock,
-    getAccountsCount: getAccountsCountMock,
-    getAccount: getAccountMock,
-    findAccount: findAccountMock,
-    postAccount: postAccountMock,
-    deleteAccount: deleteAccountMock,
-    putAccount: putAccountMock,
-    updateAccount: updateAccountMock,
-  }),
-);
-
+jest.unstable_mockModule("../../repository/accountsRepository.js", () => ({
+  getAccounts: getAccountsMock,
+  getAccountsCount: getAccountsCountMock,
+  getAccount: getAccountMock,
+  findAccount: findAccountMock,
+  postAccount: postAccountMock,
+  deleteAccount: deleteAccountMock,
+  putAccount: putAccountMock,
+  updateAccount: updateAccountMock,
+}));
 
 // Service must be imported AFTER the mock
 const {
@@ -101,11 +80,9 @@ const {
   patchAccount,
 } = await import("../../services/accountsService.js");
 
-
 beforeEach(() => {
   jest.clearAllMocks();
 });
-
 
 // ======================================================
 // GET ALL
@@ -128,13 +105,10 @@ describe("fetchAccounts", () => {
 
     expect(result).toEqual(expected);
 
-    expect(getAccountsMock)
-      .toHaveBeenCalledWith(0, 3);
+    expect(getAccountsMock).toHaveBeenCalledWith(0, 3);
 
-    expect(getAccountsCountMock)
-      .toHaveBeenCalledTimes(1);
+    expect(getAccountsCountMock).toHaveBeenCalledTimes(1);
   });
-
 
   test("successfully fetches second page of accounts", async () => {
     const result = await fetchAccounts({
@@ -142,19 +116,15 @@ describe("fetchAccounts", () => {
       limit: 3,
     });
 
-    expect(result.data).toEqual(
-      fakeAccounts.slice(3, 6),
-    );
+    expect(result.data).toEqual(fakeAccounts.slice(3, 6));
 
     expect(result.page).toBe(2);
     expect(result.limit).toBe(3);
     expect(result.total).toBe(6);
     expect(result.pages).toBe(2);
 
-    expect(getAccountsMock)
-      .toHaveBeenCalledWith(3, 3);
+    expect(getAccountsMock).toHaveBeenCalledWith(3, 3);
   });
-
 
   test("returns empty data when page exceeds available accounts", async () => {
     const result = await fetchAccounts({
@@ -166,10 +136,8 @@ describe("fetchAccounts", () => {
     expect(result.total).toBe(6);
     expect(result.pages).toBe(2);
 
-    expect(getAccountsMock)
-      .toHaveBeenCalledWith(297, 3);
+    expect(getAccountsMock).toHaveBeenCalledWith(297, 3);
   });
-
 
   test("calculates number of pages correctly", async () => {
     const result = await fetchAccounts({
@@ -179,11 +147,9 @@ describe("fetchAccounts", () => {
 
     expect(result.pages).toBe(2);
 
-    expect(getAccountsMock)
-      .toHaveBeenCalledWith(0, 4);
+    expect(getAccountsMock).toHaveBeenCalledWith(0, 4);
   });
 });
-
 
 // ======================================================
 // GET ONE
@@ -199,26 +165,19 @@ describe("fetchAccount", () => {
 
     expect(result).toEqual(account);
 
-    expect(getAccountMock)
-      .toHaveBeenCalledWith(account.id);
+    expect(getAccountMock).toHaveBeenCalledWith(account.id);
 
-    expect(getAccountMock)
-      .toHaveBeenCalledTimes(1);
+    expect(getAccountMock).toHaveBeenCalledTimes(1);
   });
-
 
   test("throws NotFoundError when account does not exist", async () => {
     getAccountMock.mockResolvedValueOnce(undefined);
 
-    await expect(
-      fetchAccount(999),
-    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(fetchAccount(999)).rejects.toBeInstanceOf(NotFoundError);
 
-    expect(getAccountMock)
-      .toHaveBeenCalledWith(999);
+    expect(getAccountMock).toHaveBeenCalledWith(999);
   });
 });
-
 
 // ======================================================
 // POST
@@ -231,7 +190,6 @@ describe("createAccount", () => {
     openingBalance: 1000,
   };
 
-
   test("successfully creates an account", async () => {
     const createdAccount: Account = {
       id: 7,
@@ -240,41 +198,29 @@ describe("createAccount", () => {
 
     findAccountMock.mockResolvedValueOnce(undefined);
 
-    postAccountMock.mockResolvedValueOnce(
-      createdAccount,
-    );
+    postAccountMock.mockResolvedValueOnce(createdAccount);
 
-    const result = await createAccount(
-      accountInput,
-    );
+    const result = await createAccount(accountInput);
 
     expect(result).toEqual(createdAccount);
 
-    expect(findAccountMock)
-      .toHaveBeenCalledWith(accountInput);
+    expect(findAccountMock).toHaveBeenCalledWith(accountInput);
 
-    expect(postAccountMock)
-      .toHaveBeenCalledWith(accountInput);
+    expect(postAccountMock).toHaveBeenCalledWith(accountInput);
   });
-
 
   test("throws ConflictError when account already exists", async () => {
-    findAccountMock.mockResolvedValueOnce(
-      fakeAccounts[0]!,
+    findAccountMock.mockResolvedValueOnce(fakeAccounts[0]!);
+
+    await expect(createAccount(accountInput)).rejects.toBeInstanceOf(
+      ConflictError,
     );
 
-    await expect(
-      createAccount(accountInput),
-    ).rejects.toBeInstanceOf(ConflictError);
+    expect(findAccountMock).toHaveBeenCalledWith(accountInput);
 
-    expect(findAccountMock)
-      .toHaveBeenCalledWith(accountInput);
-
-    expect(postAccountMock)
-      .not.toHaveBeenCalled();
+    expect(postAccountMock).not.toHaveBeenCalled();
   });
 });
-
 
 // ======================================================
 // DELETE
@@ -284,35 +230,23 @@ describe("removeAccount", () => {
   test("successfully removes an account", async () => {
     const account = fakeAccounts[0]!;
 
-    deleteAccountMock.mockResolvedValueOnce(
-      account,
-    );
+    deleteAccountMock.mockResolvedValueOnce(account);
 
-    const result = await removeAccount(
-      account.id,
-    );
+    const result = await removeAccount(account.id);
 
     expect(result).toEqual(account);
 
-    expect(deleteAccountMock)
-      .toHaveBeenCalledWith(account.id);
+    expect(deleteAccountMock).toHaveBeenCalledWith(account.id);
   });
-
 
   test("throws NotFoundError when deleting nonexistent account", async () => {
-    deleteAccountMock.mockResolvedValueOnce(
-      undefined,
-    );
+    deleteAccountMock.mockResolvedValueOnce(undefined);
 
-    await expect(
-      removeAccount(999),
-    ).rejects.toBeInstanceOf(NotFoundError);
+    await expect(removeAccount(999)).rejects.toBeInstanceOf(NotFoundError);
 
-    expect(deleteAccountMock)
-      .toHaveBeenCalledWith(999);
+    expect(deleteAccountMock).toHaveBeenCalledWith(999);
   });
 });
-
 
 // ======================================================
 // PUT
@@ -325,49 +259,31 @@ describe("replaceAccount", () => {
     openingBalance: 5000,
   };
 
-
   test("successfully replaces an account", async () => {
     const updatedAccount: Account = {
       id: 1,
       ...replacement,
     };
 
-    putAccountMock.mockResolvedValueOnce(
-      updatedAccount,
-    );
+    putAccountMock.mockResolvedValueOnce(updatedAccount);
 
-    const result = await replaceAccount(
-      replacement,
-      1,
-    );
+    const result = await replaceAccount(replacement, 1);
 
     expect(result).toEqual(updatedAccount);
 
-    expect(putAccountMock)
-      .toHaveBeenCalledWith(
-        1,
-        replacement,
-      );
+    expect(putAccountMock).toHaveBeenCalledWith(1, replacement);
   });
-
 
   test("throws NotFoundError when replacing nonexistent account", async () => {
-    putAccountMock.mockResolvedValueOnce(
-      undefined,
+    putAccountMock.mockResolvedValueOnce(undefined);
+
+    await expect(replaceAccount(replacement, 999)).rejects.toBeInstanceOf(
+      NotFoundError,
     );
 
-    await expect(
-      replaceAccount(replacement, 999),
-    ).rejects.toBeInstanceOf(NotFoundError);
-
-    expect(putAccountMock)
-      .toHaveBeenCalledWith(
-        999,
-        replacement,
-      );
+    expect(putAccountMock).toHaveBeenCalledWith(999, replacement);
   });
 });
-
 
 // ======================================================
 // PATCH
@@ -384,42 +300,26 @@ describe("patchAccount", () => {
       openingBalance: 3000,
     };
 
-    updateAccountMock.mockResolvedValueOnce(
-      updatedAccount,
-    );
+    updateAccountMock.mockResolvedValueOnce(updatedAccount);
 
-    const result = await patchAccount(
-      update,
-      1,
-    );
+    const result = await patchAccount(update, 1);
 
     expect(result).toEqual(updatedAccount);
 
-    expect(updateAccountMock)
-      .toHaveBeenCalledWith(
-        1,
-        update,
-      );
+    expect(updateAccountMock).toHaveBeenCalledWith(1, update);
   });
-
 
   test("throws NotFoundError when patching nonexistent account", async () => {
     const update: UpdateAccountInput = {
       name: "Updated Name",
     };
 
-    updateAccountMock.mockResolvedValueOnce(
-      undefined,
+    updateAccountMock.mockResolvedValueOnce(undefined);
+
+    await expect(patchAccount(update, 999)).rejects.toBeInstanceOf(
+      NotFoundError,
     );
 
-    await expect(
-      patchAccount(update, 999),
-    ).rejects.toBeInstanceOf(NotFoundError);
-
-    expect(updateAccountMock)
-      .toHaveBeenCalledWith(
-        999,
-        update,
-      );
+    expect(updateAccountMock).toHaveBeenCalledWith(999, update);
   });
 });

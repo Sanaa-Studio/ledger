@@ -6,14 +6,14 @@ import {
 import { BadRequestError, NotFoundError } from "../errors/AppError.js";
 import type { TransactionQuery } from "@ledger/contracts";
 import type { TransactionQueryResponse } from "@ledger/contracts";
-import { 
-    getTransaction, 
-    getTransactions, 
-    getTransactionsCount, 
-    postTransaction, 
-    putTransaction,
-    updateTransaction,
-    deleteTransaction 
+import {
+  getTransaction,
+  getTransactions,
+  getTransactionsCount,
+  postTransaction,
+  putTransaction,
+  updateTransaction,
+  deleteTransaction,
 } from "../repository/transactionsRepository.js";
 import { getAccount } from "../repository/accountsRepository.js";
 
@@ -37,10 +37,7 @@ const validateTransactionAccounts = async (
     throw new BadRequestError("Origin account does not exist");
   }
 
-  if (
-    destinationAccountId !== undefined &&
-    destinationAccountId !== null
-  ) {
+  if (destinationAccountId !== undefined && destinationAccountId !== null) {
     const destinationAccount = await getAccount(destinationAccountId);
 
     if (!destinationAccount) {
@@ -50,24 +47,24 @@ const validateTransactionAccounts = async (
 };
 
 // GET
-export const fetchTransactions = async(query: TransactionQuery): Promise<TransactionQueryResponse> => {
-    const {page, limit} = query;
-    const startIndex =  (page - 1) * limit;
+export const fetchTransactions = async (
+  query: TransactionQuery,
+): Promise<TransactionQueryResponse> => {
+  const { page, limit } = query;
+  const startIndex = (page - 1) * limit;
 
-    const [total, paginatedTransactions] = await Promise.all(
-        [
-            getTransactionsCount(),
-            getTransactions(startIndex, limit)
-        ]
-    );
+  const [total, paginatedTransactions] = await Promise.all([
+    getTransactionsCount(),
+    getTransactions(startIndex, limit),
+  ]);
 
-    const response: TransactionQueryResponse = {
-        page,
-        limit,
-        total: total,
-        pages: Math.ceil(total / limit),
-        data: paginatedTransactions
-    };
+  const response: TransactionQueryResponse = {
+    page,
+    limit,
+    total: total,
+    pages: Math.ceil(total / limit),
+    data: paginatedTransactions,
+  };
 
   return response;
 };
@@ -83,34 +80,33 @@ export const fetchTransaction = async (transactionId: number) => {
 };
 
 //POST
-export const makeTransaction = async (input: CreateTransactionInput): Promise<Transaction> => {
-    const sourceAccount = await getAccount(input.accountId);
+export const makeTransaction = async (
+  input: CreateTransactionInput,
+): Promise<Transaction> => {
+  const sourceAccount = await getAccount(input.accountId);
 
-    if (!sourceAccount) {
-        throw new BadRequestError("Origin account does not exist");
+  if (!sourceAccount) {
+    throw new BadRequestError("Origin account does not exist");
+  }
+
+  if (input.accountId === input.destinationAccountId) {
+    throw new BadRequestError(
+      "Origin and desitination accounts cannot be the same",
+    );
+  }
+
+  if (input.destinationAccountId) {
+    const destinationAccount = await getAccount(input.destinationAccountId);
+
+    if (!destinationAccount) {
+      throw new BadRequestError("Destination account does not exist");
     }
-
-    if (input.accountId === input.destinationAccountId) {
-      throw new BadRequestError(
-        "Origin and desitination accounts cannot be the same",
-      );
-    }
-
-    if (input.destinationAccountId) {
-        const destinationAccount =
-            await getAccount(input.destinationAccountId);
-
-        if (!destinationAccount) {
-            throw new BadRequestError(
-            "Destination account does not exist"
-            );
-        }
-    }
+  }
 
   return postTransaction(input);
 };
 
-// PUT 
+// PUT
 export const replaceTransaction = async (
   input: CreateTransactionInput,
   id: number,
@@ -146,18 +142,14 @@ export const patchTransaction = async (
     throw new NotFoundError("Transaction does not exist");
   }
 
-  const accountId =
-    input.accountId ?? existingTransaction.accountId;
+  const accountId = input.accountId ?? existingTransaction.accountId;
 
   const destinationAccountId =
     input.destinationAccountId !== undefined
       ? input.destinationAccountId
       : existingTransaction.destinationAccountId;
 
-  await validateTransactionAccounts(
-    accountId,
-    destinationAccountId,
-  );
+  await validateTransactionAccounts(accountId, destinationAccountId);
 
   const updatedTransaction = await updateTransaction(id, input);
 

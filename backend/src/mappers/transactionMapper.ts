@@ -1,22 +1,26 @@
 import { TransactionSchema } from "@ledger/contracts";
-import type { Transaction, CreateTransactionInput } from "@ledger/contracts"
+import type { Transaction, CreateTransactionInput } from "@ledger/contracts";
 import { transactionsTable } from "@ledger/database/schema";
 
-export const toTransaction = (transaction: typeof transactionsTable.$inferSelect): Transaction => {
-    const transformedTransaction = TransactionSchema.parse({
-        ...transaction,
-        amount: Number(transaction.amount)
-    });
+export const toTransaction = (
+  transaction: typeof transactionsTable.$inferSelect,
+): Transaction => {
+  const transformedTransaction = TransactionSchema.parse({
+    ...transaction,
+    amount: Number(transaction.amount),
+  });
 
-    return transformedTransaction;
+  return transformedTransaction;
 };
 
-export const toTransactionEntry = (transactionInput: CreateTransactionInput): typeof transactionsTable.$inferInsert => {
-    return {
-        accountId: transactionInput.accountId,
-        destinationAccountId: transactionInput.destinationAccountId,
-        amount: String(transactionInput.amount),
-        description: transactionInput.description,
-        date: transactionInput.date,
-    }
+export const toTransactionEntry = (
+  transactionInput: CreateTransactionInput,
+): typeof transactionsTable.$inferInsert => {
+  return {
+    accountId: transactionInput.accountId,
+    destinationAccountId: transactionInput.destinationAccountId,
+    amount: String(transactionInput.amount),
+    description: transactionInput.description,
+    date: transactionInput.date,
+  };
 };

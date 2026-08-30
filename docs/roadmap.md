@@ -86,9 +86,9 @@
 - [x] Handle transaction pagination
 - [x] Add loading states
 - [x] Add error states for accounts
-- [ ] Add error and empty states for transactions
-- [ ] Account details page
-- [ ] Transaction details page: also change how I represent date
+- [x] Add error and empty states for transactions
+- [x] Account details page
+- [x] Transaction details page: also change how I represent date
 
 ## Phase 7C: CRUD UI
 
@@ -141,17 +141,23 @@
 ## Phase 9A: Deployment and Infrastructure
 
 - [ ] Containerize the production application
-- [ ] Define production container/deployment architecture
-- [ ] Add CI/CD with GitHub Actions
-- [ ] Provision AWS infrastructure with Terraform
+- [ ] Define production deployment architecture
+- [ ] Learn Terraform fundamentals
+- [ ] Define AWS infrastructure with Terraform
+- [ ] Validate Terraform locally with MiniStack
+- [ ] Provision AWS beta infrastructure with Terraform
 - [ ] Deploy PostgreSQL with Amazon RDS
 - [ ] Deploy backend services to AWS
-- [ ] Deploy frontend
+- [ ] Deploy frontend to AWS
+- [ ] Configure DNS and HTTPS
 - [ ] Configure production environment variables and secrets
+- [ ] Add CI/CD with GitHub Actions
+- [ ] Implement health and readiness checks
 - [ ] Implement structured application logging
 - [ ] Centralize production logs
-- [ ] Implement health/readiness checks
-- [ ] Set up basic metrics/alerts
+- [ ] Set up basic metrics and alerts
+- [ ] Provision production infrastructure with Terraform
+- [ ] Deploy production environment
 
 ## Phase 9B: Infrastructure Improvements
 

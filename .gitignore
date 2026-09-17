@@ -147,3 +147,8 @@ vite.config.ts.timestamp-*
 
 # Zip files
 *.zip
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*

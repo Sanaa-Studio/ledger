@@ -92,7 +92,7 @@
 
 ## Phase 7C: CRUD UI
 
-- [ ] Add account creation form
+- [x] Add account creation form
 - [ ] Add account update form
 - [ ] Add account deletion confirmation modal
 - [ ] Add transaction creation form
@@ -105,25 +105,8 @@
 ## Phase 7D: Application Structure/Wireframes
 
 - [ ] Finalize application navigation/sidebar
-- [ ] Homepage wireframe
-- [ ] Dashboard wireframe
 - [x] Accounts list wireframe
 - [x] Account details wireframe
-- [ ] Transactions list wireframe
-- [ ] Transaction details wireframe
-
-## Phase 7E: Styling
-
-- [ ] Establish global typography/colors/background
-- [ ] Style application shell/sidebar
-- [ ] Style buttons and shared controls
-- [ ] Style accounts page
-- [ ] Style account details page
-- [ ] Style transactions page
-- [ ] Style transaction details page
-- [ ] Style forms
-- [ ] Responsive layouts
-- [ ] Loading/error/empty states styling
 
 ## Phase 8: Authentication and Authorization
 
@@ -138,34 +121,40 @@
 - [ ] Add RLS to PostgreSQL for account and transaction ownership
 - [ ] Integrate authentication with the frontend
 
-## Phase 9A: Deployment and Infrastructure
+## Phase 9: Deployment and Infrastructure
 
+- [ ] Define deployment architecture
 - [ ] Containerize the production application
-- [ ] Define production deployment architecture
 - [ ] Learn Terraform fundamentals
-- [ ] Define AWS infrastructure with Terraform
-- [ ] Validate Terraform locally with MiniStack
-- [ ] Provision AWS beta infrastructure with Terraform
+- [ ] Define AWS infrastructure
+- [ ] Validate infrastructure with MiniStack
+- [ ] Provision beta infrastructure
 - [ ] Deploy PostgreSQL with Amazon RDS
-- [ ] Deploy backend services to AWS
-- [ ] Deploy frontend to AWS
-- [ ] Configure DNS and HTTPS
-- [ ] Configure production environment variables and secrets
+- [ ] Deploy backend
+- [ ] Deploy frontend
+- [ ] Configure DNS/HTTPS and secrets
 - [ ] Add CI/CD with GitHub Actions
-- [ ] Implement health and readiness checks
-- [ ] Implement structured application logging
-- [ ] Centralize production logs
-- [ ] Set up basic metrics and alerts
-- [ ] Provision production infrastructure with Terraform
-- [ ] Deploy production environment
+- [ ] Implement logging, health and metrics
+- [ ] Deploy production
 
-## Phase 9B: Infrastructure Improvements
+## Phase 10: Styling
 
-- [ ] Add Redis to local Docker Compose
-- [ ] Learn Redis keys/TTL
-- [ ] Implement Redis-backed API rate limiting
+- [ ] Homepage wireframe
+- [ ] Dashboard wireframe
+- [ ] Transactions list wireframe
+- [ ] Transaction details wireframe
+- [ ] Establish global typography/colors/background
+- [ ] Style application shell/sidebar
+- [ ] Style buttons and shared controls
+- [ ] Style accounts page
+- [ ] Style account details page
+- [ ] Style transactions page
+- [ ] Style transaction details page
+- [ ] Style forms
+- [ ] Responsive layouts
+- [ ] Loading/error/empty states styling
 
-## Phase 10: Product Features
+## Phase 11: Product Features
 
 - [ ] Implement transfers
 - [ ] Add transaction filtering
@@ -176,7 +165,13 @@
 - [ ] Add spending analytics
 - [ ] Add data visualization with D3.js
 
-## Phase 11A: Future Features - Backend Implementation
+## Phase 12: Infrastructure Improvements
+
+- [ ] Add Redis to local Docker Compose
+- [ ] Learn Redis keys/TTL
+- [ ] Implement Redis-backed API rate limiting
+
+## Phase 13: Future Features - Backend Implementation
 
 - [ ] Add email notifications for budget overspending
 - [ ] Add search for transactions
@@ -184,8 +179,9 @@
 - [ ] Add indexes based on actual query patterns
 - [ ] Learn Redis-backed background job queues
 - [ ] Add transaction categories
+- [ ] Implement OAuth2 with Google and GitHub
 
-## Phase 11B: Future Features - Frontend Implementation
+## Phase 14: Future Features - Frontend Implementation
 
 - [ ] Advanced filtering UI
 - [ ] Saved views
@@ -193,7 +189,7 @@
 - [ ] Accessibility improvements
 - [ ] Offline/cache behavior
 
-## Phase 12: Future Architecture Improvements
+## Phase 15: Future Architecture Improvements
 
 - [ ] Do University of Helsinki Docker Course
 - [ ] Do University of Helsinki Kubernetes course

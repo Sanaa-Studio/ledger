@@ -11,12 +11,14 @@ export const CreateAccountSchema = z.object({
   openingBalance: z.number(),
 });
 
-export const UpdateAccountSchema = CreateAccountSchema.partial().refine(
-  (data) => Object.keys(data).length > 0,
-  {
+export const UpdateAccountSchema = CreateAccountSchema.pick({
+  name: true,
+  type: true,
+})
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided",
-  },
-);
+  });
 
 export const AccountSchema = CreateAccountSchema.extend({
   id: z.number().int().positive(),

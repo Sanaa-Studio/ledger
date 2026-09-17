@@ -1,4 +1,5 @@
 import AccountsDetails from "../components/accounts/AccountsDetails";
+import AccountCreateForm from "../components/accounts/AccountCreateForm";
 import { AccountsResponseSchema, type Account } from "@ledger/contracts";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -67,19 +68,20 @@ const AccountsPage = () => {
     return <p>{error}</p>;
   }
 
-  if (accounts.length === 0) {
-    return <p> No Accounts </p>;
-  }
-
   return (
     <>
       <div className="accountsPageContainer">
-        <AccountsDetails accounts={accounts}></AccountsDetails>
-        <PageSelector
-          page={page}
-          pages={pages}
-          setPage={setPage}
-        ></PageSelector>
+        <AccountCreateForm setAccounts={setAccounts}></AccountCreateForm>
+
+        {accounts.length === 0 ? (
+          <p>No Accounts</p>
+        ) : (
+          <>
+            <AccountsDetails accounts={accounts} />
+
+            <PageSelector page={page} pages={pages} setPage={setPage} />
+          </>
+        )}
       </div>
     </>
   );

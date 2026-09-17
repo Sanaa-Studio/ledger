@@ -29,6 +29,8 @@
     "docker:ps": "docker compose --env-file .env.compose --profile test ps",
     "docker:db": "docker compose --env-file .env.compose up -d postgres",
     "docker:up": "docker compose --env-file .env.compose up",
+    "docker:infra": "docker compose -f compose.infra.yml up -d",
+    "docker:infra:down": "docker compose -f compose.infra.yml down",
     "docker:down": "docker compose --env-file .env.compose down",
     "docker:build": "docker compose --env-file .env.compose up --build",
     "build": "pnpm -r --if-present build",

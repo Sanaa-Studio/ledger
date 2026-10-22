@@ -9,3 +9,7 @@ coverage
 pnpm-lock.yaml
 
 database/drizzle
+
+**/.terraform/**
+**/*.tfstate
+**/*.tfstate.*

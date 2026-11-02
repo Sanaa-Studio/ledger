@@ -1,11 +1,10 @@
-@import "@fontsource/roboto/latin-400.css";
-@import "@fontsource/roboto/latin-500.css";
-@import "@fontsource/roboto/latin-700.css";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-700.css";
 
 :root {
   font-family:
-    Roboto,
-    Inter,
+    "IBM Plex Sans",
     ui-sans-serif,
     system-ui,
     -apple-system,

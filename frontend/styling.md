@@ -17,7 +17,7 @@ Login and session screens belong to Phase 8.
 
 ## Shared styling
 
-`src/index.css` defines the dark palette, Roboto font, spacing, radii, focus color,
+`src/index.css` defines the dark palette, IBM Plex Sans font, spacing, radii, focus color,
 and base styles. `src/App.css` defines the shell, cards, buttons, badges, forms,
 dialogs, tables, loading indicators, notices, and empty states. Pages reuse
 `src/ui/Primitives.tsx` rather than maintaining their own visual controls.

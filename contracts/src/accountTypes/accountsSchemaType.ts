@@ -14,6 +14,7 @@ export const CreateAccountSchema = z.object({
 export const UpdateAccountSchema = CreateAccountSchema.pick({
   name: true,
   type: true,
+  openingBalance: true,
 })
   .partial()
   .refine((data) => Object.keys(data).length > 0, {

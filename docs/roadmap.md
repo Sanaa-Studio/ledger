@@ -93,18 +93,18 @@
 ## Phase 7C: CRUD UI
 
 - [x] Add account creation form
-- [ ] Add account update form
-- [ ] Add account deletion confirmation modal
-- [ ] Add transaction creation form
-- [ ] Add transaction update form
-- [ ] Add transaction deletion confirmation modal
-- [ ] Form validation with Zod
-- [ ] Refresh/update UI after mutations
-- [ ] Add frontend tests for critical user flows
+- [x] Add account update form
+- [x] Add account deletion confirmation modal
+- [x] Add transaction creation form
+- [x] Add transaction update form
+- [x] Add transaction deletion confirmation modal
+- [x] Form validation with Zod
+- [x] Refresh/update UI after mutations
+- [x] Add frontend tests for critical user flows
 
 ## Phase 7D: Application Structure/Wireframes
 
-- [ ] Finalize application navigation/sidebar
+- [x] Finalize application navigation/sidebar
 - [x] Accounts list wireframe
 - [x] Account details wireframe
 
@@ -139,20 +139,26 @@
 
 ## Phase 10: Styling
 
-- [ ] Homepage wireframe
-- [ ] Dashboard wireframe
-- [ ] Transactions list wireframe
-- [ ] Transaction details wireframe
-- [ ] Establish global typography/colors/background
-- [ ] Style application shell/sidebar
-- [ ] Style buttons and shared controls
-- [ ] Style accounts page
-- [ ] Style account details page
-- [ ] Style transactions page
-- [ ] Style transaction details page
-- [ ] Style forms
-- [ ] Responsive layouts
-- [ ] Loading/error/empty states styling
+Completed with the Phase 7 dark workspace and Phase 10 polish. The application
+homepage (`/`) opens the dashboard; a separate marketing homepage is not part of
+this phase. Layout references and responsive review guidance are recorded in
+[`frontend/styling.md`](../frontend/styling.md). Authentication screens remain
+part of Phase 8.
+
+- [x] Homepage wireframe
+- [x] Dashboard wireframe
+- [x] Transactions list wireframe
+- [x] Transaction details wireframe
+- [x] Establish global typography/colors/background
+- [x] Style application shell/sidebar
+- [x] Style buttons and shared controls
+- [x] Style accounts page
+- [x] Style account details page
+- [x] Style transactions page
+- [x] Style transaction details page
+- [x] Style forms
+- [x] Responsive layouts
+- [x] Loading/error/empty states styling
 
 ## Phase 11: Product Features
 

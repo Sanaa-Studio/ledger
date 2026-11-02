@@ -1,89 +1,138 @@
-import AccountsDetails from "../components/accounts/AccountsDetails";
-import AccountCreateForm from "../components/accounts/AccountCreateForm";
-import { AccountsResponseSchema, type Account } from "@ledger/contracts";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { env } from "../config/env";
-import PageSelector from "../components/PageSelector";
-import "../styles/AccountsPage.css";
-import { ZodError } from "zod";
+import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import base62 from "@sindresorhus/base62";
+import type {
+  Account,
+  CreateAccountInput,
+  UpdateAccountInput,
+} from "@ledger/contracts";
+import { createAccount, getAccounts } from "../api/client";
+import { PAGE_SIZE } from "../ui/config";
+import { ACCOUNT_TYPE_LABELS } from "../ui/config";
+import { currency } from "../ui/format";
+import {
+  Button,
+  Card,
+  EmptyState,
+  ErrorMessage,
+  LoadingState,
+  Modal,
+  PageHeader,
+  PageSelector,
+} from "../ui/Primitives";
+import AccountForm from "../components/forms/AccountForm";
 
 const AccountsPage = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
-  const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getAccounts({ page, limit: PAGE_SIZE });
+      setAccounts(response.data);
+      setPages(response.meta.pages);
+    } catch (loadError) {
+      setError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Could not load accounts.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [page]);
 
   useEffect(() => {
-    const getAccounts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+    const request = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(request);
+  }, [load]);
 
-        const response = await axios.get(env.accountsUrl, {
-          timeout: 5000,
-          params: {
-            page: page,
-            limit: limit,
-          },
-        });
-
-        const parsedResponse = AccountsResponseSchema.parse(response.data);
-
-        setAccounts(parsedResponse.data);
-        setPage(parsedResponse.meta.page);
-        setPages(parsedResponse.meta.pages);
-        setLimit(parsedResponse.meta.limit);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setError(
-            error.response?.data?.message ??
-              error.message ??
-              "Failed to fetch accounts",
-          );
-        } else if (error instanceof ZodError) {
-          console.error(error.issues);
-          setError("Received an invalid response from the server");
-        } else {
-          setError("Unexpected error while loading accounts");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void getAccounts();
-  }, [page, limit]);
-
-  // Below AccountsDetails I will also add a component for switching to
-  // Next page where I will pass page, limit, pages and total as props
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const saveAccount = async (
+    value: CreateAccountInput | UpdateAccountInput,
+  ) => {
+    await createAccount(value as CreateAccountInput);
+    setShowCreate(false);
+    if (page !== 1) setPage(1);
+    else await load();
+  };
 
   return (
-    <>
-      <div className="accountsPageContainer">
-        <AccountCreateForm setAccounts={setAccounts}></AccountCreateForm>
-
-        {accounts.length === 0 ? (
-          <p>No Accounts</p>
-        ) : (
-          <>
-            <AccountsDetails accounts={accounts} />
-
-            <PageSelector page={page} pages={pages} setPage={setPage} />
-          </>
-        )}
-      </div>
-    </>
+    <div className="page-stack">
+      <PageHeader
+        title="Accounts"
+        description="Keep track of the places your money lives."
+        action={
+          <Button variant="primary" onClick={() => setShowCreate(true)}>
+            ＋ New account
+          </Button>
+        }
+      />
+      {error && <ErrorMessage message={error} onRetry={() => void load()} />}
+      {loading ? (
+        <LoadingState label="Loading accounts" />
+      ) : accounts.length === 0 ? (
+        <Card>
+          <EmptyState
+            title="No accounts yet"
+            description="Create your first account to start organizing your finances."
+            action={
+              <Button variant="primary" onClick={() => setShowCreate(true)}>
+                Create account
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <>
+          <div className="account-grid">
+            {accounts.map((account) => (
+              <Link
+                className="account-tile"
+                key={account.id}
+                to={`/accounts/${base62.encodeInteger(account.id)}`}
+              >
+                <span className="account-tile__icon" aria-hidden="true">
+                  {account.type === "creditCard"
+                    ? "▭"
+                    : account.type === "savings"
+                      ? "◉"
+                      : "⌂"}
+                </span>
+                <span className="account-tile__details">
+                  <span className="account-tile__name">{account.name}</span>
+                  <span className="muted">
+                    {ACCOUNT_TYPE_LABELS[account.type]}
+                  </span>
+                </span>
+                <strong>{currency(account.openingBalance)}</strong>
+                <span className="account-tile__arrow" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+            ))}
+          </div>
+          <PageSelector page={page} pages={pages} onPageChange={setPage} />
+        </>
+      )}
+      {showCreate && (
+        <Modal
+          title="Create account"
+          description="Add an account to your Ledger workspace."
+          onClose={() => setShowCreate(false)}
+        >
+          <AccountForm
+            onCancel={() => setShowCreate(false)}
+            onSave={saveAccount}
+          />
+        </Modal>
+      )}
+    </div>
   );
 };
 

@@ -40,6 +40,7 @@
     "test": "trap 'pnpm test:down' EXIT; pnpm test:setup && pnpm --filter backend test",
     "test:setup": "docker compose --env-file .env.compose --profile test up -d --wait postgres-test && pnpm --filter @ledger/database db:migrate:test",
     "test:down": "docker compose --env-file .env.compose --profile test rm -sf postgres-test",
+    "test:frontend": "pnpm --filter frontend test",
     "dev": "pnpm docker:db && pnpm --filter backend --filter frontend --parallel run dev"
   },
   "dependencies": {

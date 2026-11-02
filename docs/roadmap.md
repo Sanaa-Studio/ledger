@@ -93,18 +93,18 @@
 ## Phase 7C: CRUD UI
 
 - [x] Add account creation form
-- [ ] Add account update form
-- [ ] Add account deletion confirmation modal
-- [ ] Add transaction creation form
-- [ ] Add transaction update form
-- [ ] Add transaction deletion confirmation modal
-- [ ] Form validation with Zod
-- [ ] Refresh/update UI after mutations
-- [ ] Add frontend tests for critical user flows
+- [x] Add account update form
+- [x] Add account deletion confirmation modal
+- [x] Add transaction creation form
+- [x] Add transaction update form
+- [x] Add transaction deletion confirmation modal
+- [x] Form validation with Zod
+- [x] Refresh/update UI after mutations
+- [x] Add frontend tests for critical user flows
 
 ## Phase 7D: Application Structure/Wireframes
 
-- [ ] Finalize application navigation/sidebar
+- [x] Finalize application navigation/sidebar
 - [x] Accounts list wireframe
 - [x] Account details wireframe
 

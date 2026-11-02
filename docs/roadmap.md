@@ -139,20 +139,26 @@
 
 ## Phase 10: Styling
 
-- [ ] Homepage wireframe
-- [ ] Dashboard wireframe
-- [ ] Transactions list wireframe
-- [ ] Transaction details wireframe
-- [ ] Establish global typography/colors/background
-- [ ] Style application shell/sidebar
-- [ ] Style buttons and shared controls
-- [ ] Style accounts page
-- [ ] Style account details page
-- [ ] Style transactions page
-- [ ] Style transaction details page
-- [ ] Style forms
-- [ ] Responsive layouts
-- [ ] Loading/error/empty states styling
+Completed with the Phase 7 dark workspace and Phase 10 polish. The application
+homepage (`/`) opens the dashboard; a separate marketing homepage is not part of
+this phase. Layout references and responsive review guidance are recorded in
+[`frontend/styling.md`](../frontend/styling.md). Authentication screens remain
+part of Phase 8.
+
+- [x] Homepage wireframe
+- [x] Dashboard wireframe
+- [x] Transactions list wireframe
+- [x] Transaction details wireframe
+- [x] Establish global typography/colors/background
+- [x] Style application shell/sidebar
+- [x] Style buttons and shared controls
+- [x] Style accounts page
+- [x] Style account details page
+- [x] Style transactions page
+- [x] Style transaction details page
+- [x] Style forms
+- [x] Responsive layouts
+- [x] Loading/error/empty states styling
 
 ## Phase 11: Product Features
 

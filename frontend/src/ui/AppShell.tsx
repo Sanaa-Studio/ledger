@@ -31,6 +31,9 @@ const NavIcon = ({ name }: { name: string }) => {
 
 const AppShell = () => (
   <div className="app-shell">
+    <a className="skip-link" href="#main-content">
+      Skip to content
+    </a>
     <aside className="sidebar">
       <NavLink className="brand" to="/dashboard" aria-label="Ledger dashboard">
         <span className="brand__mark" aria-hidden="true">
@@ -57,7 +60,7 @@ const AppShell = () => (
         <span>Local workspace</span>
       </div>
     </aside>
-    <main className="main-content">
+    <main className="main-content" id="main-content" tabIndex={-1}>
       <div className="mobile-brand">
         <span className="brand__mark">L</span> Ledger
       </div>

@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "quiet" | "danger";
@@ -57,42 +63,90 @@ export const Modal = ({
   onClose: () => void;
   children: ReactNode;
   wide?: boolean;
-}) => (
-  <div
-    className="modal-backdrop"
-    onMouseDown={(event) => {
-      if (event.target === event.currentTarget) onClose();
-    }}
-  >
-    <section
-      className={`modal ${wide ? "modal--wide" : ""}`.trim()}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      aria-describedby={description ? "modal-description" : undefined}
+}) => {
+  const dialogRef = useRef<HTMLElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+
+  useEffect(() => {
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
+    };
+  }, []);
+
+  return (
+    <div
+      className="modal-backdrop"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div className="modal__header">
-        <div>
-          <h2 id="modal-title">{title}</h2>
-          {description && (
-            <p id="modal-description" className="muted">
-              {description}
-            </p>
-          )}
+      <section
+        ref={dialogRef}
+        tabIndex={-1}
+        className={`modal ${wide ? "modal--wide" : ""}`.trim()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            onClose();
+          }
+          if (event.key !== "Tab") return;
+          const controls = Array.from(
+            event.currentTarget.querySelectorAll<HTMLElement>(
+              'a[href], button:not(:disabled), input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]',
+            ),
+          ).filter((element) => !element.closest("[hidden], [inert]"));
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (!first || !last) {
+            event.preventDefault();
+            return;
+          }
+          if (
+            event.shiftKey &&
+            (document.activeElement === first ||
+              document.activeElement === dialogRef.current)
+          ) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }}
+      >
+        <div className="modal__header">
+          <div>
+            <h2 id={titleId}>{title}</h2>
+            {description && (
+              <p id={descriptionId} className="muted">
+                {description}
+              </p>
+            )}
+          </div>
+          <Button
+            variant="quiet"
+            size="small"
+            aria-label="Close dialog"
+            onClick={onClose}
+          >
+            ×
+          </Button>
         </div>
-        <Button
-          variant="quiet"
-          size="small"
-          aria-label="Close dialog"
-          onClick={onClose}
-        >
-          ×
-        </Button>
-      </div>
-      {children}
-    </section>
-  </div>
-);
+        {children}
+      </section>
+    </div>
+  );
+};
 
 export const Notice = ({
   tone = "error",
